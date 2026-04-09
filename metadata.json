@@ -1,0 +1,5 @@
+{
+  "name": "Survey Digitizer",
+  "description": "Convert paper surveys into structured digital data using AI-powered OCR.",
+  "requestFramePermissions": ["camera"]
+}
