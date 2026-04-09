@@ -1,5 +1,5 @@
 {
   "name": "Survey Digitizer",
-  "description": "Convert paper surveys into structured digital data using AI-powered OCR.",
+  "description": "Digitize fixed-layout survey forms using template-based answer detection and image alignment.",
   "requestFramePermissions": ["camera"]
 }

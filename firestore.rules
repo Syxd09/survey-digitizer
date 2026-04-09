@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "syxdmatheen.9@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasRequiredFields(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidDataset(data) {
+      return hasRequiredFields(data, ['name', 'ownerId', 'createdAt', 'modifiedAt', 'entryCount']) &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.ownerId is string &&
+             data.createdAt is timestamp &&
+             data.modifiedAt is timestamp &&
+             data.entryCount is number && data.entryCount >= 0;
+    }
+
+    function isValidScan(data) {
+      return hasRequiredFields(data, ['datasetId', 'userId', 'scanId', 'status', 'confidence', 'extractedData', 'createdAt']) &&
+             data.datasetId is string &&
+             data.userId is string &&
+             data.scanId is string &&
+             data.status in ['pending', 'completed', 'conflict'] &&
+             data.confidence is number && data.confidence >= 0 && data.confidence <= 100 &&
+             data.extractedData is map &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidActivity(data) {
+      return hasRequiredFields(data, ['title', 'type', 'createdAt']) &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 100 &&
+             data.type in ['primary', 'tertiary', 'outline'] &&
+             data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /datasets/{datasetId} {
+      allow read: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
+      
+      allow create: if isAuthenticated() && 
+                      isValidDataset(request.resource.data) && 
+                      request.resource.data.ownerId == request.auth.uid;
+
+      allow update: if isAuthenticated() && 
+                      isValidDataset(request.resource.data) && 
+                      (resource.data.ownerId == request.auth.uid || isAdmin()) &&
+                      request.resource.data.ownerId == resource.data.ownerId &&
+                      request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
+
+      match /scans/{scanId} {
+        allow read: if isAuthenticated() && (get(/databases/$(database)/documents/datasets/$(datasetId)).data.ownerId == request.auth.uid || isAdmin());
+        
+        allow create: if isAuthenticated() && 
+                        isValidScan(request.resource.data) && 
+                        request.resource.data.userId == request.auth.uid &&
+                        request.resource.data.datasetId == datasetId;
+
+        allow update: if isAuthenticated() && 
+                        isValidScan(request.resource.data) && 
+                        (request.resource.data.userId == request.auth.uid || isAdmin()) &&
+                        request.resource.data.userId == resource.data.userId &&
+                        request.resource.data.datasetId == resource.data.datasetId &&
+                        request.resource.data.createdAt == resource.data.createdAt;
+
+        allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      }
+    }
+
+    match /activities/{activityId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                      isValidActivity(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+  }
+}
