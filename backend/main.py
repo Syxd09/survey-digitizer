@@ -23,6 +23,12 @@ class ProcessRequest(BaseModel):
     userId: str
     returnRaw: bool = False
 
+class FeedbackRequest(BaseModel):
+    scanId: str
+    questionId: str
+    correctedText: str
+    imageHash: str # The visual hash of the crop being corrected
+
 @app.get("/")
 async def health_check():
     return {"status": "healthy", "version": "1.0.0"}
@@ -75,6 +81,24 @@ async def ingest_form(request: ProcessRequest, background_tasks: BackgroundTasks
         "taskId": f"bg-{scan_id}",
         "status": "PROCESSING"
     }
+
+@app.post("/feedback")
+async def register_feedback(request: FeedbackRequest):
+    """Register user correction to improve the model memory."""
+    try:
+        from services.orchestrator import ExtractionOrchestrator
+        orchestrator = ExtractionOrchestrator()
+        
+        # Save the correction to Hydra's memory
+        success = orchestrator.register_correction(request.imageHash, request.correctedText)
+        
+        return {
+            "success": success,
+            "message": "Hydra has learned this correction." if success else "Failed to learn."
+        }
+    except Exception as e:
+        logger.error(f"[FEEDBACK] Failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
