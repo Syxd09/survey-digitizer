@@ -1,0 +1,194 @@
+.analytics-station {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 32px;
+  background: var(--bg-primary);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.analytics-header h1 {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.time-filter {
+  display: flex;
+  gap: 8px;
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.time-filter button {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 6px;
+  color: var(--on-surface-muted);
+  transition: 0.2s;
+}
+
+.time-filter button.active {
+  background: var(--surface-raised);
+  color: var(--on-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.metrics-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.summary-card {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.icon-box {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.trend {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 900;
+  font-family: monospace;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--on-surface-muted);
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.chart-panel {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.panel-header {
+  margin-bottom: 24px;
+}
+
+.panel-header h3 {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.subtitle {
+  font-size: 11px;
+  color: var(--on-surface-muted);
+}
+
+.mock-chart {
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding-top: 20px;
+}
+
+.bar-wrapper {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bar {
+  width: 100%;
+  background: linear-gradient(to top, var(--primary), var(--secondary));
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  transition: height 1s ease-out;
+}
+
+.bar-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: var(--primary);
+  filter: blur(10px);
+  opacity: 0.3;
+}
+
+.dist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dist-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.d-label { font-size: 12px; font-weight: 600; }
+.d-count { font-size: 12px; font-weight: 800; }
+
+.d-bar-bg {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 100px;
+}
+
+.d-bar {
+  height: 100%;
+  border-radius: 100px;
+}

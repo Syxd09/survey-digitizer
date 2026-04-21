@@ -1,0 +1,57 @@
+:root {
+  /* Core Palette - Authority Dark */
+  --bg-primary: #0a0b0d;
+  --bg-secondary: #14161a;
+  --bg-tertiary: #1c1f26;
+  
+  --surface: #1e2128;
+  --surface-raised: #2a2e38;
+  --surface-glass: rgba(30, 33, 40, 0.7);
+  
+  --on-surface: #e1e3e6;
+  --on-surface-muted: #9ba1a6;
+  
+  /* Accent Colors - Neural & Authority */
+  --primary: #0091ff; /* Electric Blue */
+  --primary-glow: rgba(0, 145, 255, 0.3);
+  
+  --secondary: #00d1ff; /* Cyan */
+  --tertiary: #ff7e33; /* Warning/Action */
+  
+  --success: #00d97e;
+  --error: #ff4d4d;
+  
+  /* Layout Metrics */
+  --sidebar-width: 260px;
+  --header-height: 64px;
+  --panel-radius: 12px;
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Shadows & Glows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --glow-primary: 0 0 20px var(--primary-glow);
+}
+
+@keyframes neural-pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(500%); }
+}
+
+.neural-glow {
+  box-shadow: 0 0 15px var(--primary-glow);
+  border: 1px solid var(--primary);
+}
+
+.glass-panel {
+  background: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}

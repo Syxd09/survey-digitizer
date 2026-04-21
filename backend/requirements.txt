@@ -1,19 +1,37 @@
-fastapi==0.104.1
-uvicorn==0.24.0
-python-multipart==0.0.6
-opencv-python-headless>=4.8.0
-easyocr>=1.7.0
-img2table>=1.2.0
-pillow>=10.0.0
-numpy>=1.24.0
-pandas>=2.0.0
-celery>=5.3.0
-redis>=5.0.0
+# ── Core API ──────────────────────────────────────────────────────────────────
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
 python-dotenv>=1.0.0
-google-genai>=0.1.0
-openai>=1.0.0
-transformers>=4.30.0
-torch>=2.0.0
 pydantic>=2.0.0
-accelerate>=0.20.0
-sentencepiece>=0.1.99
+
+# ── Image processing ──────────────────────────────────────────────────────────
+Pillow>=10.0.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+scikit-image>=0.21.0          # Sauvola binarization
+
+# ── OCR engines ───────────────────────────────────────────────────────────────
+easyocr>=1.7.0                 # Multilingual fallback / handwriting detection
+# PaddleOCR: install ONE of the two lines below (comment the other)
+paddlepaddle>=2.5.0            # CPU version
+# paddlepaddle-gpu>=2.5.0       # GPU version (CUDA 11.7+)
+paddleocr>=2.7.0               # Paddle OCR wrapper
+
+# ── Handwriting model ─────────────────────────────────────────────────────────
+transformers>=4.35.0
+torch>=2.0.0
+# Install MPS support automatically with torch on Apple Silicon
+
+# ── Table extraction ──────────────────────────────────────────────────────────
+img2table>=1.2.5               # Borderless + bordered table extraction
+
+# ── NLP / correction ──────────────────────────────────────────────────────────
+rapidfuzz>=3.0.0               # Fuzzy OCR artifact correction
+langdetect>=1.0.9              # Auto language detection
+
+# ── AI fallback ───────────────────────────────────────────────────────────────
+anthropic>=0.25.0              # Claude vision fallback for low-confidence crops
+
+# ── Storage / export ──────────────────────────────────────────────────────────
+pandas>=2.0.0
+openpyxl>=3.1.0

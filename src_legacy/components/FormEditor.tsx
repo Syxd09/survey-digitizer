@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Eye, EyeOff, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye, EyeOff, Check, Scan, Activity, Fingerprint } from 'lucide-react';
 
 export interface FormQuestion {
   id: string;
@@ -7,14 +7,16 @@ export interface FormQuestion {
   options: string[];
   selected: string | null;
   suggestions?: { value: string; score: number }[];
-  status?: 'OK' | 'LOW_CONFIDENCE' | 'NOT_DETECTED' | 'AUTO_LOW_CONFIDENCE';
+  status?: 'OK' | 'LOW_CONFIDENCE' | 'NOT_DETECTED' | 'AUTO_LOW_CONFIDENCE' | 'SIGNATURE' | 'LEARNED_MATCH' | 'HANDWRITTEN_NOTE' | 'LIST_PAIR';
   confidence?: number;
+  imageHash?: string;
 }
 
 interface FormEditorProps {
   questions: FormQuestion[];
   onChange: (questions: FormQuestion[]) => void;
   pipelineMode?: 'TABLE' | 'OCR';
+  onCorrection?: (q: FormQuestion, newValue: string) => void;
 }
 
 // --- Adaptive Calibration Engine ---
@@ -211,7 +213,7 @@ const tableCalibrator = new AdaptiveCalibrator('table');
 const ocrCalibrator = new AdaptiveCalibrator('ocr');
 const patternTracker = new ErrorPatternTracker();
 
-export const FormEditor: React.FC<FormEditorProps> = ({ questions, onChange, pipelineMode }) => {
+export const FormEditor: React.FC<FormEditorProps> = ({ questions, onChange, pipelineMode, onCorrection }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [errorsOnly, setErrorsOnly] = useState(false);
   const [wrongAnswerCount, setWrongAnswerCount] = useState(0);
@@ -309,9 +311,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({ questions, onChange, pip
     }
 
     const updated = [...questions];
+    const prevValue = updated[realIdx].selected;
     updated[realIdx] = { ...updated[realIdx], selected: value, status: 'OK' };
     onChange(updated);
     setEditCount(c => c + 1);
+
+    // V10.0: Signal correction to parent (for backend feedback loop)
+    if (onCorrection && prevValue !== value) {
+      onCorrection(updated[realIdx], value);
+    }
 
     // Auto-advance to next error
     setTimeout(() => {
@@ -410,7 +418,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ questions, onChange, pip
       </div>
 
       {/* Question Card — Single Focus */}
-      <div className="bg-surface-container-low rounded-3xl border border-outline-variant/10 shadow-xl overflow-hidden">
+      <div className={`bg-surface-container-low rounded-3xl border border-outline-variant/10 shadow-xl overflow-hidden transition-all duration-700 ${
+        currentQ.status === 'LEARNED_MATCH' ? 'ring-2 ring-tertiary/40 shadow-tertiary/20' : ''
+      }`}>
         {/* Question Header */}
         <div className="px-6 pt-6 pb-3">
           <div className="flex items-center gap-2 mb-3">
@@ -418,6 +428,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({ questions, onChange, pip
             {currentQ.status === 'OK' && currentQ.selected ? (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[8px] font-black uppercase">
                 <Check size={10} /> Done
+              </div>
+            ) : currentQ.status === 'SIGNATURE' ? (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[8px] font-black uppercase">
+                <Scan size={10} /> Signature
+              </div>
+            ) : currentQ.status === 'LEARNED_MATCH' ? (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary text-[8px] font-black uppercase border border-tertiary/20">
+                <Activity size={10} className="animate-pulse" /> Learned Authority
               </div>
             ) : (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[8px] font-black uppercase animate-pulse">
@@ -428,6 +446,9 @@ export const FormEditor: React.FC<FormEditorProps> = ({ questions, onChange, pip
             {/* Confidence Heatmark */}
             {currentQ.confidence !== undefined && (
               <div className="flex items-center gap-2 ml-auto">
+                {currentQ.status === 'LEARNED_MATCH' && (
+                   <span className="text-[8px] font-black text-tertiary uppercase tracking-tighter mr-2">Neural Memory Hit</span>
+                )}
                 <span className="text-[9px] font-black uppercase text-on-surface-variant">Trust Level:</span>
                 <div className="h-1.5 w-16 bg-surface-container-highest rounded-full overflow-hidden">
                   <div 
@@ -450,6 +471,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({ questions, onChange, pip
           <p className="text-base font-semibold text-on-surface leading-relaxed">
             {currentQ.question || <span className="text-outline italic">No question text</span>}
           </p>
+          
+          {/* V10.1: Signature Visualizer Content Area */}
+          {currentQ.status === 'SIGNATURE' && (
+            <div className="mt-4 p-6 bg-surface-container-high rounded-2xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center gap-4 group hover:border-primary/50 transition-all">
+              <div className="relative">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <Fingerprint size={32} />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-success flex items-center justify-center text-on-success shadow-lg border-2 border-surface-container-high">
+                  <Check size={16} />
+                </div>
+              </div>
+              <div className="text-center">
+                <span className="block text-xs font-black uppercase tracking-widest text-primary mb-1">Digitized Signature</span>
+                <span className="text-[10px] font-bold text-on-surface-variant bg-surface-container-highest px-3 py-1 rounded-full uppercase">Authenticated by Hydra CCA</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Options — Large Tap Targets */}

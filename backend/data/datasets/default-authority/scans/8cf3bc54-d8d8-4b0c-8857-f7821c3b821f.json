@@ -1,0 +1,139 @@
+{
+  "datasetId": "default-authority",
+  "userId": "admin",
+  "scanId": "8cf3bc54-d8d8-4b0c-8857-f7821c3b821f",
+  "status": "good",
+  "confidence": 0.6877,
+  "imageUrl": "",
+  "createdAt": "2026-04-21T17:13:46.954051+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-21T17:13:46.954059+00:00"
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-21T17:13:46.954570+00:00",
+      "metadata": {
+        "status": "good",
+        "export_allowed": true
+      }
+    }
+  ],
+  "exportAllowed": true,
+  "nullRate": 0.0,
+  "extractedData": {
+    "questions": [
+      {
+        "question": "Data Warehouse Security Access Model",
+        "selected": "Data Warehouse Security Access Model",
+        "options": [],
+        "confidence": 0.367,
+        "status": "HANDWRITTEN_NOTE",
+        "imageHash": "2dadb5a130687070"
+      },
+      {
+        "question": "(Read-Only)",
+        "selected": "secret , view .",
+        "options": [],
+        "confidence": 0.6797,
+        "status": "LIST_PAIR",
+        "imageHash": "c8b2b7b3737bcecc"
+      },
+      {
+        "question": "DATA",
+        "selected": "DATA",
+        "options": [],
+        "confidence": 0.9959,
+        "status": "HANDWRITTEN_NOTE",
+        "imageHash": "2242551519626386"
+      },
+      {
+        "question": "WAREHOUSE",
+        "selected": "WAREHOUSE",
+        "options": [],
+        "confidence": 0.9987,
+        "status": "HANDWRITTEN_NOTE",
+        "imageHash": "b130dad29555293"
+      },
+      {
+        "question": "ENGINEER",
+        "selected": "insert of update 1,000",
+        "options": [],
+        "confidence": 0.4532,
+        "status": "LIST_PAIR",
+        "imageHash": "d0ea6ba9a970d0d0"
+      },
+      {
+        "question": "(Write)",
+        "selected": "(Write)",
+        "options": [],
+        "confidence": 0.7227,
+        "status": "HANDWRITTEN_NOTE",
+        "imageHash": "8e4551b33a599c87"
+      },
+      {
+        "question": "ALL PRIvILEGES / MANAGE",
+        "selected": "ALL PRIvILEGES / MANAGE",
+        "options": [],
+        "confidence": 0.6064,
+        "status": "HANDWRITTEN_NOTE",
+        "imageHash": "94d599a9a956d494"
+      },
+      {
+        "question": "FEB 17, 2026",
+        "selected": "FEB 17, 2026",
+        "options": [],
+        "confidence": 0.6781,
+        "status": "HANDWRITTEN_NOTE",
+        "imageHash": "bc3d2d33222cc450"
+      }
+    ],
+    "diagnostics": {
+      "logic": "UNIVERSAL_V11",
+      "text_count": 11,
+      "box_count": 0,
+      "row_count": 8,
+      "quality": {
+        "status": "GOOD",
+        "blur_score": 591.29,
+        "brightness": 197.23,
+        "contrast": 43.98,
+        "warnings": []
+      },
+      "handwriting_ratio": 0.33,
+      "detected_language": "en",
+      "processing_duration": 5.01,
+      "logic_version": "Hydra-v11.0-PRODUCTION",
+      "engine": "LOCAL_HYDRA_V11",
+      "avg_confidence": 0.6877,
+      "null_rate": 0.0,
+      "question_count": 8,
+      "handwriting_mode": false
+    }
+  },
+  "diagnostics": {
+    "logic": "UNIVERSAL_V11",
+    "text_count": 11,
+    "box_count": 0,
+    "row_count": 8,
+    "quality": {
+      "status": "GOOD",
+      "blur_score": 591.29,
+      "brightness": 197.23,
+      "contrast": 43.98,
+      "warnings": []
+    },
+    "handwriting_ratio": 0.33,
+    "detected_language": "en",
+    "processing_duration": 5.01,
+    "logic_version": "Hydra-v11.0-PRODUCTION",
+    "engine": "LOCAL_HYDRA_V11",
+    "avg_confidence": 0.6877,
+    "null_rate": 0.0,
+    "question_count": 8,
+    "handwriting_mode": false
+  },
+  "processedAt": "2026-04-21T17:13:46.954575+00:00",
+  "logicVersion": "Hydra-v11.0"
+}

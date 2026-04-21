@@ -1,0 +1,231 @@
+.vault-station {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 32px;
+  background: var(--bg-primary);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+}
+
+.vault-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+}
+
+.vault-title {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.title-icon {
+  color: var(--primary);
+  filter: drop-shadow(0 0 10px var(--primary-glow));
+}
+
+.vault-title h1 {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.vault-title p {
+  font-size: 13px;
+  color: var(--on-surface-muted);
+  font-weight: 500;
+}
+
+.vault-metrics {
+  display: flex;
+  gap: 32px;
+}
+
+.v-metric {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.v-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--on-surface-muted);
+  letter-spacing: 0.1em;
+}
+
+.v-value {
+  font-size: 24px;
+  font-weight: 900;
+  font-family: monospace;
+}
+
+.vault-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 24px;
+}
+
+.vault-panel {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.vault-panel h3 {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--on-surface-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+}
+
+/* Stats Panel */
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.s-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--on-surface);
+  font-weight: 500;
+}
+
+.s-bar-container {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.s-bar {
+  height: 100%;
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary-glow);
+}
+
+/* Patterns Panel */
+.patterns-panel {
+  grid-row: span 2;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.panel-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.panel-search input {
+  background: none;
+  border: none;
+  color: var(--on-surface);
+  font-size: 12px;
+  outline: none;
+}
+
+.pattern-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pattern-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: 0.2s;
+}
+
+.pattern-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.p-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 145, 255, 0.1);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.p-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.p-name { font-size: 13px; font-weight: 700; color: var(--on-surface); }
+.p-name small { color: var(--on-surface-muted); font-weight: 500; margin-left: 4px; }
+.p-meta { font-size: 11px; color: var(--on-surface-muted); }
+
+.p-status {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.p-status.verified { background: rgba(0, 217, 126, 0.1); color: var(--success); }
+.p-status.learning { background: rgba(0, 145, 255, 0.1); color: var(--primary); }
+.p-status.difficult { background: rgba(255, 126, 51, 0.1); color: var(--tertiary); }
+
+/* Diag Panel */
+.diag-logs {
+  background: #000;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: monospace;
+  font-size: 11px;
+  height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.log-line { color: #888; }
+.log-line .time { color: var(--primary); margin-right: 12px; }
+.log-line.info .msg { color: var(--on-surface); }
+.log-line.success .msg { color: var(--success); }
+.engine-badge {
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.engine-badge.healthy { background: rgba(0, 217, 126, 0.1); color: var(--success); }

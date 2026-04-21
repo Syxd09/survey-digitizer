@@ -13,7 +13,8 @@ export interface ExtractionRow {
   confidence: number;
   options?: string[];
   suggestions?: { value: string; score: number }[];
-  status?: 'OK' | 'LOW_CONFIDENCE' | 'NOT_DETECTED';
+  status?: 'OK' | 'LOW_CONFIDENCE' | 'NOT_DETECTED' | 'SIGNATURE' | 'LEARNED_MATCH' | 'HANDWRITTEN_NOTE' | 'LIST_PAIR';
+  imageHash?: string; // Visual hash of the field for the feedback loop
 }
 
 export interface ExtractionResult {
@@ -24,12 +25,40 @@ export interface ExtractionResult {
   debugImageUrl?: string;
   status: 'pending' | 'completed' | 'failed' | 'conflict';
   error?: string;
-  // Legacy / Metadata fields for UI compatibility
   extractionTier?: 'DETERMINISTIC' | 'OCR' | 'AI_SMART' | 'FAILED';
   pipelineMode?: 'TABLE' | 'OCR';
   preRetakeConfidence?: number;
   logicVersion?: string;
   diagnostics?: any;
+}
+
+/**
+ * Register user feedback to improve the model.
+ */
+export async function registerFeedback(
+  scanId: string,
+  questionId: string,
+  correctedText: string,
+  imageHash: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/feedback`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        scanId,
+        questionId,
+        correctedText,
+        imageHash
+      })
+    });
+    return response.ok;
+  } catch (err) {
+    console.error('[FEEDBACK] Error:', err);
+    return false;
+  }
 }
 
 /**
@@ -68,14 +97,15 @@ export async function processFormOnBackend(
       rows: result.questions?.map((q: any, i: number) => ({
         sno: (i + 1).toString(),
         question: q.question || '',
-        value: q.selected || q.question || '',
+        value: q.selected || '',
         confidence: q.confidence || 0.5,
         options: q.options || [],
-        status: q.status || 'OK'
+        status: q.status || 'OK',
+        imageHash: q.imageHash
       })) || [],
       overallConfidence: result.avgConfidence || 0.5,
       status: 'completed',
-      extractionTier: 'OCR',
+      extractionTier: 'AI_SMART',
       pipelineMode: 'OCR',
       logicVersion: result.diagnostics?.logic_version || 'Hydra-v5.7-LOCAL',
       diagnostics: result.diagnostics
@@ -93,14 +123,15 @@ export async function ingestFormForProcessing(
   imageBase64: string,
   datasetId: string,
   userId: string
-): Promise<{ success: boolean; scanId: string; taskId: string }> {
+): Promise<{ success: boolean; scanId: string; taskId: string; result?: ExtractionResult }> {
   try {
     // First try to process directly via /process endpoint
     const result = await processFormOnBackend(imageBase64, datasetId, userId);
     return {
       success: true,
       scanId: result.scanId,
-      taskId: `backend-${result.scanId}`
+      taskId: `backend-${result.scanId}`,
+      result
     };
   } catch (err) {
     // Backend unavailable — fall back to local processing
