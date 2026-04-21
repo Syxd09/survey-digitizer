@@ -264,8 +264,9 @@ class ContentValidator:
         text = re.sub(r"\(Ln\s", "[Ln ", text)
 
         # Final pass: ensure any remaining [Ln N, Col N without ] gets closed
+        # Important: use (?!\d) to ensure we don't truncate a multi-digit number
         text = re.sub(
-            r"\[Ln\s*(\d+),?\s*Col\s*(\d+)(?!\])",
+            r"\[Ln\s*(\d+),?\s*Col\s*(\d+)(?!\d)(?!\])",
             lambda m: f"[Ln {m.group(1)}, Col {m.group(2)}]",
             text,
         )
