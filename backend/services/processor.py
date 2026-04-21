@@ -439,6 +439,11 @@ class SurveyProcessor:
                 key_text = self._semantic_correction(text_regions[key_idx]['text'])
                 val_text = self._semantic_correction(text_regions[val_idx]['text'])
                 
+                # V10.1: Signature Label Sentinel - Auto-normalize noisy labels
+                if self._detect_signature(img[text_regions[val_idx]['bbox'][1]:text_regions[val_idx]['bbox'][3], text_regions[val_idx]['bbox'][0]:text_regions[val_idx]['bbox'][2]]):
+                    if self._is_noisy_label(key_text):
+                        key_text = "Signature / Verification Field"
+                
                 # V10.0: Check Memory Vault for previously corrected patterns
                 crop_v = img[max(0, text_regions[val_idx]['bbox'][1]-5):min(img.shape[0], text_regions[val_idx]['bbox'][3]+5), 
                              max(0, text_regions[val_idx]['bbox'][0]-5):min(img.shape[1], text_regions[val_idx]['bbox'][2]+5)]
@@ -618,8 +623,7 @@ class SurveyProcessor:
 
     def _extract_text_with_troc(self, img_crop: np.ndarray, high_precision: bool = False) -> str:
         """Use TrOCR for better handwriting recognition with optional high-precision beam search."""
-        model = self._get_troc_model()
-        if not model:
+        if not self.troc_model or not self.troc_processor:
             return ""
         
         try:
@@ -659,7 +663,7 @@ class SurveyProcessor:
                 "repetition_penalty": 1.2
             }
             
-            generated_ids = model.generate(pixel_values, **gen_kwargs)
+            generated_ids = self.troc_model.generate(pixel_values, **gen_kwargs)
             text = self.troc_processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
             
             return text.strip()
@@ -879,3 +883,13 @@ class SurveyProcessor:
 
 
 
+    def _is_noisy_label(self, text):
+        """Detect if a text label is likely OCR artifacting/noise."""
+        if not text: return True
+        # If text is too short or contains high density of special chars
+        special_chars = sum(1 for c in text if not c.isalnum() and c != ' ')
+        if special_chars / len(text) > 0.4: return True
+        if len(text) < 3: return True
+        # Common noise patterns
+        if any(p in text.lower() for p in ["prg", "round", "#", "__"]): return True
+        return False

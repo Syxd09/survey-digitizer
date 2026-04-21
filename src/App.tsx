@@ -60,7 +60,7 @@ import { DistributionChart, MiniSparkline } from './components/DataCharts';
 import { analyticsService } from './services/analyticsService';
 import { DiagnosticsDashboard } from './components/DiagnosticsDashboard';
 import { Point, Quad, analyzeImageQuality, detectQuad } from './services/alignmentService';
-import { ingestFormForProcessing, processFormLocally, toBase64, ExtractionResult, BACKEND_URL } from './services/ocrService';
+import { ingestFormForProcessing, processFormLocally, toBase64, ExtractionResult, BACKEND_URL, registerFeedback } from './services/ocrService';
 import { DetectionResult, ExtractedRow } from './services/processingService';
 import { formatterService } from './services/formatterService';
 import { StructuredTable } from './components/StructuredTable';
@@ -1132,7 +1132,8 @@ function Review({ onNavigate, bundle, user, datasetId, diagnosticsEnabled, evalu
       options: row.options || [],
       selected: row.value === 'undetected' ? null : row.value,
       suggestions: row.suggestions || [],
-      status: (row.status as FormQuestion['status']) || (row.value === 'undetected' ? 'NOT_DETECTED' : 'OK')
+      status: (row.status as FormQuestion['status']) || (row.value === 'undetected' ? 'NOT_DETECTED' : 'OK'),
+      imageHash: row.imageHash
     }))
   );
 
@@ -1142,6 +1143,21 @@ function Review({ onNavigate, bundle, user, datasetId, diagnosticsEnabled, evalu
   const [showDebug, setShowDebug] = useState(true);
   const [savedNotice, setSavedNotice] = useState('');
   const [viewMode, setViewMode] = useState<'FORM' | 'RAW' | 'ENGINE'>('FORM');
+
+  const handleCorrection = async (q: FormQuestion, newValue: string) => {
+    if (!q.imageHash) return;
+    console.log(`[V10.0-AUTHORITY] Recording correction for hash: ${q.imageHash} -> ${newValue}`);
+    const success = await registerFeedback(
+      (bundle[0]?.data as any).scanId || 'temp-scan',
+      q.id,
+      newValue,
+      q.imageHash
+    );
+    if (success) {
+      setSavedNotice('Hydra Learned!');
+      setTimeout(() => setSavedNotice(''), 2000);
+    }
+  };
   
   const handleConfirm = async () => {
     if (!datasetId) {
@@ -1250,6 +1266,22 @@ function Review({ onNavigate, bundle, user, datasetId, diagnosticsEnabled, evalu
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-black tracking-tight text-on-surface">Review & Edit</h2>
+          
+          {/* Hydra V10.1 Authority Dashboard */}
+          <div className="flex items-center gap-2 mt-3 mb-1">
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-surface-container-highest rounded-full border border-primary/20 shadow-lg shadow-primary/5">
+              <div className="relative">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <div className="absolute inset-0 w-2 h-2 rounded-full bg-primary animate-ping opacity-30" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-primary">Hydra V10.0 Engine Active</span>
+            </div>
+            
+            <div className="flex items-center gap-1.5 px-3 py-1 bg-surface-container-highest rounded-full border border-tertiary/20 shadow-lg shadow-tertiary/5">
+              <div className="w-1.5 h-1.5 rounded-sm bg-tertiary rotate-45" />
+              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-tertiary">Authority Level: Zero-Fail</span>
+            </div>
+          </div>
           <div className="flex items-center gap-3 mt-2">
             <p className="text-on-surface-variant font-medium text-xs">
               Bundled {bundle.length} pages • {bundle[0]?.data.questionnaireType}
@@ -1260,10 +1292,10 @@ function Review({ onNavigate, bundle, user, datasetId, diagnosticsEnabled, evalu
                 AI Verified
               </span>
             )}
-            <div className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest ${
+            <div className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-[0.15em] border ${
               bundle[0]?.data.extractionTier === 'DETERMINISTIC' 
-                ? 'bg-success/10 text-success' 
-                : 'bg-secondary/10 text-secondary'
+                ? 'bg-success/10 text-success border-success/20 shadow-sm shadow-success/5' 
+                : 'bg-secondary/10 text-secondary border-secondary/20 shadow-sm shadow-secondary/5'
             }`}>
               {bundle[0]?.data.extractionTier?.replace('_', ' ') || 'PROCESSED'}
             </div>
@@ -1335,6 +1367,7 @@ function Review({ onNavigate, bundle, user, datasetId, diagnosticsEnabled, evalu
           questions={questions} 
           onChange={setQuestions} 
           pipelineMode={bundle[0]?.data.pipelineMode}
+          onCorrection={handleCorrection}
         />
       </div>
 

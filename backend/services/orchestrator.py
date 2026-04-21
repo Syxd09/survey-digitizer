@@ -43,7 +43,7 @@ class ExtractionOrchestrator:
 
         return {
             "questions": [],
-            "diagnostics": {"error": "Local OCR processing failed", "engine": "NONE", "v": "6.0-LOCAL-ONLY"}
+            "diagnostics": {"error": "Local OCR processing failed", "engine": "NONE", "v": "Hydra-v10.1-AUTHORITY"}
         }
 
     def _get_bytes_from_b64(self, image_b64: str) -> bytes:
@@ -78,7 +78,7 @@ class ExtractionOrchestrator:
             diagnostics.update({
                 "avg_confidence": avg_conf,
                 "null_rate": sum(1 for q in questions if q.get("selected") is None) / max(1, len(questions)) if questions else 1,
-                "logic_version": diagnostics.get("logic_version", "Hydra-v10.0-AUTHORITY")
+                "logic_version": diagnostics.get("logic_version", "Hydra-v10.1-AUTHORITY")
             })
             
             return {
