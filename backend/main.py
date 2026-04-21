@@ -257,7 +257,7 @@ async def ingest_form(
     return {"success": True, "scanId": scan_id, "status": "PROCESSING"}
 
 
-# ── Scan status endpoint ──────────────────────────────────────────────────────
+# ── Scan status & listing endpoints ───────────────────────────────────────────
 
 @app.get("/scan/{dataset_id}/{scan_id}", tags=["Scans"])
 async def get_scan(
@@ -272,6 +272,17 @@ async def get_scan(
     from services.storage import _read_json
     data = _read_json(storage._scan_path(dataset_id, scan_id))
     return data or {"scanId": scan_id, "status": status}
+
+@app.get("/list/{dataset_id}", tags=["Scans"])
+async def list_scans(
+    dataset_id: str,
+    storage    = Depends(get_storage),
+):
+    """
+    Retrieve all scans associated with a specific dataset.
+    Used by the Vault and Workbench for history and batch processing.
+    """
+    return storage.get_all_scans(dataset_id)
 
 
 # ── Feedback / active learning endpoint ──────────────────────────────────────

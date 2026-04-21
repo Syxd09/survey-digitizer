@@ -43,6 +43,7 @@ interface HydraState {
   // Async fetches
   fetchVault: () => Promise<void>;
   fetchMetrics: () => Promise<void>;
+  pollPendingScans: () => Promise<void>;
 }
 
 export const useHydraStore = create<HydraState>((set, get) => ({
@@ -109,7 +110,35 @@ export const useHydraStore = create<HydraState>((set, get) => ({
       console.error('Metrics fetch failed:', err);
     }
   },
+
+  pollPendingScans: async () => {
+    const { scannedPages } = get();
+    // Poll anything not finished
+    const pending = scannedPages.filter(p => p.status === 'uploaded' || p.status === 'processing');
+    
+    if (pending.length === 0) return;
+
+    for (const page of pending) {
+      try {
+        const result = await hydraApi.getScanStatus(page.id);
+        
+        // Use backend status directly (good, bad, conflict, failed, processing)
+        let frontendStatus: ScannedPage['status'] = result.status as ScannedPage['status'];
+        
+        // Safety normalization for uppercase if needed (backend ingestion returns PROCESSING)
+        if (typeof frontendStatus === 'string' && frontendStatus.toLowerCase() === 'processing') {
+          frontendStatus = 'processing';
+        }
+
+        // Only update if status changed or results arrived
+        if (frontendStatus !== page.status || (!page.result && result.extractedData)) {
+          get().updatePageStatus(page.id, frontendStatus, result);
+        }
+      } catch (err) {
+        console.error(`Polling failed for ${page.id}:`, err);
+      }
+    }
+  }
 }));
 
-// Export the maps for use in App.tsx
 export { ROUTE_MAP, PATH_MAP };

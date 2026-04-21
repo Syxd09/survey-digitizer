@@ -111,7 +111,8 @@ export const imageService = {
       brightness: Math.round(brightness),
       blur: Math.round(blurScore),
       contrast: 0,
-      isStable: blurScore > 1.5 && brightness > 50 && brightness < 220
+      // Relaxed thresholds for better UX
+      isStable: blurScore > 0.8 && brightness > 40 && brightness < 235
     };
   },
 

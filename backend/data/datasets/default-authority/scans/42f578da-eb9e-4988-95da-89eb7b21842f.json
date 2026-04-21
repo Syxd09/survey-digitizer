@@ -1,0 +1,101 @@
+{
+  "datasetId": "default-authority",
+  "userId": "admin",
+  "scanId": "42f578da-eb9e-4988-95da-89eb7b21842f",
+  "status": "bad",
+  "confidence": 0.1719,
+  "imageUrl": "",
+  "createdAt": "2026-04-21T17:28:42.567853+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-21T17:28:42.567862+00:00"
+    },
+    {
+      "stage": "PROCESSING",
+      "timestamp": "2026-04-21T17:28:42.568348+00:00",
+      "metadata": {}
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-21T17:28:45.217739+00:00",
+      "metadata": {
+        "status": "bad",
+        "export_allowed": false
+      }
+    }
+  ],
+  "lastUpdatedAt": "2026-04-21T17:28:42.568342+00:00",
+  "exportAllowed": false,
+  "nullRate": 0.0,
+  "extractedData": {
+    "questions": [
+      {
+        "question": "There were also included",
+        "selected": "There were also included",
+        "options": [],
+        "confidence": 0.1543,
+        "status": "HANDWRITTEN_NOTE",
+        "imageHash": "d6b6a6626c555594"
+      },
+      {
+        "question": "contemptation .",
+        "selected": "contemptation .",
+        "options": [],
+        "confidence": 0.1894,
+        "status": "HANDWRITTEN_NOTE",
+        "imageHash": "c1d7267f79393e3"
+      }
+    ],
+    "diagnostics": {
+      "logic": "UNIVERSAL_V11",
+      "text_count": 6,
+      "box_count": 0,
+      "row_count": 2,
+      "quality": {
+        "status": "POOR",
+        "blur_score": 34.06,
+        "brightness": 186.71,
+        "contrast": 89.38,
+        "warnings": [
+          "LOW_RESOLUTION_OR_BLURRY"
+        ]
+      },
+      "handwriting_ratio": 0.176,
+      "detected_language": "en",
+      "processing_duration": 2.64,
+      "logic_version": "Hydra-v11.0-PRODUCTION",
+      "engine": "LOCAL_HYDRA_V11",
+      "avg_confidence": 0.1719,
+      "null_rate": 0.0,
+      "question_count": 2,
+      "handwriting_mode": false
+    }
+  },
+  "diagnostics": {
+    "logic": "UNIVERSAL_V11",
+    "text_count": 6,
+    "box_count": 0,
+    "row_count": 2,
+    "quality": {
+      "status": "POOR",
+      "blur_score": 34.06,
+      "brightness": 186.71,
+      "contrast": 89.38,
+      "warnings": [
+        "LOW_RESOLUTION_OR_BLURRY"
+      ]
+    },
+    "handwriting_ratio": 0.176,
+    "detected_language": "en",
+    "processing_duration": 2.64,
+    "logic_version": "Hydra-v11.0-PRODUCTION",
+    "engine": "LOCAL_HYDRA_V11",
+    "avg_confidence": 0.1719,
+    "null_rate": 0.0,
+    "question_count": 2,
+    "handwriting_mode": false
+  },
+  "processedAt": "2026-04-21T17:28:45.217749+00:00",
+  "logicVersion": "Hydra-v11.0"
+}

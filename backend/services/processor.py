@@ -762,7 +762,14 @@ class SurveyProcessor:
         try:
             rgb     = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             pil_img = PILImage.fromarray(rgb)
-            doc     = Img2TableImage(src=pil_img)
+            # img2table expects path or bytes
+            import io
+            buf = io.BytesIO()
+            pil_img.save(buf, format="PNG")
+            data = buf.getvalue()
+            if not data:
+                raise ValueError("Empty image buffer")
+            doc = Img2TableImage(src=data)
             tables  = doc.extract_tables(
                 ocr=self.img2table_ocr,
                 implicit_rows=True,
