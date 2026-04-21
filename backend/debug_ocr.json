@@ -1,0 +1,1382 @@
+{
+  "paddle": [],
+  "easy": [
+    {
+      "bbox": [
+        78,
+        54,
+        190,
+        80
+      ],
+      "text": "PROBLEMS",
+      "conf": 0.9990968769649472,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        268,
+        54,
+        354,
+        80
+      ],
+      "text": "OUTPU\"",
+      "conf": 0.3843198991307031,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        400,
+        54,
+        576,
+        82
+      ],
+      "text": "DEBUG CONSOLE",
+      "conf": 0.933256846654442,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        618,
+        54,
+        724,
+        80
+      ],
+      "text": "TERMvIIvAL",
+      "conf": 0.1942288799561602,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        768,
+        54,
+        838,
+        78
+      ],
+      "text": "CORTS",
+      "conf": 0.6179558261141961,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        139,
+        107,
+        323,
+        145
+      ],
+      "text": "prgS py roundz",
+      "conf": 0.20861905055720692,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        169,
+        151,
+        655,
+        187
+      ],
+      "text": "\"T\"was not closed Pylance [Ln 14, Col 14]",
+      "conf": 0.532174023456925,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        167,
+        194,
+        1093,
+        235
+      ],
+      "text": "Keyword arguments within subscripts are not supported Pylance [Ln 14 Col 15]",
+      "conf": 0.58866613337607,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        169,
+        236,
+        1093,
+        280
+      ],
+      "text": "Keyword arguments within subscripts are not supported Pylance [Ln 14 Col 26]",
+      "conf": 0.7963936439361585,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        167,
+        283,
+        1297,
+        321
+      ],
+      "text": "Import \"skleam datasets\" could not be resolved from source Pylance rEpOLWEIYMoquleso3",
+      "conf": 0.0800312416998764,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        1310,
+        284,
+        1452,
+        316
+      ],
+      "text": "[Ln 4 Col 6)",
+      "conf": 0.4768956369127727,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        167,
+        325,
+        775,
+        363
+      ],
+      "text": "\"df\" is not defined PylancereporUndetinedvarable",
+      "conf": 0.2916635954265037,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        786,
+        328,
+        942,
+        360
+      ],
+      "text": "[Ln 8 Col 13]",
+      "conf": 0.9656889761561087,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        167,
+        369,
+        775,
+        405
+      ],
+      "text": "\"df\" is not defined PylancereporUndetinedvarable",
+      "conf": 0.6492661728616915,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        786,
+        372,
+        942,
+        404
+      ],
+      "text": "[Ln 8 Col 26]",
+      "conf": 0.757831179988339,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        167,
+        413,
+        775,
+        451
+      ],
+      "text": "\"df\" is not defined PylancereporUndetinedvarable",
+      "conf": 0.3767857428248697,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        785,
+        413,
+        946,
+        450
+      ],
+      "text": "[Ln 8 Col 41]",
+      "conf": 0.6162720960995621,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        167,
+        457,
+        775,
+        493
+      ],
+      "text": "\"df\" is not defined PylancereporUndetinedvarable",
+      "conf": 0.5260566826522826,
+      "engine": "easyocr"
+    },
+    {
+      "bbox": [
+        785,
+        457,
+        958,
+        493
+      ],
+      "text": "[Ln 14, Col 37]",
+      "conf": 0.4001971991753849,
+      "engine": "easyocr"
+    }
+  ],
+  "tesseract": [
+    {
+      "bbox": [
+        82,
+        50,
+        228,
+        82
+      ],
+      "text": "PROBLEMS",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        204,
+        46,
+        232,
+        86
+      ],
+      "text": "@)",
+      "conf": 0.73,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        251,
+        46,
+        262,
+        86
+      ],
+      "text": "=",
+      "conf": 0.39,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        273,
+        60,
+        351,
+        76
+      ],
+      "text": "OUTPUT",
+      "conf": 0.68,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        478,
+        60,
+        572,
+        76
+      ],
+      "text": "CONSOLE",
+      "conf": 0.65,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        588,
+        46,
+        608,
+        86
+      ],
+      "text": "=",
+      "conf": 0.34,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        622,
+        60,
+        718,
+        76
+      ],
+      "text": "TERMINAL",
+      "conf": 0.38,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        738,
+        46,
+        759,
+        86
+      ],
+      "text": "\u00ab=",
+      "conf": 0.32,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        774,
+        60,
+        834,
+        76
+      ],
+      "text": "PORTS",
+      "conf": 0.88,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        72,
+        118,
+        86,
+        126
+      ],
+      "text": "~",
+      "conf": 0.31,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        109,
+        111,
+        131,
+        133
+      ],
+      "text": "\u00ae",
+      "conf": 0.46,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        146,
+        114,
+        232,
+        138
+      ],
+      "text": "prg5.py",
+      "conf": 0.81,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        245,
+        114,
+        317,
+        132
+      ],
+      "text": "round2",
+      "conf": 0.38,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        334,
+        102,
+        378,
+        146
+      ],
+      "text": "(3)",
+      "conf": 0.67,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        134,
+        154,
+        154,
+        178
+      ],
+      "text": "Q",
+      "conf": 0.89,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        174,
+        158,
+        200,
+        180
+      ],
+      "text": "\"['",
+      "conf": 0.45,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        208,
+        162,
+        250,
+        176
+      ],
+      "text": "was",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        259,
+        158,
+        297,
+        176
+      ],
+      "text": "not",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        304,
+        156,
+        376,
+        176
+      ],
+      "text": "closed",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        390,
+        156,
+        476,
+        182
+      ],
+      "text": "Pylance",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        489,
+        158,
+        522,
+        180
+      ],
+      "text": "[Ln",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        532,
+        158,
+        562,
+        180
+      ],
+      "text": "14,",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        571,
+        156,
+        607,
+        176
+      ],
+      "text": "Col",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        618,
+        158,
+        650,
+        180
+      ],
+      "text": "14]",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        134,
+        196,
+        154,
+        220
+      ],
+      "text": "\u00b0\u00a9",
+      "conf": 0.02,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        174,
+        200,
+        270,
+        226
+      ],
+      "text": "Keyword",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        279,
+        202,
+        400,
+        226
+      ],
+      "text": "arguments",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        409,
+        200,
+        477,
+        220
+      ],
+      "text": "within",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        486,
+        200,
+        600,
+        226
+      ],
+      "text": "subscripts",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        608,
+        206,
+        642,
+        220
+      ],
+      "text": "are",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        652,
+        202,
+        688,
+        220
+      ],
+      "text": "not",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        696,
+        200,
+        812,
+        226
+      ],
+      "text": "supported",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        828,
+        201,
+        913,
+        221
+      ],
+      "text": "Pylance",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        927,
+        202,
+        958,
+        224
+      ],
+      "text": "[Ln",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        970,
+        202,
+        998,
+        221
+      ],
+      "text": "14,",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        1009,
+        201,
+        1044,
+        220
+      ],
+      "text": "Col",
+      "conf": 0.94,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        1055,
+        202,
+        1086,
+        224
+      ],
+      "text": "15]",
+      "conf": 0.9,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        134,
+        242,
+        154,
+        266
+      ],
+      "text": "Q",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        174,
+        244,
+        270,
+        270
+      ],
+      "text": "Keyword",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        279,
+        246,
+        400,
+        270
+      ],
+      "text": "arguments",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        409,
+        244,
+        477,
+        264
+      ],
+      "text": "within",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        486,
+        244,
+        600,
+        270
+      ],
+      "text": "subscripts",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        608,
+        250,
+        642,
+        264
+      ],
+      "text": "are",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        652,
+        246,
+        689,
+        265
+      ],
+      "text": "not",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        696,
+        244,
+        812,
+        270
+      ],
+      "text": "supported",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        828,
+        246,
+        913,
+        267
+      ],
+      "text": "Pylance",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        927,
+        246,
+        958,
+        268
+      ],
+      "text": "[Ln",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        970,
+        247,
+        998,
+        265
+      ],
+      "text": "14,",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        1009,
+        246,
+        1044,
+        264
+      ],
+      "text": "Col",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        1054,
+        246,
+        1086,
+        268
+      ],
+      "text": "26]",
+      "conf": 0.82,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        130,
+        284,
+        158,
+        310
+      ],
+      "text": "A\\",
+      "conf": 0.67,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        174,
+        290,
+        250,
+        314
+      ],
+      "text": "import",
+      "conf": 0.49,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        258,
+        288,
+        458,
+        308
+      ],
+      "text": "\u201csklearn.datasets\u201d",
+      "conf": 0.26,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        467,
+        288,
+        528,
+        308
+      ],
+      "text": "could",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        538,
+        290,
+        576,
+        308
+      ],
+      "text": "not",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        584,
+        288,
+        611,
+        308
+      ],
+      "text": "be",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        620,
+        288,
+        714,
+        308
+      ],
+      "text": "resolved",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        722,
+        288,
+        776,
+        308
+      ],
+      "text": "from",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        785,
+        294,
+        860,
+        308
+      ],
+      "text": "source",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        874,
+        289,
+        1292,
+        312
+      ],
+      "text": "PylanceieporivissingivioduleSour=",
+      "conf": 0.13,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        1315,
+        290,
+        1346,
+        312
+      ],
+      "text": "[Lp",
+      "conf": 0.86,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        1355,
+        291,
+        1372,
+        308
+      ],
+      "text": "4,",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        1382,
+        290,
+        1417,
+        308
+      ],
+      "text": "Col",
+      "conf": 0.94,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        1427,
+        290,
+        1446,
+        312
+      ],
+      "text": "6}",
+      "conf": 0.9,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        130,
+        328,
+        158,
+        354
+      ],
+      "text": "AX",
+      "conf": 0.15,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        174,
+        332,
+        214,
+        352
+      ],
+      "text": "\"df\"",
+      "conf": 0.76,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        224,
+        332,
+        240,
+        352
+      ],
+      "text": "is",
+      "conf": 0.94,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        249,
+        334,
+        286,
+        352
+      ],
+      "text": "not",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        294,
+        332,
+        379,
+        352
+      ],
+      "text": "defined",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        394,
+        333,
+        768,
+        357
+      ],
+      "text": "PylanceireporUndetinedvanabie",
+      "conf": 0.08,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        791,
+        334,
+        822,
+        356
+      ],
+      "text": "[Ln",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        832,
+        334,
+        848,
+        352
+      ],
+      "text": "8,",
+      "conf": 0.91,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        859,
+        334,
+        894,
+        352
+      ],
+      "text": "Col",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        905,
+        334,
+        936,
+        356
+      ],
+      "text": "13)",
+      "conf": 0.75,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        130,
+        372,
+        158,
+        398
+      ],
+      "text": "AX",
+      "conf": 0.23,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        174,
+        376,
+        214,
+        396
+      ],
+      "text": "\"df\"",
+      "conf": 0.75,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        224,
+        376,
+        240,
+        396
+      ],
+      "text": "is",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        249,
+        378,
+        286,
+        396
+      ],
+      "text": "not",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        294,
+        376,
+        379,
+        396
+      ],
+      "text": "defined",
+      "conf": 0.92,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        394,
+        377,
+        509,
+        401
+      ],
+      "text": "Pylanceire",
+      "conf": 0.85,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        791,
+        378,
+        822,
+        400
+      ],
+      "text": "[Ln",
+      "conf": 0.89,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        832,
+        378,
+        848,
+        396
+      ],
+      "text": "8,",
+      "conf": 0.89,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        859,
+        378,
+        894,
+        396
+      ],
+      "text": "Col",
+      "conf": 0.94,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        904,
+        378,
+        936,
+        400
+      ],
+      "text": "26)",
+      "conf": 0.88,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        130,
+        416,
+        158,
+        442
+      ],
+      "text": "AY",
+      "conf": 0.16,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        174,
+        420,
+        214,
+        440
+      ],
+      "text": "\"df\"",
+      "conf": 0.86,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        224,
+        420,
+        240,
+        440
+      ],
+      "text": "is",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        249,
+        422,
+        286,
+        440
+      ],
+      "text": "not",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        294,
+        420,
+        379,
+        440
+      ],
+      "text": "defined",
+      "conf": 0.92,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        394,
+        421,
+        484,
+        445
+      ],
+      "text": "Pylance:",
+      "conf": 0.06,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        757,
+        432,
+        768,
+        440
+      ],
+      "text": "\u20ac",
+      "conf": 0.05,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        791,
+        422,
+        822,
+        444
+      ],
+      "text": "[Ln",
+      "conf": 0.45,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        832,
+        422,
+        848,
+        440
+      ],
+      "text": "8",
+      "conf": 0.45,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        859,
+        422,
+        894,
+        440
+      ],
+      "text": "Col",
+      "conf": 0.89,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        903,
+        422,
+        936,
+        443
+      ],
+      "text": "41]",
+      "conf": 0.67,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        130,
+        460,
+        158,
+        486
+      ],
+      "text": "AX",
+      "conf": 0.2,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        174,
+        464,
+        214,
+        484
+      ],
+      "text": "\"df\"",
+      "conf": 0.79,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        224,
+        464,
+        240,
+        484
+      ],
+      "text": "is",
+      "conf": 0.95,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        249,
+        466,
+        286,
+        484
+      ],
+      "text": "not",
+      "conf": 0.96,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        294,
+        464,
+        379,
+        484
+      ],
+      "text": "defined",
+      "conf": 0.92,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        394,
+        465,
+        509,
+        487
+      ],
+      "text": "Pylanceire",
+      "conf": 0.86,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        735,
+        470,
+        768,
+        484
+      ],
+      "text": "bie",
+      "conf": 0.67,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        791,
+        466,
+        822,
+        488
+      ],
+      "text": "[Ln",
+      "conf": 0.91,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        834,
+        466,
+        862,
+        485
+      ],
+      "text": "14,",
+      "conf": 0.93,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        873,
+        466,
+        908,
+        484
+      ],
+      "text": "Col",
+      "conf": 0.94,
+      "engine": "tesseract"
+    },
+    {
+      "bbox": [
+        920,
+        466,
+        950,
+        487
+      ],
+      "text": "31]",
+      "conf": 0.75,
+      "engine": "tesseract"
+    }
+  ]
+}
