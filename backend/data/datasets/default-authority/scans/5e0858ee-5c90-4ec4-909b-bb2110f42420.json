@@ -1,0 +1,87 @@
+{
+  "datasetId": "default-authority",
+  "userId": "admin",
+  "scanId": "5e0858ee-5c90-4ec4-909b-bb2110f42420",
+  "status": "bad",
+  "confidence": 0.3601,
+  "imageUrl": "",
+  "createdAt": "2026-04-21T17:17:10.437970+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-21T17:17:10.437985+00:00"
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-21T17:17:10.438705+00:00",
+      "metadata": {
+        "status": "bad",
+        "export_allowed": false
+      }
+    }
+  ],
+  "exportAllowed": false,
+  "nullRate": 0.0,
+  "extractedData": {
+    "questions": [
+      {
+        "question": "spy-",
+        "selected": "spy-",
+        "options": [],
+        "confidence": 0.3601,
+        "status": "HANDWRITTEN_NOTE",
+        "imageHash": "80c0aa2eb73600"
+      }
+    ],
+    "diagnostics": {
+      "logic": "UNIVERSAL_V11",
+      "text_count": 6,
+      "box_count": 0,
+      "row_count": 1,
+      "quality": {
+        "status": "POOR",
+        "blur_score": 4.31,
+        "brightness": 221.44,
+        "contrast": 26.35,
+        "warnings": [
+          "LOW_RESOLUTION_OR_BLURRY"
+        ]
+      },
+      "handwriting_ratio": 0.154,
+      "detected_language": "en",
+      "processing_duration": 4.16,
+      "logic_version": "Hydra-v11.0-PRODUCTION",
+      "engine": "LOCAL_HYDRA_V11",
+      "avg_confidence": 0.3601,
+      "null_rate": 0.0,
+      "question_count": 1,
+      "handwriting_mode": false
+    }
+  },
+  "diagnostics": {
+    "logic": "UNIVERSAL_V11",
+    "text_count": 6,
+    "box_count": 0,
+    "row_count": 1,
+    "quality": {
+      "status": "POOR",
+      "blur_score": 4.31,
+      "brightness": 221.44,
+      "contrast": 26.35,
+      "warnings": [
+        "LOW_RESOLUTION_OR_BLURRY"
+      ]
+    },
+    "handwriting_ratio": 0.154,
+    "detected_language": "en",
+    "processing_duration": 4.16,
+    "logic_version": "Hydra-v11.0-PRODUCTION",
+    "engine": "LOCAL_HYDRA_V11",
+    "avg_confidence": 0.3601,
+    "null_rate": 0.0,
+    "question_count": 1,
+    "handwriting_mode": false
+  },
+  "processedAt": "2026-04-21T17:17:10.438713+00:00",
+  "logicVersion": "Hydra-v11.0"
+}

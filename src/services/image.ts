@@ -64,7 +64,7 @@ export const imageService = {
     if (det !== 0) {
       const idet = 1 / det;
       const a = ((p1.x - p0.x) * (v2 - v0) - (p2.x - p0.x) * (v1 - v0)) * idet;
-      const b = ((p2.y - p0.y) * (u1 - u0) - (p1.y - p0.y) * (u2 - u0)) * idet; // Fixed logic from legacy if needed
+      const b = ((p2.x - p0.x) * (u1 - u0) - (p1.x - p0.x) * (u2 - u0)) * idet; 
       const c = p0.x - a * u0 - b * v0;
       const d = ((p1.y - p0.y) * (v2 - v0) - (p2.y - p0.y) * (v1 - v0)) * idet;
       const e = ((p2.y - p0.y) * (u1 - u0) - (p1.y - p0.y) * (u2 - u0)) * idet;
@@ -80,11 +80,12 @@ export const imageService = {
     const ctx = canvas.getContext('2d')!;
     const w = canvas.width;
     const h = canvas.height;
-    const data = ctx.getImageData(0, 0, w, h).data;
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const data = imageData.data;
     
     let totalBrightness = 0;
     let laplacianVar = 0;
-    const step = 8; // Faster analysis
+    const step = 8; 
     let count = 0;
     
     for (let y = step; y < h - step; y += step) {
@@ -93,9 +94,12 @@ export const imageService = {
         const gray = (data[idx] + data[idx+1] + data[idx+2]) / 3;
         totalBrightness += gray;
         
-        const left = (data[idx - step*4]) || gray;
-        const right = (data[idx + step*4]) || gray;
-        laplacianVar += Math.abs(2 * gray - left - right);
+        const left = (data[idx - 4]) || gray;
+        const right = (data[idx + 4]) || gray;
+        const up = (data[idx - w*4]) || gray;
+        const down = (data[idx + w*4]) || gray;
+
+        laplacianVar += Math.abs(4 * gray - left - right - up - down);
         count++;
       }
     }
@@ -106,8 +110,38 @@ export const imageService = {
     return {
       brightness: Math.round(brightness),
       blur: Math.round(blurScore),
-      contrast: 0, // Simplified
-      isStable: blurScore > 5 && brightness > 40 && brightness < 230
+      contrast: 0,
+      isStable: blurScore > 1.5 && brightness > 50 && brightness < 220
     };
+  },
+
+  /**
+   * Enhances an image specifically for OCR throughput.
+   */
+  async normalizeForOCR(canvas: HTMLCanvasElement): Promise<string> {
+    const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+    const { width, height } = canvas;
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+
+    let min = 255;
+    let max = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+      if (avg < min) min = avg;
+      if (avg > max) max = avg;
+    }
+
+    const range = max - min || 1;
+    for (let i = 0; i < data.length; i += 4) {
+      for (let j = 0; j < 3; j++) {
+        let val = ((data[i + j] - min) / range) * 255;
+        val = 127 + 1.2 * (val - 127); // Contrast boost
+        data[i + j] = Math.max(0, Math.min(255, val));
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    return canvas.toDataURL('image/jpeg', 0.9);
   }
 };

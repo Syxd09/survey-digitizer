@@ -1,126 +1,142 @@
 import React, { useState } from 'react';
-import { 
-  CheckCircle, 
-  AlertCircle, 
-  ChevronRight, 
-  Save, 
-  FileText,
-  BrainCircuit,
-  CornerDownRight
-} from 'lucide-react';
+import { Database, Download, CheckCircle2, AlertCircle, RefreshCcw, FileText, Search } from 'lucide-react';
 import { useHydraStore } from '../store/useHydraStore';
-import { hydraApi } from '../services/api';
+import { hydraApi, ExtractionQuestion } from '../services/api';
 import './Workbench.css';
 
 export const Workbench: React.FC = () => {
-  const { scannedPages, updatePageStatus } = useHydraStore();
-  const [activePageId, setActivePageId] = useState<string | null>(
+  const { scannedPages } = useHydraStore();
+  const [selectedDocId, setSelectedDocId] = useState<string | null>(
     scannedPages.length > 0 ? scannedPages[0].id : null
   );
-  const [isSaving, setIsSaving] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
-  const activePage = scannedPages.find(p => p.id === activePageId);
+  const activeDoc = scannedPages.find(p => p.id === selectedDocId);
 
-  const handleCorrection = async (index: number, newValue: string) => {
-    if (!activePage || !activePage.result) return;
+  const handleFieldChange = async (questionIndex: number, newValue: string) => {
+    if (!activeDoc || !activeDoc.result?.extractedData) return;
+
+    const questions = [...activeDoc.result.extractedData.questions];
+    const target = questions[questionIndex];
     
-    // Optimistic update
-    const updatedResult = { ...activePage.result };
-    const field = updatedResult.questions[index];
-    const originalValue = field.response;
-    field.response = newValue;
+    // Update local store immediately for UI responsiveness (optimistic)
+    // In a real app, you might want a specific action in useHydraStore for this
+    target.selected = newValue;
     
-    updatePageStatus(activePage.id, activePage.status, updatedResult);
+    // Register feedback to Hydra Memory Vault
+    if (target.imageHash) {
+      await hydraApi.registerFeedback(target.imageHash, newValue);
+    }
+  };
 
-    // If it's a real correction, send to Memory Vault
-    if (originalValue !== newValue && field.imageHash) {
-      await hydraApi.registerFeedback(field.imageHash, newValue);
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+      const blob = await hydraApi.exportDataset();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Hydra_Export_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Export failed:', err);
+      alert('Export failed. Ensure backend is running.');
+    } finally {
+      setIsExporting(false);
     }
   };
 
   return (
     <div className="workbench-station">
-      {/* Page Browser Sidebar */}
-      <aside className="workbench-browser">
+      <div className="workbench-browser">
         <div className="browser-header">
-          <FileText size={14} />
-          <span>SCANNED DOCUMENTS</span>
+          <Database size={14} />
+          <span>IN-FLIGHT DOCUMENTS</span>
         </div>
         <div className="browser-list">
           {scannedPages.map((page, idx) => (
-            <button 
+            <button
               key={page.id}
-              className={`browser-item ${activePageId === page.id ? 'active' : ''}`}
-              onClick={() => setActivePageId(page.id)}
+              className={`browser-item ${selectedDocId === page.id ? 'active' : ''}`}
+              onClick={() => setSelectedDocId(page.id)}
             >
-              <div className="item-index">{idx + 1}</div>
+              <div className="item-index">{scannedPages.length - idx}</div>
               <div className="item-meta">
-                <span className="item-id">#SCAN-{page.id.slice(0, 4)}</span>
-                <span className={`item-status ${page.status.toLowerCase()}`}>{page.status}</span>
+                <span className="item-id">{page.id.substring(0, 8)}...</span>
+                <span className={`item-status ${page.status.toLowerCase()}`}>
+                  {page.status}
+                </span>
               </div>
-              {page.status === 'COMPLETED' && <CheckCircle size={14} className="status-icon" />}
             </button>
           ))}
-          {scannedPages.length === 0 && <div className="browser-empty">No scans yet</div>}
+          {scannedPages.length === 0 && (
+            <div className="browser-empty">No documents found</div>
+          )}
         </div>
-      </aside>
+      </div>
 
-      {/* Main Review Grid */}
-      <main className="workbench-editor">
-        {activePage ? (
+      <div className="workbench-editor">
+        {activeDoc ? (
           <div className="editor-container">
             <div className="editor-header">
               <div className="doc-info">
-                <BrainCircuit size={20} className="header-icon" />
+                <FileText className="header-icon" size={24} />
                 <div>
-                  <h3>HYDRA EXTRACTION</h3>
-                  <p>Document Precision: {(activePage.result?.avgConfidence || 0 * 100).toFixed(1)}%</p>
+                  <h3>Document {activeDoc.id.substring(0, 8)}</h3>
+                  <p>Injected {new Date(activeDoc.timestamp).toLocaleTimeString()}</p>
                 </div>
               </div>
-              <div className="header-actions">
-                <button className="export-btn">
-                  <Save size={16} />
-                  <span>EXPORT DATA</span>
-                </button>
-              </div>
+              <button 
+                className="export-btn" 
+                onClick={handleExport}
+                disabled={isExporting}
+              >
+                {isExporting ? <RefreshCcw size={16} className="spin" /> : <Download size={16} />}
+                <span>EXPORT DATA</span>
+              </button>
             </div>
 
             <div className="grid-container">
               <div className="grid-header">
-                <div className="col">QUESTION / FIELD</div>
-                <div className="col">EXTRACTED RESPONSE</div>
-                <div className="col">CONFIDENCE</div>
+                <div>SURVEY FIELD</div>
+                <div>EXTRACTED VALUE (EDITABLE)</div>
+                <div>CONFIDENCE</div>
               </div>
-              
+
               <div className="grid-body">
-                {activePage.result?.questions.map((field, idx) => (
-                  <div key={idx} className="grid-row">
-                    <div className="col field-label">
-                      <span className="row-num">{idx + 1}</span>
-                      {field.question}
-                    </div>
-                    <div className="col field-input">
-                      <div className="input-wrapper">
-                        <input 
-                          type="text" 
-                          defaultValue={field.response}
-                          onBlur={(e) => handleCorrection(idx, e.target.value)}
-                          className={field.confidence > 0.8 ? 'high-conf' : ''}
-                        />
-                        {field.confidence > 0.8 && <div className="neural-glow-line" />}
-                      </div>
-                    </div>
-                    <div className="col field-meta">
-                      <div className={`confidence-pill ${field.confidence > 0.8 ? 'certified' : ''}`}>
-                        {(field.confidence * 100).toFixed(0)}%
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {!activePage.result && (
+                {(activeDoc.status === 'processing' || activeDoc.status === 'uploaded') ? (
                   <div className="grid-loading">
-                    <RefreshCcw size={24} className="spin" />
-                    <span>Hydra is analyzing this document...</span>
+                    <RefreshCcw size={40} className="spin" />
+                    <p>Hydra is extracting data... ({activeDoc.status})</p>
+                  </div>
+                ) : activeDoc.result?.extractedData?.questions ? (
+                  activeDoc.result.extractedData.questions.map((q, idx) => (
+                    <div key={idx} className="grid-row">
+                      <div className="field-label">
+                        <span className="row-num">{idx + 1}</span>
+                        {q.question}
+                      </div>
+                      <div className="input-wrapper">
+                        <input
+                          type="text"
+                          defaultValue={q.selected || ''}
+                          onBlur={(e) => handleFieldChange(idx, e.target.value)}
+                          className={q.confidence > 0.85 ? 'high-conf' : ''}
+                        />
+                        {q.confidence > 0.95 && <div className="neural-glow-line" />}
+                      </div>
+                      <div className={`confidence-pill ${q.confidence > 0.9 ? 'certified' : ''}`}>
+                        {(q.confidence * 100).toFixed(1)}%
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="grid-loading">
+                    <AlertCircle size={40} color="var(--error)" />
+                    <p>Extraction failed or no data found.</p>
                   </div>
                 )}
               </div>
@@ -128,24 +144,12 @@ export const Workbench: React.FC = () => {
           </div>
         ) : (
           <div className="workbench-intro">
-            <AlertCircle size={48} color="var(--on-surface-muted)" />
-            <h2>Select a document to begin review</h2>
-            <p>Documents scanned in the Command Center will appear in the list on the left.</p>
+            <Database size={64} color="var(--on-surface-muted)" />
+            <h2>Authority Workbench</h2>
+            <p>Select a document from the sidebar to review and verify extraction results.</p>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 };
-
-const RefreshCcw = ({ size, className }: { size: number; className?: string }) => (
-  <svg 
-    width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" 
-    strokeLinecap="round" strokeLinejoin="round" className={className}
-  >
-    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-    <path d="M3 3v5h5" />
-    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-    <path d="M21 21v-5h-5" />
-  </svg>
-);

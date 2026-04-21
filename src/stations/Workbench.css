@@ -44,6 +44,9 @@
   border-radius: 8px;
   text-align: left;
   transition: var(--transition-fast);
+  background: transparent;
+  border: none;
+  width: 100%;
 }
 
 .browser-item:hover { background: rgba(255, 255, 255, 0.03); }
@@ -69,8 +72,11 @@
 }
 
 .item-id { font-size: 11px; font-weight: 700; color: var(--on-surface); }
-.item-status { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-.item-status.completed { color: var(--success); }
+.item-status { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+.item-status.good { color: var(--success); }
+.item-status.bad { color: var(--error); }
+.item-status.conflict { color: var(--tertiary); }
+.item-status.uploaded { color: var(--on-surface-muted); }
 .item-status.processing { color: var(--primary); }
 .item-status.failed { color: var(--error); }
 
@@ -113,6 +119,19 @@
   font-size: 13px;
   font-weight: 700;
   box-shadow: 0 4px 12px var(--primary-glow);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.export-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px var(--primary-glow);
+}
+
+.export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* High Density Grid */
@@ -238,3 +257,22 @@
 
 .workbench-intro h2 { font-size: 20px; font-weight: 800; }
 .workbench-intro p { font-size: 14px; }
+
+.grid-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
+  gap: 20px;
+  color: var(--on-surface-muted);
+}
+
+.spin {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

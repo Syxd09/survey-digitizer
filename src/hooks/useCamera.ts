@@ -12,7 +12,7 @@ export const useCamera = () => {
   const [error, setError] = useState<string | null>(null);
 
   const start = useCallback(async () => {
-    if (streamRef.current) return; // Already running
+    if (streamRef.current) return;
 
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -29,6 +29,7 @@ export const useCamera = () => {
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
+      setError(null);
     } catch (err) {
       setError('Camera access denied');
       console.error(err);
@@ -40,24 +41,30 @@ export const useCamera = () => {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
       setStream(null);
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
     }
-  }, []); // Explicitly stable, no dependencies
+  }, []);
 
-  // Analysis Loop
+  // Analysis Loop - only runs when stream is active
   useEffect(() => {
-    if (!stream || !videoRef.current || !canvasRef.current) return;
+    if (!stream) {
+      setMetrics(null);
+      return;
+    }
 
     let active = true;
     const analyze = (time: number) => {
       if (!active) return;
       
-      // Throttle to ~10fps (100ms) to prevent UI saturation/crashes
+      // 10fps analysis to keep main thread fluid
       if (time - lastAnalysisRef.current > 100) {
-        const video = videoRef.current!;
-        const canvas = canvasRef.current!;
-        
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        if (videoRef.current && canvasRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+          const video = videoRef.current;
+          const canvas = canvasRef.current;
           const ctx = canvas.getContext('2d', { alpha: false })!;
+          
           canvas.width = 300;
           canvas.height = 300;
           ctx.drawImage(video, 0, 0, 300, 300);
@@ -75,15 +82,19 @@ export const useCamera = () => {
     return () => { active = false; };
   }, [stream]);
 
-  const capture = useCallback((): string | null => {
+  const capture = useCallback(async (normalize = false): Promise<string | null> => {
     if (!videoRef.current) return null;
     
     const video = videoRef.current;
     const captureCanvas = document.createElement('canvas');
     captureCanvas.width = video.videoWidth;
     captureCanvas.height = video.videoHeight;
-    const ctx = captureCanvas.getContext('2d')!;
+    const ctx = captureCanvas.getContext('2d', { willReadFrequently: true })!;
     ctx.drawImage(video, 0, 0);
+    
+    if (normalize) {
+      return await imageService.normalizeForOCR(captureCanvas);
+    }
     
     return captureCanvas.toDataURL('image/jpeg', 0.95);
   }, []);

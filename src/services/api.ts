@@ -1,29 +1,46 @@
 const API_BASE = 'http://localhost:8000';
 
 export interface ExtractionQuestion {
-  id: string;
   question: string;
-  response: string;
+  selected: string | null;
   confidence: number;
-  type: string;
+  status: string;
   imageHash?: string;
 }
 
 export interface ProcessResponse {
-  success: boolean;
-  scanId: string;
   questions: ExtractionQuestion[];
-  total: number;
-  avgConfidence: number;
   diagnostics: any;
+}
+
+export interface ScanStatusResponse {
+  scanId: string;
+  status: 'uploaded' | 'good' | 'bad' | 'conflict' | 'failed' | 'processing';
+  confidence: number;
+  extractedData?: {
+    questions: ExtractionQuestion[];
+  };
+  diagnostics?: any;
+  error?: string;
+}
+
+export interface DatasetMetrics {
+  total_forms: number;
+  avg_processing_time: number;
+  avg_confidence: number;
+  avg_null_rate: number;
+  throughput_fpm: number;
+  status_distribution: Record<string, number>;
+  failure_rate: number;
+  conflict_rate: number;
 }
 
 export const hydraApi = {
   /**
-   * Directly digitize an image using Hydra V10.1
+   * Async Ingest: returns scanId immediately
    */
-  process: async (imageBase64: string): Promise<ProcessResponse> => {
-    const response = await fetch(`${API_BASE}/process`, {
+  ingest: async (imageBase64: string): Promise<{ scanId: string }> => {
+    const response = await fetch(`${API_BASE}/ingest`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -32,8 +49,34 @@ export const hydraApi = {
         userId: 'admin'
       })
     });
-    
-    if (!response.ok) throw new Error('Hydra Engine failed to process');
+    if (!response.ok) throw new Error('Hydra Ingestion failed');
+    return response.json();
+  },
+
+  /**
+   * Poll for scan status/results
+   */
+  getScanStatus: async (scanId: string): Promise<ScanStatusResponse> => {
+    const response = await fetch(`${API_BASE}/scan/default-authority/${scanId}`);
+    if (!response.ok) throw new Error('Failed to fetch scan status');
+    return response.json();
+  },
+
+  /**
+   * Fetch aggregate metrics for a dataset
+   */
+  getDatasetMetrics: async (): Promise<DatasetMetrics> => {
+    const response = await fetch(`${API_BASE}/metrics/default-authority`);
+    if (!response.ok) throw new Error('Failed to fetch metrics');
+    return response.json();
+  },
+
+  /**
+   * List all scans in a dataset for The Vault
+   */
+  listScans: async (): Promise<ScanStatusResponse[]> => {
+    const response = await fetch(`${API_BASE}/list/default-authority`);
+    if (!response.ok) throw new Error('Failed to list scans');
     return response.json();
   },
 
@@ -58,6 +101,15 @@ export const hydraApi = {
       console.error('Feedback failed:', error);
       return false;
     }
+  },
+
+  /**
+   * Export dataset as Excel (blob)
+   */
+  exportDataset: async (): Promise<Blob> => {
+    const response = await fetch(`${API_BASE}/export?dataset_id=default-authority`);
+    if (!response.ok) throw new Error('Export failed');
+    return response.blob();
   },
 
   /**

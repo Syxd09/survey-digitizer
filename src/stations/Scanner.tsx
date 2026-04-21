@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Camera, RefreshCcw, CheckCircle2, AlertCircle, Zap, Upload } from 'lucide-react';
 import { useCamera } from '../hooks/useCamera';
 import { useHydraStore } from '../store/useHydraStore';
@@ -6,9 +6,9 @@ import { hydraApi } from '../services/api';
 import './Scanner.css';
 
 export const Scanner: React.FC = () => {
-  const { videoRef, metrics, stream, start, stop, capture, error } = useCamera();
+  const { videoRef, metrics, start, stop, capture } = useCamera();
   const { addPage, updatePageStatus, scannedPages } = useHydraStore();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -16,19 +16,47 @@ export const Scanner: React.FC = () => {
     return () => stop();
   }, [start, stop]);
 
-  const processImage = async (image: string) => {
-    const pageId = addPage(image);
-    setIsProcessing(true);
+  /**
+   * Polling Logic for Async Scans
+   */
+  useEffect(() => {
+    const unfinishedPages = scannedPages.filter(
+      p => p.status === 'uploaded' || p.status === 'processing'
+    );
 
+    if (unfinishedPages.length === 0) return;
+
+    const interval = setInterval(async () => {
+      for (const page of unfinishedPages) {
+        try {
+          const statusResult = await hydraApi.getScanStatus(page.id);
+          
+          if (statusResult.status !== 'uploaded' && statusResult.status !== 'processing') {
+            updatePageStatus(page.id, statusResult.status, statusResult);
+          } else if (statusResult.status === 'processing' && page.status !== 'processing') {
+            updatePageStatus(page.id, 'processing');
+          }
+        } catch (err) {
+          console.error(`Status check failed for ${page.id}:`, err);
+        }
+      }
+    }, 2000); // Poll every 2 seconds
+
+    return () => clearInterval(interval);
+  }, [scannedPages, updatePageStatus]);
+
+  const processImage = async (image: string) => {
     try {
-      updatePageStatus(pageId, 'PROCESSING');
-      const result = await hydraApi.process(image);
-      updatePageStatus(pageId, 'COMPLETED', result);
+      setIsCapturing(true);
+      // 1. Kick off async ingestion
+      const { scanId } = await hydraApi.ingest(image);
+      
+      // 2. Add to store
+      addPage(image, scanId);
     } catch (err) {
-      updatePageStatus(pageId, 'FAILED');
-      console.error('Processing failed:', err);
+      console.error('Ingestion failed:', err);
     } finally {
-      setIsProcessing(false);
+      setIsCapturing(false);
     }
   };
 
@@ -38,15 +66,20 @@ export const Scanner: React.FC = () => {
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files) return;
 
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const b64 = event.target?.result as string;
-      if (b64) await processImage(b64);
-    };
-    reader.readAsDataURL(file);
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const b64 = event.target?.result as string;
+        if (b64) await processImage(b64);
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    // Reset input
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return (
@@ -96,7 +129,7 @@ export const Scanner: React.FC = () => {
           <div className="corner br" />
         </div>
 
-        {isProcessing && (
+        {isCapturing && (
           <div className="processing-overlay">
             <div className="neural-pulse-box">
               <Zap size={48} className="pulse-icon" />
@@ -115,7 +148,7 @@ export const Scanner: React.FC = () => {
               <><AlertCircle size={14} color="var(--tertiary)" /> <span>Align Document</span></>
             )}
           </div>
-          <p className="status-hint">Position the survey form within the frame or upload a file.</p>
+          <p className="status-hint">Position the survey form within the frame or upload files.</p>
         </div>
 
         <div className="capture-ops">
@@ -124,21 +157,22 @@ export const Scanner: React.FC = () => {
             ref={fileInputRef} 
             onChange={handleFileUpload} 
             accept="image/*" 
+            multiple
             style={{ display: 'none' }} 
           />
           
           <button 
             className="upload-op-btn"
             onClick={() => fileInputRef.current?.click()}
-            disabled={isProcessing}
+            disabled={isCapturing}
           >
             <Upload size={18} />
           </button>
 
           <button 
-            className={`capture-btn ${isProcessing ? 'disabled' : ''}`}
+            className={`capture-btn ${isCapturing ? 'disabled' : ''}`}
             onClick={handleCapture}
-            disabled={isProcessing}
+            disabled={isCapturing}
           >
             <div className="btn-inner">
               <Camera size={24} />
@@ -150,12 +184,14 @@ export const Scanner: React.FC = () => {
         </div>
 
         <div className="scanner-history">
-          {scannedPages.slice(0, 3).map(page => (
+          {scannedPages.slice(0, 5).map(page => (
             <div key={page.id} className={`history-thumb ${page.status.toLowerCase()}`}>
               <img src={page.image} alt="scanned" />
               <div className="thumb-status-box">
-                {page.status === 'COMPLETED' && <CheckCircle2 size={12} fill="var(--success)" color="var(--bg-primary)" />}
-                {page.status === 'PROCESSING' && <RefreshCcw size={12} className="spin" />}
+                {(page.status === 'good' || page.status === 'conflict') && <CheckCircle2 size={12} fill="var(--success)" color="var(--bg-primary)" />}
+                {(page.status === 'uploaded' || page.status === 'processing') && <RefreshCcw size={12} className="spin" />}
+                {page.status === 'bad' && <AlertCircle size={12} fill="var(--tertiary)" color="var(--bg-primary)" />}
+                {page.status === 'failed' && <AlertCircle size={12} fill="var(--error)" color="var(--bg-primary)" />}
               </div>
             </div>
           ))}

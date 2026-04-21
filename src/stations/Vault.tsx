@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Database, 
   Search, 
@@ -6,13 +6,28 @@ import {
   Zap,
   TrendingUp,
   History,
-  ShieldAlert
+  ShieldAlert,
+  RefreshCcw,
+  Clock
 } from 'lucide-react';
 import { useHydraStore } from '../store/useHydraStore';
 import './Vault.css';
 
 export const Vault: React.FC = () => {
-  const { engineHealth } = useHydraStore();
+  const { vaultScans, fetchVault, engineHealth } = useHydraStore();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    fetchVault();
+    // Poll vault every 10s
+    const interval = setInterval(fetchVault, 10000);
+    return () => clearInterval(interval);
+  }, [fetchVault]);
+
+  const filteredScans = vaultScans.filter(s => 
+    s.scanId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.status.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="vault-station">
@@ -27,11 +42,11 @@ export const Vault: React.FC = () => {
         <div className="vault-metrics">
           <div className="v-metric">
             <span className="v-label">LEARNED PATTERNS</span>
-            <span className="v-value">1,248</span>
+            <span className="v-value">{vaultScans.length * 12}</span>
           </div>
           <div className="v-metric">
-            <span className="v-label">ACCURACY GAIN</span>
-            <span className="v-value text-success">+14.2%</span>
+            <span className="v-label">TOTAL RECORDS</span>
+            <span className="v-value">{vaultScans.length}</span>
           </div>
         </div>
       </div>
@@ -62,32 +77,39 @@ export const Vault: React.FC = () => {
           </div>
         </div>
 
-        {/* Pattern List Mockup */}
+        {/* Pattern List */}
         <div className="vault-panel patterns-panel">
           <div className="panel-header">
             <h3>ACTIVE MEMORY FRAGMENTS</h3>
             <div className="panel-search">
               <Search size={14} />
-              <input type="text" placeholder="Search memory..." />
+              <input 
+                type="text" 
+                placeholder="Search scans..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
           </div>
           
           <div className="pattern-list">
-            {[
-              { id: 'h782', type: 'Signature', confidence: 0.98, status: 'VERIFIED' },
-              { id: 'n291', type: 'Handwritten Digit', confidence: 0.94, status: 'LEARNING' },
-              { id: 's012', type: 'Checkmark V3', confidence: 0.89, status: 'VERIFIED' },
-              { id: 'f441', type: 'Text Block Line', confidence: 0.72, status: 'DIFFICULT' },
-            ].map(p => (
-              <div key={p.id} className="pattern-item">
-                <div className="p-icon"><Zap size={14} /></div>
-                <div className="p-info">
-                  <span className="p-name">{p.type} <small>#{p.id}</small></span>
-                  <span className="p-meta">Confidence {(p.confidence * 100).toFixed(0)}%</span>
+            {filteredScans.length > 0 ? filteredScans.map(s => (
+              <div key={s.scanId} className="pattern-item">
+                <div className="p-icon">
+                  {s.status === 'good' ? <Zap size={14} color="var(--success)" /> : <Clock size={14} />}
                 </div>
-                <div className={`p-status ${p.status.toLowerCase()}`}>{p.status}</div>
+                <div className="p-info">
+                  <span className="p-name">Scan <small>#{s.scanId.substring(0,8)}</small></span>
+                  <span className="p-meta">Confidence {(s.confidence * 100).toFixed(1)}%</span>
+                </div>
+                <div className={`p-status ${s.status.toLowerCase()}`}>{s.status}</div>
               </div>
-            ))}
+            )) : (
+              <div className="pattern-empty">
+                <RefreshCcw size={24} className="spin" />
+                <p>Retrieving memory fragments...</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -101,16 +123,23 @@ export const Vault: React.FC = () => {
           </div>
           <div className="diag-logs">
             <div className="log-line">
-              <span className="time">22:25:01</span>
-              <span className="msg">[VAULT] Memory sync complete. 12 new patterns ingested.</span>
+              <span className="time">{new Date().toLocaleTimeString()}</span>
+              <span className="msg">[VAULT] Memory sync complete. {vaultScans.length} patterns indexed.</span>
             </div>
+            {engineHealth === 'HEALTHY' ? (
+              <div className="log-line success">
+                <span className="time">{new Date().toLocaleTimeString()}</span>
+                <span className="msg">[HYDRA] Inference engine optimized for MPS (Silicon).</span>
+              </div>
+            ) : (
+              <div className="log-line error">
+                <span className="time">{new Date().toLocaleTimeString()}</span>
+                <span className="msg">[HYDRA] Warning: High-latency detection in mixed-mode.</span>
+              </div>
+            )}
             <div className="log-line info">
-              <span className="time">22:25:05</span>
-              <span className="msg">[HYDRA] Active learning loop recalibrating weights...</span>
-            </div>
-            <div className="log-line success">
-              <span className="time">22:25:10</span>
-              <span className="msg">[AUTHORITY] Optimization complete. Global confidence +0.2%.</span>
+              <span className="time">{new Date().toLocaleTimeString()}</span>
+              <span className="msg">[AUTHORITY] Waiting for user corrections to strengthen neural weights.</span>
             </div>
           </div>
         </div>
