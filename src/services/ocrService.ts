@@ -33,6 +33,60 @@ export interface ExtractionResult {
 }
 
 /**
+ * Process Form Image — calls backend /process endpoint directly.
+ */
+export async function processFormOnBackend(
+  imageBase64: string,
+  datasetId: string,
+  userId: string
+): Promise<ExtractionResult> {
+  try {
+    // Try the direct /process endpoint first
+    const response = await fetch(`${BACKEND_URL}/process`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        image: imageBase64,
+        datasetId,
+        userId,
+        returnRaw: true
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Processing failed: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    // Convert backend format to frontend format
+    return {
+      scanId: result.scanId || crypto.randomUUID(),
+      questionnaireType: 'Processed Form',
+      rows: result.questions?.map((q: any, i: number) => ({
+        sno: (i + 1).toString(),
+        question: q.question || '',
+        value: q.selected || q.question || '',
+        confidence: q.confidence || 0.5,
+        options: q.options || [],
+        status: q.status || 'OK'
+      })) || [],
+      overallConfidence: result.avgConfidence || 0.5,
+      status: 'completed',
+      extractionTier: 'OCR',
+      pipelineMode: 'OCR',
+      logicVersion: result.diagnostics?.logic_version || 'Hydra-v5.7-LOCAL',
+      diagnostics: result.diagnostics
+    };
+  } catch (err) {
+    console.error('[BACKEND_PROCESS] Failed:', err);
+    throw err;
+  }
+}
+
+/**
  * Ingest Form Image — tries backend first, falls back to local processing.
  */
 export async function ingestFormForProcessing(
@@ -41,23 +95,13 @@ export async function ingestFormForProcessing(
   userId: string
 ): Promise<{ success: boolean; scanId: string; taskId: string }> {
   try {
-    const response = await fetch(`${BACKEND_URL}/ingest`, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        image: imageBase64,
-        datasetId,
-        userId
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Ingestion failed: ${response.statusText}`);
-    }
-
-    return await response.json();
+    // First try to process directly via /process endpoint
+    const result = await processFormOnBackend(imageBase64, datasetId, userId);
+    return {
+      success: true,
+      scanId: result.scanId,
+      taskId: `backend-${result.scanId}`
+    };
   } catch (err) {
     // Backend unavailable — fall back to local processing
     console.warn('[INGEST] Backend unavailable, falling back to local processing:', err);
@@ -106,7 +150,7 @@ export async function processFormLocally(imageUrl: string): Promise<ExtractionRe
  * Poll for Result
  */
 export async function pollProcessingStatus(scanId: string, datasetId: string): Promise<ExtractionResult | null> {
-  return null; 
+  return null;
 }
 
 /**
