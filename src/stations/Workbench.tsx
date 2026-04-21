@@ -31,7 +31,21 @@ export const Workbench: React.FC = () => {
   };
 
   const handleApproveSurvey = async (approvedQuestions: ExtractionQuestion[]) => {
-    if (!activeDoc) return;
+    if (!activeDoc || !activeDoc.result?.extractedData) return;
+    
+    // Calculate Active Learning corrections
+    const originalQuestions = activeDoc.result.extractedData.questions || [];
+    const corrections: { originalText: string, correctedText: string }[] = [];
+    
+    approvedQuestions.forEach((approvedQ, i) => {
+      const originalQ = originalQuestions[i];
+      if (originalQ && originalQ.question !== approvedQ.question) {
+        corrections.push({
+          originalText: originalQ.question,
+          correctedText: approvedQ.question
+        });
+      }
+    });
     
     try {
       setIsExporting(true); // Re-using export state for loading indicator
@@ -41,11 +55,14 @@ export const Workbench: React.FC = () => {
         body: JSON.stringify({
           scanId: activeDoc.id,
           datasetId: 'default-authority',
-          questions: approvedQuestions
+          questions: approvedQuestions,
+          corrections: corrections
         })
       });
       if (response.ok) {
-        alert('Survey data approved and saved successfully!');
+        alert(corrections.length > 0 
+          ? `Survey approved! Model learned from ${corrections.length} corrections.` 
+          : 'Survey data approved and saved successfully!');
       } else {
         alert('Failed to save survey approval.');
       }

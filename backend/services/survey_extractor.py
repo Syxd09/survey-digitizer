@@ -20,9 +20,9 @@ import re
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, field, asdict
 
+from services.llm_semantic_refiner import get_semantic_refiner
+
 logger = logging.getLogger(__name__)
-
-
 # ═══════════════════════════════════════════════════════════════════════════
 # Data Classes
 # ═══════════════════════════════════════════════════════════════════════════
@@ -182,6 +182,24 @@ class SurveyExtractor:
             )
             if q and q.text.strip():
                 result.questions.append(q)
+
+        # 9. Apply LLM Semantic Refinement for ultimate accuracy
+        if result.questions:
+            try:
+                refiner = get_semantic_refiner()
+                raw_texts = [q.text for q in result.questions]
+                refined_texts = refiner.refine_questions(
+                    raw_header=result.header_text,
+                    form_type=result.form_type,
+                    questions=raw_texts
+                )
+                
+                # Update question objects with refined text
+                for idx, new_text in enumerate(refined_texts):
+                    if idx < len(result.questions):
+                        result.questions[idx].text = new_text
+            except Exception as e:
+                logger.warning(f"[SURVEY] LLM Refinement skipped due to error: {e}")
 
         logger.info(f"[SURVEY] Extracted {len(result.questions)} questions")
         return result

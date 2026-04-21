@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Save, RefreshCcw, Check, Info } from 'lucide-react';
+import { Circle, CircleDot, Info } from 'lucide-react';
 import { ExtractionQuestion } from '../services/api';
 import './DigitalSurveyForm.css';
 
@@ -7,8 +7,15 @@ interface DigitalSurveyFormProps {
   scanId: string;
   surveyData: {
     form_type: string;
-    column_headers: string[];
+    column_headers?: string[];
+    columns?: string[];
     raw_text?: string;
+    form_metadata?: {
+      study_code?: string;
+      form_number?: string;
+      title?: string;
+      raw_header?: string;
+    };
   };
   questions: ExtractionQuestion[];
   onApprove: (approvedQuestions: ExtractionQuestion[]) => Promise<void>;
@@ -36,82 +43,104 @@ export const DigitalSurveyForm: React.FC<DigitalSurveyFormProps> = ({
     setQuestions(updated);
   };
 
-  const headers = (surveyData?.column_headers || []).filter(
+  // Support both legacy column_headers and new columns array
+  const rawHeaders = surveyData?.columns || surveyData?.column_headers || [];
+  const headers = rawHeaders.filter(
     h => !h.toLowerCase().includes('question') && !h.toLowerCase().includes('s.no') && h.trim() !== ''
   );
 
+  const meta = surveyData?.form_metadata || {};
+
   return (
-    <div className="digital-survey-form">
-      <div className="survey-header-bar">
-        <div className="survey-meta">
-          <span className="form-type-badge">{surveyData.form_type.toUpperCase()}</span>
-          <span className="survey-info">
-            <Info size={14} />
-            Please review the extracted grid. Click cells to correct misread marks.
-          </span>
+    <div className="google-form-container">
+      
+      {/* HEADER CARD */}
+      <div className="gf-card gf-header-card">
+        <div className="gf-top-accent"></div>
+        <div className="gf-header-content">
+          {meta.title ? (
+            <h1 className="gf-title">{meta.title}</h1>
+          ) : (
+            <h1 className="gf-title">Survey Form</h1>
+          )}
+          
+          <div className="gf-description">
+            {meta.raw_header && !meta.title ? meta.raw_header : (meta.raw_header || "Please review the extracted answers below.")}
+          </div>
+          
+          <div className="gf-meta-tags">
+            {meta.study_code && <span className="gf-tag">Study Code: {meta.study_code}</span>}
+            {meta.form_number && <span className="gf-tag">Form No: {meta.form_number}</span>}
+            <span className="gf-tag badge-primary">{surveyData.form_type.toUpperCase()}</span>
+          </div>
         </div>
       </div>
 
-      <div className="survey-table-container">
-        <table className="survey-table">
-          <thead>
-            <tr>
-              <th className="sno-col">#</th>
-              <th className="question-col">Question</th>
-              {headers.map((h, i) => (
-                <th key={i} className="response-col">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {questions.map((q, rIdx) => (
-              <tr key={rIdx} className={q.confidence < 0.8 ? 'low-confidence-row' : ''}>
-                <td className="sno-col">{rIdx + 1}</td>
-                <td className="question-col">
+      {/* QUESTIONS GRID CARD */}
+      <div className="gf-card gf-questions-card">
+        <div className="gf-grid-header">
+          <div className="gf-row-header"></div> {/* Empty corner for questions column */}
+          {headers.map((h, i) => (
+            <div key={i} className="gf-col-header">{h}</div>
+          ))}
+        </div>
+        
+        <div className="gf-grid-body">
+          {questions.map((q, rIdx) => (
+            <div key={rIdx} className={`gf-grid-row ${q.confidence < 0.8 ? 'gf-row-warning' : ''}`}>
+              <div className="gf-row-question">
+                <span className="gf-q-num">{rIdx + 1}.</span>
+                <div className="gf-q-input-wrapper">
                   <input
                     type="text"
                     value={q.question}
                     onChange={(e) => handleQuestionTextChange(rIdx, e.target.value)}
-                    className="question-input"
+                    className="gf-q-input"
                   />
-                  {q.confidence < 0.8 && (
-                    <div className="confidence-warning">Low confidence: {(q.confidence * 100).toFixed(0)}%</div>
-                  )}
-                </td>
-                {headers.map((h, cIdx) => {
-                  const isSelected = q.selected === h;
-                  return (
-                    <td 
-                      key={cIdx} 
-                      className={`response-col clickable-cell ${isSelected ? 'selected' : ''}`}
-                      onClick={() => handleCellClick(rIdx, h)}
-                    >
-                      <div className="cell-content">
-                        {isSelected && <Check size={20} className="check-icon" />}
-                      </div>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  <div className="gf-input-underline"></div>
+                </div>
+                {q.confidence < 0.8 && (
+                  <div className="gf-confidence-warning">
+                    <Info size={12} /> Low confidence: {(q.confidence * 100).toFixed(0)}%
+                  </div>
+                )}
+              </div>
+              
+              {headers.map((h, cIdx) => {
+                const isSelected = q.selected === h;
+                return (
+                  <div 
+                    key={cIdx} 
+                    className="gf-grid-cell"
+                    onClick={() => handleCellClick(rIdx, h)}
+                  >
+                    <div className="gf-radio-button">
+                      {isSelected ? (
+                        <CircleDot size={20} className="gf-radio-icon selected" />
+                      ) : (
+                        <Circle size={20} className="gf-radio-icon" />
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="survey-actions">
+      {/* FOOTER ACTIONS */}
+      <div className="gf-footer">
         <button 
-          className="approve-btn" 
+          className="gf-submit-btn" 
           onClick={() => onApprove(questions)}
           disabled={isApproving}
         >
-          {isApproving ? (
-            <RefreshCcw size={18} className="spin" />
-          ) : (
-            <CheckCircle2 size={18} />
-          )}
-          <span>APPROVE & SAVE FORM</span>
+          {isApproving ? 'Saving...' : 'Submit'}
         </button>
+        <span className="gf-footer-text">Never submit passwords through Google Forms.</span>
       </div>
+      
     </div>
   );
 };

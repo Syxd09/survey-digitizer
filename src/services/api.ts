@@ -21,8 +21,17 @@ export interface ScanStatusResponse {
     questions: ExtractionQuestion[];
     survey_data?: {
       form_type: string;
-      column_headers: string[];
-      raw_text: string;
+      columns: string[];
+      column_headers?: string[]; // Legacy compatibility
+      header_text: string;
+      instructions: string;
+      form_metadata: {
+        raw_header?: string;
+        study_code?: string;
+        title?: string;
+        form_number?: string;
+        [key: string]: any;
+      };
     };
   };
   diagnostics?: any;

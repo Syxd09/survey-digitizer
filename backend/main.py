@@ -227,6 +227,7 @@ class ApproveRequest(BaseModel):
     scanId:    str
     datasetId: str = "default"
     questions: list = Field(..., description="Reviewed/edited survey questions")
+    corrections: Optional[list] = Field(None, description="List of dicts containing {originalText, correctedText} to train the LLM")
 
 
 @app.post("/process-survey", tags=["OCR"])
@@ -277,6 +278,7 @@ async def approve_survey(
     Save reviewed/edited survey results after human approval.
     """
     try:
+        # 1. Update storage with approved results
         result = {
             "questions": request.questions,
             "status": "approved",
@@ -285,6 +287,17 @@ async def approve_survey(
             request.datasetId, request.scanId, result,
             {"approved": True, "status": "approved"}
         )
+        
+        # 2. Add corrections to Active Learning Memory
+        if request.corrections:
+            from services.llm_semantic_refiner import get_semantic_refiner
+            refiner = get_semantic_refiner()
+            for c in request.corrections:
+                orig = c.get("originalText")
+                corr = c.get("correctedText")
+                if orig and corr:
+                    refiner.add_correction(orig, corr)
+
         return {"success": True, "scanId": request.scanId, "status": "approved"}
     except Exception as exc:
         logger.error(f"[APPROVE] Failed: {exc}")

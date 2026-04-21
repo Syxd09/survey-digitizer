@@ -1,0 +1,266 @@
+{
+  "datasetId": "default-authority",
+  "userId": "admin",
+  "scanId": "d3fb8ced-3de8-45e1-b77f-f521669e844e",
+  "status": "good",
+  "confidence": 1.0,
+  "imageUrl": "",
+  "createdAt": "2026-04-21T19:39:04.586458+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-21T19:39:04.586479+00:00"
+    },
+    {
+      "stage": "PROCESSING",
+      "timestamp": "2026-04-21T19:39:04.587523+00:00",
+      "metadata": {}
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-21T19:39:11.150086+00:00",
+      "metadata": {
+        "status": "good",
+        "export_allowed": true
+      }
+    }
+  ],
+  "lastUpdatedAt": "2026-04-21T19:39:04.587508+00:00",
+  "exportAllowed": true,
+  "nullRate": 0.0,
+  "extractedData": {
+    "questions": [
+      {
+        "question": "1. WaS resiless; could not Stay still for long",
+        "selected": "bal",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "2. gol Iot of headaches, stomach-aches O sickness",
+        "selected": "aa",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "3. usually shared others (food, games; pens etc ) with",
+        "selected": "a",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "4. got very angry and often lost my lemper",
+        "selected": "aa",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "5. usually on my own generally played alone or kcpt t0 mysclf",
+        "selected": "bal",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "6. usually did as / was told",
+        "selected": "aa",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      }
+    ],
+    "survey_data": {
+      "form_metadata": {
+        "raw_header": "Fort No Study Code: SSIAR 19 010 CARETULLY BEFORE BEGINNING PLEASE READ ALL INSTRUCTIONS = Read each queston carefully and honesily: So share truthfully Respond with Ihe responses r 4S per All answers Will be kept confidential order thal (hcy hcre questions answcred in the same Tlic Iyou have any doubt; then ask fcclings and thoughts The following questions = you aboui YOur Somewhat True or Certainly True For each item; please mark the box for Not True; based on how you think: doing Mark ofyour on the basis of Last four days NOTE: Please answer the below questions experience Certainly Not Soniewhat SNo Questions True True True respfd expericuce  and lile }our prinled Jsk",
+        "study_code": "SSIAR"
+      },
+      "columns": [
+        "5g",
+        "2",
+        "tried t0 be nice (0 Olher people: I cared about tneir Teelings",
+        "bal",
+        "aa",
+        "a"
+      ],
+      "questions": [
+        {
+          "number": 1,
+          "text": "WaS resiless; could not Stay still for long",
+          "selected_column": "bal",
+          "selected_index": 2,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 2,
+          "text": "gol Iot of headaches, stomach-aches O sickness",
+          "selected_column": "aa",
+          "selected_index": 3,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 3,
+          "text": "usually shared others (food, games; pens etc ) with",
+          "selected_column": "a",
+          "selected_index": 4,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 4,
+          "text": "got very angry and often lost my lemper",
+          "selected_column": "aa",
+          "selected_index": 3,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 5,
+          "text": "usually on my own generally played alone or kcpt t0 mysclf",
+          "selected_column": "bal",
+          "selected_index": 2,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 6,
+          "text": "usually did as / was told",
+          "selected_column": "aa",
+          "selected_index": 3,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        }
+      ],
+      "form_type": "checkmark",
+      "header_text": "",
+      "instructions": ""
+    },
+    "diagnostics": {
+      "vision": {
+        "is_dark_mode": false,
+        "enhanced_upscaled": true
+      },
+      "doc_type": {
+        "type": "survey_form",
+        "confidence": 0.929,
+        "signals_matched": [
+          "\\bQuestionnaire\\b",
+          "\\bQuestions?\\b",
+          "\\bNot\\s*True\\b",
+          "\\bSomewhat\\s*True\\b",
+          "\\bCertainly\\s*True\\b",
+          "\\bTrue\\b",
+          "\\bStudy\\s*Code\\b",
+          "\\bForm\\s*No\\b",
+          "\\bexperience\\b",
+          "\\bbasis\\s*of\\b",
+          "\\bplease\\s*read\\b",
+          "\\bNOTE\\b",
+          "\\bmark\\s*the\\b"
+        ],
+        "hints": {
+          "has_dark_bg": false,
+          "handwriting_density": 0.0378,
+          "has_table_lines": true,
+          "h_lines": 33,
+          "v_lines": 18
+        },
+        "all_scores": {
+          "code_screenshot": 0.0,
+          "survey_form": 0.929,
+          "form": 0.0,
+          "invoice": 0.0,
+          "handwritten": 0.0,
+          "table": 0.5,
+          "general": 0.0
+        }
+      },
+      "ocr_counts": {
+        "paddle": 0,
+        "easyocr": 66,
+        "tesseract": 207
+      },
+      "form_type": "checkmark",
+      "columns_detected": [
+        "5g",
+        "2",
+        "tried t0 be nice (0 Olher people: I cared about tneir Teelings",
+        "bal",
+        "aa",
+        "a"
+      ],
+      "questions_extracted": 6,
+      "duration": 6.54,
+      "logic_version": "Hydra-v12.5-SURVEY",
+      "engine": "LOCAL_HYDRA_V11",
+      "avg_confidence": 1.0,
+      "null_rate": 0.0,
+      "question_count": 6,
+      "handwriting_mode": false
+    }
+  },
+  "diagnostics": {
+    "vision": {
+      "is_dark_mode": false,
+      "enhanced_upscaled": true
+    },
+    "doc_type": {
+      "type": "survey_form",
+      "confidence": 0.929,
+      "signals_matched": [
+        "\\bQuestionnaire\\b",
+        "\\bQuestions?\\b",
+        "\\bNot\\s*True\\b",
+        "\\bSomewhat\\s*True\\b",
+        "\\bCertainly\\s*True\\b",
+        "\\bTrue\\b",
+        "\\bStudy\\s*Code\\b",
+        "\\bForm\\s*No\\b",
+        "\\bexperience\\b",
+        "\\bbasis\\s*of\\b",
+        "\\bplease\\s*read\\b",
+        "\\bNOTE\\b",
+        "\\bmark\\s*the\\b"
+      ],
+      "hints": {
+        "has_dark_bg": false,
+        "handwriting_density": 0.0378,
+        "has_table_lines": true,
+        "h_lines": 33,
+        "v_lines": 18
+      },
+      "all_scores": {
+        "code_screenshot": 0.0,
+        "survey_form": 0.929,
+        "form": 0.0,
+        "invoice": 0.0,
+        "handwritten": 0.0,
+        "table": 0.5,
+        "general": 0.0
+      }
+    },
+    "ocr_counts": {
+      "paddle": 0,
+      "easyocr": 66,
+      "tesseract": 207
+    },
+    "form_type": "checkmark",
+    "columns_detected": [
+      "5g",
+      "2",
+      "tried t0 be nice (0 Olher people: I cared about tneir Teelings",
+      "bal",
+      "aa",
+      "a"
+    ],
+    "questions_extracted": 6,
+    "duration": 6.54,
+    "logic_version": "Hydra-v12.5-SURVEY",
+    "engine": "LOCAL_HYDRA_V11",
+    "avg_confidence": 1.0,
+    "null_rate": 0.0,
+    "question_count": 6,
+    "handwriting_mode": false
+  },
+  "processedAt": "2026-04-21T19:39:11.150102+00:00",
+  "logicVersion": "Hydra-v11.0"
+}
