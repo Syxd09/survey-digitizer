@@ -105,7 +105,7 @@ export async function processFormOnBackend(
       })) || [],
       overallConfidence: result.avgConfidence || 0.5,
       status: 'completed',
-      extractionTier: 'OCR',
+      extractionTier: 'AI_SMART',
       pipelineMode: 'OCR',
       logicVersion: result.diagnostics?.logic_version || 'Hydra-v5.7-LOCAL',
       diagnostics: result.diagnostics
@@ -123,14 +123,15 @@ export async function ingestFormForProcessing(
   imageBase64: string,
   datasetId: string,
   userId: string
-): Promise<{ success: boolean; scanId: string; taskId: string }> {
+): Promise<{ success: boolean; scanId: string; taskId: string; result?: ExtractionResult }> {
   try {
     // First try to process directly via /process endpoint
     const result = await processFormOnBackend(imageBase64, datasetId, userId);
     return {
       success: true,
       scanId: result.scanId,
-      taskId: `backend-${result.scanId}`
+      taskId: `backend-${result.scanId}`,
+      result
     };
   } catch (err) {
     // Backend unavailable — fall back to local processing

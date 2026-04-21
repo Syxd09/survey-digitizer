@@ -1,42 +1,48 @@
-@import "tailwindcss";
+@import "./styles/theme.css";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  
-  --color-primary: #00488d;
-  --color-primary-container: #005fb8;
-  --color-on-primary: #ffffff;
-  
-  --color-secondary: #486176;
-  --color-secondary-container: #cbe6ff;
-  
-  --color-tertiary: #7b3200;
-  --color-tertiary-container: #a04401;
-  
-  --color-surface: #f8f9fa;
-  --color-surface-container: #edeeef;
-  --color-surface-container-low: #f3f4f5;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-high: #e7e8e9;
-  --color-surface-container-highest: #e1e3e4;
-  
-  --color-on-surface: #191c1d;
-  --color-on-surface-variant: #424752;
-  
-  --color-error: #ba1a1a;
-  --color-error-container: #ffdad6;
-  
-  --radius-xl: 0.5rem;
-  --radius-full: 0.75rem;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
 }
 
-@layer base {
-  body {
-    @apply bg-surface text-on-surface font-sans;
-  }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--on-surface);
+  line-height: 1.5;
+  overflow: hidden; /* App-like feel */
 }
 
-.canvas-bg {
-  background-image: radial-gradient(circle, #c2c6d4 1px, transparent 1px);
-  background-size: 24px 24px;
+button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-raised);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--on-surface-muted);
 }

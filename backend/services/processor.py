@@ -1,895 +1,1137 @@
+"""
+SurveyProcessor — Hydra v11.0 PRODUCTION
+=========================================
+Full pipeline:
+  perspective correction → lighting normalisation → adaptive binarisation
+  → deskew → content-type detection → language detection
+  → PaddleOCR (printed) | EasyOCR (multilingual) | TrOCR (handwriting)
+  → img2table (structured tables)
+  → universal layout reconstruction
+  → rapidfuzz semantic correction
+  → Claude vision fallback (low-confidence crops)
+  → SQLite-backed active-learning memory
+"""
+
+import base64
+import io
+import json
+import logging
+import os
+import sqlite3
+import threading
+import time
+from functools import lru_cache
+from typing import Any, Dict, List, Optional, Tuple
+
 import cv2
 import numpy as np
-import base64
 from PIL import Image as PILImage
-import easyocr
-import pandas as pd
-import io
-import logging
 
 logger = logging.getLogger(__name__)
 
+# ── Optional imports with graceful degradation ────────────────────────────────
+
+try:
+    from skimage.filters import threshold_sauvola
+    SAUVOLA_AVAILABLE = True
+except ImportError:
+    SAUVOLA_AVAILABLE = False
+    logger.warning("[IMPORT] scikit-image not found — falling back to OTSU binarisation")
+
+try:
+    from paddleocr import PaddleOCR
+    PADDLE_AVAILABLE = True
+except ImportError:
+    PADDLE_AVAILABLE = False
+    logger.warning("[IMPORT] PaddleOCR not found — using EasyOCR only")
+
+try:
+    import easyocr
+    EASYOCR_AVAILABLE = True
+except ImportError:
+    EASYOCR_AVAILABLE = False
+    logger.warning("[IMPORT] EasyOCR not found — OCR accuracy will be limited")
+
+try:
+    from img2table.document import Image as Img2TableImage
+    from img2table.ocr import EasyOCR as Img2EasyOCR
+    IMG2TABLE_AVAILABLE = True
+except ImportError:
+    IMG2TABLE_AVAILABLE = False
+    logger.warning("[IMPORT] img2table not found — using contour-based table detection")
+
+try:
+    from rapidfuzz import fuzz
+    from rapidfuzz import process as fuzz_process
+    RAPIDFUZZ_AVAILABLE = True
+except ImportError:
+    RAPIDFUZZ_AVAILABLE = False
+    logger.warning("[IMPORT] rapidfuzz not found — using static correction dictionary only")
+
+try:
+    import langdetect
+    LANGDETECT_AVAILABLE = True
+except ImportError:
+    LANGDETECT_AVAILABLE = False
+    logger.warning("[IMPORT] langdetect not found — defaulting to English")
+
+try:
+    import anthropic
+    ANTHROPIC_AVAILABLE = bool(os.getenv("ANTHROPIC_API_KEY"))
+except ImportError:
+    ANTHROPIC_AVAILABLE = False
+    logger.warning("[IMPORT] anthropic SDK not found — Claude fallback disabled")
+
+
+# ── Domain vocabulary for fuzzy correction ────────────────────────────────────
+
+DOMAIN_VOCAB: List[str] = [
+    "Read-Only", "Write", "Full Access", "Insert", "Update", "Delete",
+    "Exempt", "Analyst", "Engineer", "Admin", "Manager", "Supervisor",
+    "Approved", "Rejected", "Pending", "Completed", "Cancelled",
+    "Signature", "Date", "Name", "Address", "Phone", "Email",
+    "Yes", "No", "N/A", "True", "False",
+    "View", "Select", "Execute", "Create", "Drop",
+]
+
+
 class SurveyProcessor:
-    def __init__(self):
-        # Detect best available device
+    """
+    Singleton-safe OCR processor.  Instantiate ONCE at application startup
+    (via FastAPI lifespan) and reuse the same instance for every request.
+    """
+
+    def __init__(self, custom_vocab: Optional[List[str]] = None):
         import torch
-        # Note: EasyOCR 1.7+ supports MPS, but we need to ensure torch is ready
-        self.device = "mps" if torch.backends.mps.is_available() else "cpu"
-        logger.info(f"[PROCESSOR] Initializing local OCR with device: {self.device}")
-        
-        # V7.0: Multi-language support (English + Portuguese for "Plugues" and similar terminology)
+
+        self.device = self._pick_device(torch)
+        logger.info(f"[PROCESSOR] Initialising on device: {self.device}")
+
+        # Extend domain vocabulary if caller supplied extras
+        self.vocab = DOMAIN_VOCAB + (custom_vocab or [])
+
+        # ── Load OCR engines ────────────────────────────────────────────────
+        self.paddle_reader = self._load_paddle()
+        self.easy_reader   = self._load_easyocr()
+        self.troc_model, self.troc_processor = self._load_trocr(torch)
+
+        # ── img2table (optional) ────────────────────────────────────────────
+        self.img2table_ocr = self._load_img2table_ocr()
+
+        # ── Active-learning memory (SQLite + in-memory LRU) ─────────────────
+        self.memory_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "feedback_loop", "memory.db"
+        )
+        self._db_lock = threading.Lock()
+        self._memory_cache: Dict[str, str] = {}
+        self._init_memory_db()
+
+        logger.info("[PROCESSOR] Initialisation complete")
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Initialisation helpers
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @staticmethod
+    def _pick_device(torch) -> str:
+        if torch.cuda.is_available():
+            return "cuda"
+        if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+            return "mps"
+        return "cpu"
+
+    def _load_paddle(self) -> Optional[Any]:
+        if not PADDLE_AVAILABLE:
+            return None
         try:
-            self.raw_reader = easyocr.Reader(['en', 'pt'], gpu=(self.device == "mps" or torch.cuda.is_available()))
-        except Exception as e:
-            logger.warning(f"[PROCESSOR] EasyOCR GPU initialization failed, falling back to CPU: {e}")
-            self.raw_reader = easyocr.Reader(['en', 'pt'], gpu=False)
-            
-        self.troc_model = None
-        self.troc_processor = None
-        
-        # V10.0: Load Active Learning Memory
-        self.memory_path = "feedback_loop/memory.json"
-        self._load_memory()
-        
-        # Lazy-load TrOCR specifically for handwriting refinement
-        if self.troc_model is None:
-            try:
-                import torch
-                from transformers import TrOCRProcessor, VisionEncoderDecoderModel
-                logger.info("[PROCESSOR] Loading TrOCR model (microsoft/trocr-base-handwritten)...")
-                self.troc_processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
-                self.troc_model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
-                self.troc_model.to(self.device)
-                logger.info(f"[PROCESSOR] TrOCR model loaded successfully on {self.device}")
-            except Exception as e:
-                logger.warning(f"[PROCESSOR] TrOCR initialization failed: {e}")
-                self.troc_model = False
-
-    def _load_memory(self):
-        """Load user-corrected patterns from the feedback loop memory."""
-        try:
-            import json
-            import os
-            if os.path.exists(self.memory_path):
-                with open(self.memory_path, 'r') as f:
-                    self.memory = json.load(f)
-            else:
-                self.memory = {}
-        except:
-            self.memory = {}
-
-    def _save_memory(self):
-        """Persist learned patterns to the memory vault."""
-        try:
-            import json
-            with open(self.memory_path, 'w') as f:
-                json.dump(self.memory, f, indent=4)
-        except Exception as e:
-            logger.warning(f"[MEMORY] Save failed: {e}")
-
-    def register_feedback(self, image_hash: str, text: str) -> bool:
-        """Hydra learns a new pattern from user correction."""
-        self.memory[image_hash] = text
-        self._save_memory()
-        logger.info(f"[MEMORY] Hydra learned pattern {image_hash} -> {text}")
-        return True
-
-    def _get_image_hash(self, img_crop):
-        """Generate a difference hash (dhash) for visual pattern recognition."""
-        try:
-            if img_crop is None or img_crop.size == 0: return "0"
-            gray = cv2.cvtColor(img_crop, cv2.COLOR_BGR2GRAY) if len(img_crop.shape) == 3 else img_crop
-            resized = cv2.resize(gray, (9, 8), interpolation=cv2.INTER_AREA)
-            diff = resized[:, 1:] > resized[:, :-1]
-            return hex(int("".join(diff.flatten().astype(int).astype(str)), 2))[2:]
-        except:
-            return "0"
-
-    def _skeletonize(self, img):
-        """Thin out messy ink strokes to improve character clarity."""
-        try:
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-            
-            # Use Zhang-Suen or morphological skeletonization
-            element = cv2.getStructuringElement(cv2.MORPH_CROSS, (3,3))
-            done = False
-            size = np.size(binary)
-            skel = np.zeros(binary.shape, np.uint8)
-            
-            temp_img = binary.copy()
-            while not done:
-                eroded = cv2.erode(temp_img, element)
-                temp = cv2.dilate(eroded, element)
-                temp = cv2.subtract(temp_img, temp)
-                skel = cv2.bitwise_or(skel, temp)
-                temp_img = eroded.copy()
-                if cv2.countNonZero(temp_img) == 0:
-                    done = True
-            
-            # Invert back to black-on-white
-            return cv2.bitwise_not(skel)
-        except:
-            return img
-
-    def _detect_signature(self, img_crop):
-        """Identify dense, interconnected clusters as potential signatures."""
-        try:
-            if img_crop is None or img_crop.size == 0: return False
-            gray = cv2.cvtColor(img_crop, cv2.COLOR_BGR2GRAY) if len(img_crop.shape) == 3 else img_crop
-            _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-            
-            # 1. Density Check
-            density = cv2.countNonZero(binary) / binary.size
-            
-            # 2. Connectivity Check (Signatures have few, very large components)
-            num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(binary)
-            if num_labels < 2: return False
-            
-            # Take internal components (skip background at 0)
-            comp_areas = stats[1:, cv2.CC_STAT_AREA]
-            max_comp_ratio = np.max(comp_areas) / binary.size
-            
-            # A signature is usually a high-density, high-connectivity mass
-            if density > 0.15 and max_comp_ratio > 0.05:
-                return True
-            return False
-        except:
-            return False
-
-    def _deblur_image(self, img):
-        """Advanced Edge Boosting for extremely blurry (score < 10) scans."""
-        try:
-            # 1. Laplacian Sharpening Mask
-            kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
-            sharpened = cv2.filter2D(img, -1, kernel)
-            
-            # 2. Unsharp Masking (Boost high-frequency edge details)
-            gaussian_3 = cv2.GaussianBlur(sharpened, (0, 0), 2.0)
-            unsharp = cv2.addWeighted(sharpened, 1.5, gaussian_3, -0.5, 0)
-            
-            return unsharp
-        except Exception as e:
-            logger.warning(f"[PROCESSOR] Deblur failed: {e}")
-            return img
-
-    def _enhance_for_handwriting(self, img):
-        """Preprocess image specifically to help OCR read handwriting."""
-        try:
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            
-            # 1. Denoise (V7.0: Use even lower strength for blurry images to avoid artifacts)
-            denoised = cv2.fastNlMeansDenoising(gray, None, 3, 7, 21)
-            
-            # 2. CLAHE for better contrast
-            clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-            enhanced = clahe.apply(denoised)
-            
-            # 3. Convert back to BGR
-            result = cv2.cvtColor(enhanced, cv2.COLOR_GRAY2BGR)
-            return result
-        except Exception as e:
-            logger.warning(f"[PROCESSOR] Enhancement failed: {e}")
-            return img
-
-    def process(self, pil_image: PILImage.Image):
-        import time
-        start_time = time.time()
-        
-        # Convert PIL to OpenCV
-        open_cv_image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-        quality_report = self._check_quality(open_cv_image)
-
-        logger.info(f"[PROCESSOR] Starting image enhancement (Device: {self.device})...")
-        t0 = time.time()
-        open_cv_image = self._enhance_image(open_cv_image)
-        
-        # V9.2: Auto-Lighting Recovery for dark scans (Brightness < 50)
-        if quality_report["brightness"] < 50:
-            logger.info(f"[PROCESSOR] Low lighting detected ({quality_report['brightness']}). Applying recovery boost...")
-            open_cv_image = self._normalize_lighting(open_cv_image)
-            
-        logger.info(f"[PROCESSOR] Base enhancement took {time.time()-t0:.2f}s")
-        
-        t1 = time.time()
-        open_cv_image = self._enhance_for_handwriting(open_cv_image) 
-        logger.info(f"[PROCESSOR] Handwriting enhancement took {time.time()-t1:.2f}s")
-        
-        t2 = time.time()
-        open_cv_image = self._deskew(open_cv_image)
-        logger.info(f"[PROCESSOR] Deskew took {time.time()-t2:.2f}s")
-
-        # 1. Structural Scan (Find all boxes/cells)
-        logger.info("[PROCESSOR] Running structural scan...")
-        _, structural_boxes = self._detect_table_cells(open_cv_image)
-        
-        # 2. Textual Scan (Find all text everywhere)
-        logger.info("[PROCESSOR] Running textual scan...")
-        text_regions = self._get_full_text_scan(open_cv_image)
-        
-        # 3. Unified Reconstruction
-        logger.info(f"[PROCESSOR] Unifying structural ({len(structural_boxes)}) and textual ({len(text_regions)}) results...")
-        result = self._reconstruct_universal(structural_boxes, text_regions, open_cv_image)
-        mode = "UNIVERSAL_MAPPING"
-
-        debug_b64 = None
-        if getattr(self, 'debug_mode', False):
-            debug_b64 = self._generate_debug_image(open_cv_image, result["questions"])
-
-        result["diagnostics"]["quality"] = quality_report
-        result["diagnostics"]["mode"] = mode
-        result["diagnostics"]["debug_image"] = debug_b64
-        
-        return result
-
-    def _detect_table_cells(self, img):
-        """Detect potential table cells or MCQ boxes using contour analysis with V8 Pruning."""
-        try:
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-            contours, _ = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            
-            cells = []
-            img_area = img.shape[0] * img.shape[1]
-            for cnt in contours:
-                x, y, w, h = cv2.boundingRect(cnt)
-                area = w * h
-                # Ignore tiny noise boxes
-                if area < (img_area * 0.0005): continue
-                
-                # Flexible filtering for both small checkboxes and larger table cells
-                if 15 < w < img.shape[1] * 0.8 and 15 < h < img.shape[0] * 0.8:
-                    aspect_ratio = w / float(h)
-                    if 0.5 < aspect_ratio < 10:
-                        cells.append({'x': x, 'y': y, 'w': w, 'h': h, 'bbox': (x, y, x+w, y+h)})
-            
-                # V8.1: Deduplicate and then prune singletons
-            if len(cells) > 0:
-                # Convert to format for groupRectangles
-                rects = [[c['x'], c['y'], c['w'], c['h']] for c in cells]
-                # Multiply to allow groupRectangles to work (it needs at least 1 overlap or eps)
-                # But here we just want to merge very close boxes
-                rects, weights = cv2.groupRectangles(rects, 1, 0.2)
-                
-                dedup_cells = []
-                for r in rects:
-                    dedup_cells.append({'x': r[0], 'y': r[1], 'w': r[2], 'h': r[3], 'bbox': (r[0], r[1], r[0]+r[2], r[1]+r[3])})
-                
-                # Now prune singletons from deduped list
-                pruned_cells = []
-                for i, c1 in enumerate(dedup_cells):
-                    # V9.0 GRID RECOVERY: If it's a very large box (table border), keep it regardless
-                    if c1['w'] > (img.shape[1] * 0.4):
-                        pruned_cells.append(c1)
-                        continue
-
-                    has_sibling = False
-                    for j, c2 in enumerate(dedup_cells):
-                        if i == j: continue
-                        dist = np.sqrt((c1['x']-c2['x'])**2 + (c1['y']-c2['y'])**2)
-                        if dist < 250: # Increased sibling threshold
-                            has_sibling = True
-                            break
-                    if has_sibling:
-                        pruned_cells.append(c1)
-                
-                logger.info(f"[PROCESSOR] Structural cleanup: Total={len(cells)} -> Dedup={len(dedup_cells)} -> Pruned={len(pruned_cells)}")
-                return (len(pruned_cells) > 0), pruned_cells
-        except Exception as e:
-            logger.warning(f"[PROCESSOR] Structural scan failed: {e}")
-            return False, []
-
-    def _get_full_text_scan(self, img):
-        """Unified text detection with Auto-Scaling fallback for low-res scans."""
-        try:
-            # Stage 1: Standard Scale Detection with High Sensitivity
-            params = {
-                'text_threshold': 0.3, # Catch faint ink
-                'low_text': 0.2,       # Catch small fragments
-                'link_threshold': 0.4, # Better word connectivity
-                'canvas_size': 2560,   # High-res internal rendering
-                'mag_ratio': 1.0,
-            }
-            
-            results = self.raw_reader.readtext(img, **params)
-            
-            # Stage 2: 2x Upscaling Fallback
-            if len(results) < 15:
-                logger.info("[PROCESSOR] Low text count at 1x. Retrying with 2x Upscaling...")
-                h, w = img.shape[:2]
-                img_2x = cv2.resize(img, (int(w*2), int(h*2)), interpolation=cv2.INTER_CUBIC)
-                results_2x = self.raw_reader.readtext(img_2x, **params)
-                
-                if len(results_2x) > len(results):
-                    logger.info(f"[PROCESSOR] 2x Upscaling helpful. Found {len(results_2x)} regions.")
-                    # Map back
-                    results = [([[pt[0]/2.0, pt[1]/2.0] for pt in b], t, p) for b, t, p in results_2x]
-
-            # Stage 3: 3x NUCLEAR Upscaling Fallback (For blur_score < 10)
-            if len(results) < 15:
-                logger.info("[PROCESSOR] Still low text count. Retrying with 3x Lanczos scaling...")
-                h, w = img.shape[:2]
-                # Lanczos is superior for extracting detail from blurry sources
-                img_3x = cv2.resize(img, (int(w*3), int(h*3)), interpolation=cv2.INTER_LANCZOS4)
-                results_3x = self.raw_reader.readtext(img_3x, **params)
-                
-                if len(results_3x) > len(results):
-                    logger.info(f"[PROCESSOR] 3x Scaling success! Found {len(results_3x)} regions.")
-                    results = [([[pt[0]/3.0, pt[1]/3.0] for pt in b], t, p) for b, t, p in results_3x]
-
-            text_regions = []
-            for (bbox, text, prob) in results:
-                x1, y1 = int(bbox[0][0]), int(bbox[0][1])
-                x2, y2 = int(bbox[2][0]), int(bbox[2][1])
-                text_regions.append({
-                    'text': text,
-                    'bbox': (x1, y1, x2, y2),
-                    'conf': prob,
-                    'center': ((x1 + x2) / 2, (y1 + y2) / 2)
-                })
-            return text_regions
-        except Exception as e:
-            logger.warning(f"[PROCESSOR] Text scan failed: {e}")
-            return []
-
-    def _reconstruct_universal(self, boxes, text_regions, img):
-        """V9.0: Semantic Alignment Reconstruction. Handles MCQs and Key-Value Lists."""
-        questions = []
-        
-        if not text_regions:
-            return {"questions": [], "diagnostics": {"logic": "EMPTY_PAGE", "logic_version": "Hydra-v9.2-STABLE"}}
-
-        # V9.2: Signal Filter (Remove IDE noise/ghost artifacts)
-        filtered_regions = []
-        noise_patterns = ["Pylance", "reportUndefinedVariable", "Ln ", "Col ", "Keyword arguments", "\"df\""]
-        for t in text_regions:
-            low_t = t['text'].lower()
-            # 1. Pattern Matching (IDE/Terminal noise)
-            if any(p.lower() in low_t for p in noise_patterns):
-                continue
-            # 2. Length Filter (Suppress tiny ghost tokens < 3 chars unless high confidence)
-            if len(t['text'].strip()) < 3 and t['conf'] < 0.9:
-                continue
-            filtered_regions.append(t)
-        
-        text_regions = filtered_regions
-
-        # 1. Column Detection (Finding Gutters)
-        columns = self._detect_vertical_gutters(text_regions, img.shape[1])
-        
-        # 2. Sort text by Y then X for logical reading order
-        text_regions.sort(key=lambda t: (t['bbox'][1], t['bbox'][0]))
-        
-        claimed_boxes = set()
-        claimed_text = set()
-
-        # Step A: Primary Checkbox Mapping (MCQ Pattern)
-        for i, t in enumerate(text_regions):
-            if t['conf'] < 0.1: continue
-            t_x, t_y = t['center']
-            
-            nearby_boxes = []
-            for j, b in enumerate(boxes):
-                if j in claimed_boxes: continue
-                b_center = (b['x'] + b['w']/2, b['y'] + b['h']/2)
-                dist = np.sqrt((t_x - b_center[0])**2 + (t_y - b_center[1])**2)
-                if dist < 350: 
-                    nearby_boxes.append((dist, j, b))
-            
-            if nearby_boxes:
-                valid_boxes = [nb for nb in nearby_boxes if abs(nb[2]['y'] - t['bbox'][1]) < 60]
-                if valid_boxes:
-                    claimed_text.add(i)
-                    valid_boxes.sort(key=lambda x: x[0])
-                    selected_val = None
-                    max_dark = 0
-                    for dist, idx, b in valid_boxes:
-                        claimed_boxes.add(idx)
-                        crop = img[b['bbox'][1]:b['bbox'][3], b['bbox'][0]:b['bbox'][2]]
-                        if crop.size > 0:
-                            gray_crop = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
-                            thresh = cv2.adaptiveThreshold(gray_crop, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-                                                         cv2.THRESH_BINARY_INV, 11, 2)
-                            dark_ratio = cv2.countNonZero(thresh) / thresh.size
-                            if dark_ratio > max_dark and dark_ratio > 0.1:
-                                max_dark = dark_ratio
-                                selected_val = t['text']
-
-                    full_text = self._semantic_correction(t['text'])
-                    questions.append({
-                        "question": full_text,
-                        "options": [f"Option {i+1}" for i in range(len(valid_boxes))],
-                        "selected": selected_val,
-                        "confidence": t['conf'],
-                        "status": "OK" if selected_val else "UNSELECTED"
-                    })
-
-        # Step B: Alignment Pairing (List Pattern for remaining text)
-        unclaimed_idx = [i for i in range(len(text_regions)) if i not in claimed_text and text_regions[i]['conf'] > 0.1]
-        
-        # Group unclaimed text into rows using Rolling Center Logic
-        rows = []
-        if unclaimed_idx:
-            # First, sort all unclaimed text by Y for row grouping
-            unclaimed_idx.sort(key=lambda idx: text_regions[idx]['bbox'][1])
-            
-            current_row = [unclaimed_idx[0]]
-            row_y_sum = text_regions[unclaimed_idx[0]]['bbox'][1]
-            
-            for idx in unclaimed_idx[1:]:
-                avg_y = row_y_sum / len(current_row)
-                # V9.1: Increased threshold and rolling center
-                if abs(text_regions[idx]['bbox'][1] - avg_y) < 55:
-                    current_row.append(idx)
-                    row_y_sum += text_regions[idx]['bbox'][1]
-                else:
-                    rows.append(current_row)
-                    current_row = [idx]
-                    row_y_sum = text_regions[idx]['bbox'][1]
-            if current_row: rows.append(current_row)
-
-        for row_indices in rows:
-            if len(row_indices) >= 2:
-                # Potential Key-Value pair (Role / Permission)
-                # Sort by X to see columns
-                row_indices.sort(key=lambda idx: text_regions[idx]['bbox'][0])
-                key_idx = row_indices[0]
-                val_idx = row_indices[-1] # Usually the right-most is the value
-                
-                key_text = self._semantic_correction(text_regions[key_idx]['text'])
-                val_text = self._semantic_correction(text_regions[val_idx]['text'])
-                
-                # V10.1: Signature Label Sentinel - Auto-normalize noisy labels
-                if self._detect_signature(img[text_regions[val_idx]['bbox'][1]:text_regions[val_idx]['bbox'][3], text_regions[val_idx]['bbox'][0]:text_regions[val_idx]['bbox'][2]]):
-                    if self._is_noisy_label(key_text):
-                        key_text = "Signature / Verification Field"
-                
-                # V10.0: Check Memory Vault for previously corrected patterns
-                crop_v = img[max(0, text_regions[val_idx]['bbox'][1]-5):min(img.shape[0], text_regions[val_idx]['bbox'][3]+5), 
-                             max(0, text_regions[val_idx]['bbox'][0]-5):min(img.shape[1], text_regions[val_idx]['bbox'][2]+5)]
-                
-                v_hash = self._get_image_hash(crop_v)
-                if v_hash in self.memory:
-                    val_text = self.memory[v_hash]
-                    status = "LEARNED_MATCH"
-                    conf = 1.0
-                else:
-                    # Check for Signature Pattern
-                    if self._detect_signature(crop_v):
-                        val_text = "[SIGNATURE_DETECTED]"
-                        status = "SIGNATURE"
-                        conf = 0.95
-                    else:
-                        # Proceed with OCR
-                        if text_regions[val_idx]['conf'] < 0.7:
-                            # Apply Skeletonization for messy cursive recovery
-                            skel_crop = self._skeletonize(crop_v)
-                            refined = self._extract_text_with_troc(skel_crop, high_precision=True)
-                            if refined: val_text = self._semantic_correction(refined)
-                        status = "LIST_PAIR"
-                        conf = (text_regions[key_idx]['conf'] + text_regions[val_idx]['conf']) / 2
-
-                questions.append({
-                    "question": key_text,
-                    "selected": val_text,
-                    "options": [],
-                    "confidence": conf,
-                    "status": status,
-                    "imageHash": v_hash
-                })
-            else:
-                # Standalone note
-                idx = row_indices[0]
-                t = text_regions[idx]
-                
-                v_hash = self._get_image_hash(img[t['bbox'][1]:t['bbox'][3], t['bbox'][0]:t['bbox'][2]])
-                full_text = self._semantic_correction(t['text'])
-                
-                if v_hash in self.memory:
-                    full_text = self.memory[v_hash]
-                    status = "LEARNED_MATCH"
-                    conf = 1.0
-                else:
-                    status = "HANDWRITTEN_NOTE"
-                    conf = t['conf']
-
-                questions.append({
-                    "question": full_text,
-                    "selected": full_text,
-                    "options": [],
-                    "confidence": conf,
-                    "status": status,
-                    "imageHash": v_hash
-                })
-
-        return {
-            "questions": questions, 
-            "diagnostics": {
-                "logic": "SEMANTIC_LIST_V9.2",
-                "col_count": len(columns),
-                "text_count": len(text_regions),
-                "box_count": len(boxes),
-                "image_lightness": self._check_quality(img)['brightness'],
-                "logic_version": "Hydra-v10.0-AUTHORITY"
-            }
-        }
-
-    def _detect_vertical_gutters(self, text_regions, img_width):
-        """Analyze X-coordinates to find logical columns."""
-        if not text_regions: return []
-        xs = [t['center'][0] for t in text_regions]
-        # Simple clustering (can be improved with Gaussian Mixtue but this is faster)
-        xs.sort()
-        columns = []
-        if xs:
-            curr_col = [xs[0]]
-            for x in xs[1:]:
-                if x - curr_col[-1] < 250: # Increased Column span for stability
-                    curr_col.append(x)
-                else:
-                    columns.append(sum(curr_col)/len(curr_col))
-                    curr_col = [x]
-            columns.append(sum(curr_col)/len(curr_col))
-        return columns
-
-    def _get_merged_crop(self, objects, img):
-        if not objects: return np.array([])
-        x1 = min(o['data']['bbox'][0] for o in objects)
-        y1 = min(o['data']['bbox'][1] for o in objects)
-        x2 = max(o['data']['bbox'][2] for o in objects)
-        y2 = max(o['data']['bbox'][3] for o in objects)
-        return img[max(0, y1-5):min(img.shape[0], y2+5), max(0, x1-5):min(img.shape[1], x2+5)]
-
-
-    def _check_quality(self, img):
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
-        mean, std_dev = cv2.meanStdDev(gray)
-        
-        warnings = []
-        if laplacian_var < 100: warnings.append("LOW_RESOLUTION_OR_BLURRY")
-        if mean[0][0] < 40: warnings.append("LOW_LIGHTING")
-        if std_dev[0][0] < 20: warnings.append("LOW_CONTRAST")
-        
-        return {
-            "status": "POOR" if warnings else "GOOD",
-            "blur_score": round(float(laplacian_var), 2),
-            "brightness": round(float(mean[0][0]), 2),
-            "warnings": warnings
-        }
-
-    def _generate_debug_image(self, img, questions):
-        display_img = img.copy()
-        try:
-            cv2.putText(display_img, "DEBUG MODE: Extracted Questions Below", (50, 50), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            _, buffer = cv2.imencode('.jpg', display_img, [cv2.IMWRITE_JPEG_QUALITY, 70])
-            return base64.b64encode(buffer).decode('utf-8')
-        except:
+            use_gpu = self.device in ("cuda",)
+            reader = PaddleOCR(
+                use_angle_cls=True,
+                lang="en",
+                use_gpu=use_gpu,
+                show_log=False,
+                det_db_score_mode="slow",   # higher accuracy
+                rec_algorithm="SVTR_LCNet",
+            )
+            logger.info(f"[PADDLE] Loaded (gpu={use_gpu})")
+            return reader
+        except Exception as exc:
+            logger.warning(f"[PADDLE] Failed to load: {exc}")
             return None
 
-    def _normalize_lighting(self, img):
-        """Recover details from dark images using CLAHE on L-channel."""
+    def _load_easyocr(self) -> Optional[Any]:
+        if not EASYOCR_AVAILABLE:
+            return None
         try:
-            lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-            l, a, b = cv2.split(lab)
-            # Apply CLAHE to the lightness channel specifically
-            clahe = cv2.createCLAHE(clipLimit=4.0, tileGridSize=(12, 12))
-            cl = clahe.apply(l)
-            limg = cv2.merge((cl, a, b))
-            return cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
-        except:
+            gpu = self.device in ("cuda", "mps")
+            reader = easyocr.Reader(
+                ["en", "pt", "es", "fr", "de", "it"],
+                gpu=gpu,
+                model_storage_directory=os.path.join(
+                    os.path.expanduser("~"), ".EasyOCR", "model"
+                ),
+            )
+            logger.info(f"[EASYOCR] Loaded (gpu={gpu}, 6 languages)")
+            return reader
+        except Exception as exc:
+            logger.warning(f"[EASYOCR] Failed to load: {exc}")
+            return None
+
+    def _load_trocr(self, torch) -> Tuple[Optional[Any], Optional[Any]]:
+        try:
+            from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+            proc  = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
+            model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
+            model.to(self.device)
+            model.eval()
+            logger.info(f"[TROCR] Loaded on {self.device}")
+            return model, proc
+        except Exception as exc:
+            logger.warning(f"[TROCR] Failed to load: {exc}")
+            return None, None
+
+    def _load_img2table_ocr(self) -> Optional[Any]:
+        if not IMG2TABLE_AVAILABLE or not EASYOCR_AVAILABLE:
+            return None
+        try:
+            return Img2EasyOCR(lang=["en", "pt"])
+        except Exception as exc:
+            logger.warning(f"[IMG2TABLE] OCR init failed: {exc}")
+            return None
+
+    def _init_memory_db(self):
+        os.makedirs(os.path.dirname(self.memory_path), exist_ok=True)
+        with self._db_lock:
+            conn = sqlite3.connect(self.memory_path)
+            conn.execute(
+                "CREATE TABLE IF NOT EXISTS patterns "
+                "(hash TEXT PRIMARY KEY, text TEXT, ts REAL, use_count INTEGER DEFAULT 1)"
+            )
+            conn.commit()
+            # Warm the in-memory cache (top 2000 most-used patterns)
+            rows = conn.execute(
+                "SELECT hash, text FROM patterns ORDER BY use_count DESC LIMIT 2000"
+            ).fetchall()
+            self._memory_cache = {r[0]: r[1] for r in rows}
+            conn.close()
+        logger.info(f"[MEMORY] Loaded {len(self._memory_cache)} cached patterns")
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Public API
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def process(self, pil_image: PILImage.Image) -> Dict[str, Any]:
+        """Full pipeline entry point.  Returns standardised JSON result dict."""
+        t_start = time.time()
+
+        # Normalise colour space
+        img = cv2.cvtColor(np.array(pil_image.convert("RGB")), cv2.COLOR_RGB2BGR)
+
+        # ── Stage 1: quality gate (run ONCE, pass report downstream) ────────
+        quality = self._check_quality(img)
+        logger.info(f"[PIPELINE] Quality: {quality}")
+
+        # ── Stage 2: preprocessing chain ────────────────────────────────────
+        img = self._correct_perspective(img)
+        img = self._normalize_lighting(img) if quality["brightness"] < 80 else self._enhance_image(img)
+        img = self._enhance_for_handwriting(img)
+        img = self._deskew(img)
+
+        if quality["blur_score"] < 80 and SAUVOLA_AVAILABLE:
+            img = self._binarize_sauvola(img)
+        elif quality["blur_score"] < 10:
+            img = self._deblur_image(img)
+
+        # ── Stage 3: content-type detection ─────────────────────────────────
+        hw_ratio   = self._estimate_handwriting_ratio(img)
+        language   = self._detect_language(img)
+        logger.info(f"[PIPELINE] handwriting_ratio={hw_ratio:.2f}, lang={language}")
+
+        # ── Stage 4: structural scan (table cells / checkboxes) ─────────────
+        _, structural_boxes = self._detect_table_cells(img)
+
+        # ── Stage 5: text scan (engine-routed) ──────────────────────────────
+        text_regions = self._get_full_text_scan(img, hw_ratio, language)
+
+        # ── Stage 6: reconstruction ──────────────────────────────────────────
+        result = self._reconstruct_universal(structural_boxes, text_regions, img, quality)
+
+        elapsed = round(time.time() - t_start, 2)
+        result["diagnostics"].update({
+            "quality":              quality,
+            "handwriting_ratio":    round(hw_ratio, 3),
+            "detected_language":    language,
+            "processing_duration":  elapsed,
+            "logic_version":        "Hydra-v11.0-PRODUCTION",
+        })
+        logger.info(f"[PIPELINE] Done in {elapsed}s — {len(result['questions'])} fields extracted")
+        return result
+
+    def register_feedback(self, image_hash: str, text: str) -> bool:
+        """Persist a user correction and update the in-memory cache."""
+        try:
+            with self._db_lock:
+                conn = sqlite3.connect(self.memory_path)
+                conn.execute(
+                    "INSERT INTO patterns (hash, text, ts, use_count) VALUES (?,?,?,1) "
+                    "ON CONFLICT(hash) DO UPDATE SET text=excluded.text, ts=excluded.ts, "
+                    "use_count=use_count+1",
+                    (image_hash, text, time.time()),
+                )
+                conn.commit()
+                conn.close()
+            self._memory_cache[image_hash] = text
+            logger.info(f"[MEMORY] Learned {image_hash} → {text!r}")
+            return True
+        except Exception as exc:
+            logger.error(f"[MEMORY] Save failed: {exc}")
+            return False
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Preprocessing pipeline
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _correct_perspective(self, img: np.ndarray) -> np.ndarray:
+        """Warp trapezoidal (phone-shot) documents back to a flat rectangle."""
+        try:
+            h, w = img.shape[:2]
+            img_area = h * w
+
+            gray    = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+            edges   = cv2.Canny(blurred, 50, 150)
+            kernel  = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+            edges   = cv2.dilate(edges, kernel, iterations=1)
+
+            contours, _ = cv2.findContours(edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+            contours = sorted(contours, key=cv2.contourArea, reverse=True)[:10]
+
+            for cnt in contours:
+                peri  = cv2.arcLength(cnt, True)
+                approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
+                if len(approx) != 4:
+                    continue
+
+                quad_area = cv2.contourArea(approx)
+                ratio = quad_area / img_area
+
+                # Must be a meaningful document region, not image border or noise
+                if not (0.20 < ratio < 0.97):
+                    continue
+
+                pts  = approx.reshape(4, 2).astype(np.float32)
+                rect = self._order_points(pts)
+                ww   = int(max(
+                    np.linalg.norm(rect[0] - rect[1]),
+                    np.linalg.norm(rect[2] - rect[3]),
+                ))
+                wh   = int(max(
+                    np.linalg.norm(rect[0] - rect[3]),
+                    np.linalg.norm(rect[1] - rect[2]),
+                ))
+                dst = np.array([[0,0],[ww-1,0],[ww-1,wh-1],[0,wh-1]], dtype=np.float32)
+                M   = cv2.getPerspectiveTransform(rect, dst)
+                warped = cv2.warpPerspective(img, M, (ww, wh), flags=cv2.INTER_CUBIC)
+                logger.info(f"[PERSPECTIVE] Corrected quad ratio={ratio:.2f}, size={ww}x{wh}")
+                return warped
+        except Exception as exc:
+            logger.warning(f"[PERSPECTIVE] Failed: {exc}")
+        return img
+
+    @staticmethod
+    def _order_points(pts: np.ndarray) -> np.ndarray:
+        rect = np.zeros((4, 2), dtype=np.float32)
+        s         = pts.sum(axis=1)
+        rect[0]   = pts[np.argmin(s)]   # top-left
+        rect[2]   = pts[np.argmax(s)]   # bottom-right
+        diff      = np.diff(pts, axis=1)
+        rect[1]   = pts[np.argmin(diff)]  # top-right
+        rect[3]   = pts[np.argmax(diff)]  # bottom-left
+        return rect
+
+    def _binarize_sauvola(self, img: np.ndarray) -> np.ndarray:
+        """Adaptive Sauvola threshold — handles uneven lighting / shadows."""
+        try:
+            gray   = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            thresh = threshold_sauvola(gray, window_size=25, k=0.2)
+            binary = ((gray > thresh) * 255).astype(np.uint8)
+            return cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
+        except Exception as exc:
+            logger.warning(f"[SAUVOLA] Failed: {exc}")
             return img
 
-    def _enhance_image(self, img):
-        """Improve contrast and lighting."""
+    def _enhance_image(self, img: np.ndarray) -> np.ndarray:
         try:
             lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
             l, a, b = cv2.split(lab)
             clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-            cl = clahe.apply(l)
-            limg = cv2.merge((cl, a, b))
-            enhanced = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
-            return enhanced
-        except:
+            return cv2.cvtColor(cv2.merge((clahe.apply(l), a, b)), cv2.COLOR_LAB2BGR)
+        except Exception:
             return img
 
-    def _deskew(self, img):
-        """Skip deskew unless there's significant tilt (outside reasonable range)."""
+    def _normalize_lighting(self, img: np.ndarray) -> np.ndarray:
+        """CLAHE on LAB L-channel for dark/poorly-lit scans."""
         try:
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            gray = cv2.bitwise_not(gray)
+            lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+            l, a, b = cv2.split(lab)
+            clahe = cv2.createCLAHE(clipLimit=4.0, tileGridSize=(12, 12))
+            return cv2.cvtColor(cv2.merge((clahe.apply(l), a, b)), cv2.COLOR_LAB2BGR)
+        except Exception:
+            return img
+
+    def _enhance_for_handwriting(self, img: np.ndarray) -> np.ndarray:
+        try:
+            gray    = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            denoised = cv2.fastNlMeansDenoising(gray, None, 3, 7, 21)
+            clahe   = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+            return cv2.cvtColor(clahe.apply(denoised), cv2.COLOR_GRAY2BGR)
+        except Exception:
+            return img
+
+    def _deblur_image(self, img: np.ndarray) -> np.ndarray:
+        try:
+            kernel   = np.array([[-1,-1,-1],[-1,9,-1],[-1,-1,-1]])
+            sharp    = cv2.filter2D(img, -1, kernel)
+            gaussian = cv2.GaussianBlur(sharp, (0, 0), 2.0)
+            return cv2.addWeighted(sharp, 1.5, gaussian, -0.5, 0)
+        except Exception:
+            return img
+
+    def _deskew(self, img: np.ndarray) -> np.ndarray:
+        try:
+            gray   = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            gray   = cv2.bitwise_not(gray)
             thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-            
             coords = np.column_stack(np.where(thresh > 0))
-            angle = cv2.minAreaRect(coords)[-1]
-            
-            # Only correct if angle is significant (not near 0 or 90)
+            if len(coords) < 10:
+                return img
+            angle  = cv2.minAreaRect(coords)[-1]
             if -3 < angle < 3 or 87 < angle < 93:
-                return img  # Skip small rotations
-            
-            if angle < -45:
-                angle = -(90 + angle)
-            else:
-                angle = -angle
-                
-            (h, w) = img.shape[:2]
-            center = (w // 2, h // 2)
-            M = cv2.getRotationMatrix2D(center, angle, 1.0)
-            rotated = cv2.warpAffine(img, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-            return rotated
-        except:
+                return img
+            angle  = -(90 + angle) if angle < -45 else -angle
+            h, w   = img.shape[:2]
+            M      = cv2.getRotationMatrix2D((w // 2, h // 2), angle, 1.0)
+            return cv2.warpAffine(img, M, (w, h), flags=cv2.INTER_CUBIC,
+                                  borderMode=cv2.BORDER_REPLICATE)
+        except Exception:
             return img
 
-    def _extract_text_with_troc(self, img_crop: np.ndarray, high_precision: bool = False) -> str:
-        """Use TrOCR for better handwriting recognition with optional high-precision beam search."""
-        if not self.troc_model or not self.troc_processor:
-            return ""
-        
+    def _skeletonize(self, img: np.ndarray) -> np.ndarray:
+        """Zhang-Suen thinning with a hard iteration cap to prevent runaway loops."""
         try:
-            # V8.1: Protection against empty or invalid crops
-            if img_crop is None or img_crop.size == 0 or img_crop.shape[0] < 2 or img_crop.shape[1] < 2:
+            gray    = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if len(img.shape) == 3 else img
+            _, bw   = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            element = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
+            skel    = np.zeros_like(bw)
+            tmp     = bw.copy()
+            for _ in range(100):            # hard cap — prevents infinite loop
+                eroded = cv2.erode(tmp, element)
+                diff   = cv2.subtract(tmp, cv2.dilate(eroded, element))
+                skel   = cv2.bitwise_or(skel, diff)
+                tmp    = eroded.copy()
+                if cv2.countNonZero(tmp) == 0:
+                    break
+            return cv2.bitwise_not(skel)
+        except Exception:
+            return img
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Content-type & language detection
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _estimate_handwriting_ratio(self, img: np.ndarray) -> float:
+        """
+        High coefficient of variation in connected-component areas → handwriting.
+        Low CV → uniform printed glyphs.
+        """
+        try:
+            gray  = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            _, bw = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            contours, _ = cv2.findContours(bw, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            areas = [cv2.contourArea(c) for c in contours if cv2.contourArea(c) > 5]
+            if len(areas) < 5:
+                return 0.0
+            cv_val = float(np.std(areas)) / (float(np.mean(areas)) + 1e-6)
+            return min(1.0, cv_val / 60.0)
+        except Exception:
+            return 0.3   # assume mixed if detection fails
+
+    def _detect_language(self, img: np.ndarray) -> str:
+        """Quick language detection via EasyOCR + langdetect."""
+        if not LANGDETECT_AVAILABLE or self.easy_reader is None:
+            return "en"
+        try:
+            h, w  = img.shape[:2]
+            small = cv2.resize(img, (min(w, 600), min(h, 400)))
+            texts = self.easy_reader.readtext(small, detail=0, paragraph=True)
+            combined = " ".join(texts[:6])
+            if len(combined.strip()) > 10:
+                return langdetect.detect(combined)
+        except Exception:
+            pass
+        return "en"
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Quality assessment
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _check_quality(self, img: np.ndarray) -> Dict[str, Any]:
+        gray       = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        blur_score = float(cv2.Laplacian(gray, cv2.CV_64F).var())
+        mean, std  = cv2.meanStdDev(gray)
+        brightness = float(mean[0][0])
+        contrast   = float(std[0][0])
+
+        warnings = []
+        if blur_score < 100:
+            warnings.append("LOW_RESOLUTION_OR_BLURRY")
+        if brightness < 40:
+            warnings.append("LOW_LIGHTING")
+        if contrast < 20:
+            warnings.append("LOW_CONTRAST")
+
+        return {
+            "status":     "POOR" if warnings else "GOOD",
+            "blur_score": round(blur_score, 2),
+            "brightness": round(brightness, 2),
+            "contrast":   round(contrast, 2),
+            "warnings":   warnings,
+        }
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # OCR engines
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _run_paddle_ocr(self, img: np.ndarray) -> List[Dict]:
+        """PaddleOCR — fast, accurate for printed/typed text."""
+        if self.paddle_reader is None:
+            return []
+        try:
+            result = self.paddle_reader.ocr(img, cls=True)
+            if not result or result[0] is None:
+                return []
+            regions = []
+            for line in result[0]:
+                if not line:
+                    continue
+                pts, (text, conf) = line
+                x1 = int(min(p[0] for p in pts))
+                y1 = int(min(p[1] for p in pts))
+                x2 = int(max(p[0] for p in pts))
+                y2 = int(max(p[1] for p in pts))
+                regions.append({
+                    "text":   text,
+                    "bbox":   (x1, y1, x2, y2),
+                    "conf":   float(conf),
+                    "center": ((x1 + x2) / 2.0, (y1 + y2) / 2.0),
+                    "engine": "paddle",
+                })
+            return regions
+        except Exception as exc:
+            logger.warning(f"[PADDLE] OCR failed: {exc}")
+            return []
+
+    def _run_easy_ocr(self, img: np.ndarray) -> List[Dict]:
+        """EasyOCR — multilingual, good for mixed scripts."""
+        if self.easy_reader is None:
+            return []
+        try:
+            params = {
+                "text_threshold": 0.3,
+                "low_text":       0.2,
+                "link_threshold": 0.4,
+                "canvas_size":    2560,
+                "mag_ratio":      1.0,
+            }
+            raw = self.easy_reader.readtext(img, **params)
+
+            # Attempt 2× upscale if sparse results
+            if len(raw) < 15:
+                h, w   = img.shape[:2]
+                img_2x = cv2.resize(img, (w * 2, h * 2), interpolation=cv2.INTER_CUBIC)
+                raw_2x = self.easy_reader.readtext(img_2x, **params)
+                if len(raw_2x) > len(raw):
+                    raw = [([[p[0]/2, p[1]/2] for p in b], t, p_)
+                           for b, t, p_ in raw_2x]
+
+            regions = []
+            for bbox, text, conf in raw:
+                x1 = int(bbox[0][0]); y1 = int(bbox[0][1])
+                x2 = int(bbox[2][0]); y2 = int(bbox[2][1])
+                regions.append({
+                    "text":   text,
+                    "bbox":   (x1, y1, x2, y2),
+                    "conf":   float(conf),
+                    "center": ((x1 + x2) / 2.0, (y1 + y2) / 2.0),
+                    "engine": "easyocr",
+                })
+            return regions
+        except Exception as exc:
+            logger.warning(f"[EASYOCR] Failed: {exc}")
+            return []
+
+    def _get_full_text_scan(
+        self,
+        img: np.ndarray,
+        hw_ratio: float,
+        language: str,
+    ) -> List[Dict]:
+        """
+        Route to the best engine based on content type, then merge results.
+        Strategy:
+          hw_ratio < 0.4  → PaddleOCR primary, EasyOCR supplement
+          hw_ratio >= 0.4 → EasyOCR primary (TrOCR applied per-crop later)
+        """
+        primary: List[Dict] = []
+        supplement: List[Dict] = []
+
+        if hw_ratio < 0.4 and self.paddle_reader is not None:
+            primary    = self._run_paddle_ocr(img)
+            supplement = self._run_easy_ocr(img) if len(primary) < 10 else []
+        else:
+            primary    = self._run_easy_ocr(img)
+
+        # Merge, deduplicating by IoU
+        merged = self._merge_regions(primary, supplement)
+
+        # Filter noise
+        noise_patterns = [
+            "pylance", "reportundefinedvariable", "ln ", "col ",
+            "keyword arguments", '"df"',
+        ]
+        filtered = []
+        for r in merged:
+            low = r["text"].lower()
+            if any(p in low for p in noise_patterns):
+                continue
+            if len(r["text"].strip()) < 3 and r["conf"] < 0.9:
+                continue
+            filtered.append(r)
+
+        logger.info(
+            f"[TEXT_SCAN] engine={'paddle' if hw_ratio<0.4 else 'easyocr'}, "
+            f"primary={len(primary)}, merged={len(merged)}, filtered={len(filtered)}"
+        )
+        return filtered
+
+    @staticmethod
+    def _merge_regions(primary: List[Dict], supplement: List[Dict]) -> List[Dict]:
+        """
+        Add supplement regions that don't significantly overlap with any
+        primary region (IoU < 0.3).
+        """
+        if not supplement:
+            return primary
+
+        def iou(a, b) -> float:
+            ax1, ay1, ax2, ay2 = a["bbox"]
+            bx1, by1, bx2, by2 = b["bbox"]
+            ix1 = max(ax1, bx1); iy1 = max(ay1, by1)
+            ix2 = min(ax2, bx2); iy2 = min(ay2, by2)
+            inter = max(0, ix2 - ix1) * max(0, iy2 - iy1)
+            if inter == 0:
+                return 0.0
+            area_a = max(1, (ax2 - ax1) * (ay2 - ay1))
+            area_b = max(1, (bx2 - bx1) * (by2 - by1))
+            return inter / (area_a + area_b - inter)
+
+        merged = list(primary)
+        for s in supplement:
+            if all(iou(s, p) < 0.3 for p in primary):
+                merged.append(s)
+        return merged
+
+    def _extract_text_with_troc(
+        self,
+        img_crop: np.ndarray,
+        high_precision: bool = False,
+    ) -> str:
+        """TrOCR for handwritten field crops."""
+        if self.troc_model is None or self.troc_processor is None:
+            return ""
+        try:
+            import torch
+
+            if img_crop is None or img_crop.size == 0:
+                return ""
+            if img_crop.shape[0] < 2 or img_crop.shape[1] < 2:
                 return ""
 
-            import torch
-            # 1. UPSCALING: If crop is small, use bi-cubic interpolation to sharpen for TrOCR
             h, w = img_crop.shape[:2]
             if h < 60 or w < 100:
-                scale = 2.0
-                img_crop = cv2.resize(img_crop, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
-                logger.info(f"[PROCESSOR] Upscaled small crop {h}x{w} to {int(h*scale)}x{int(w*scale)}")
+                scale   = 2.0
+                img_crop = cv2.resize(img_crop, None, fx=scale, fy=scale,
+                                      interpolation=cv2.INTER_CUBIC)
 
-            # 2. STROKE DILATION: Thicken faint handwriting to improve connectivity
             if high_precision:
-                gray = cv2.cvtColor(img_crop, cv2.COLOR_BGR2GRAY) if len(img_crop.shape) == 3 else img_crop
-                # Use a small kernel to avoid blurring characters together
-                kernel = np.ones((2,2), np.uint8)
-                # Dilation on inverted image thickens the dark strokes
-                inv = cv2.bitwise_not(gray)
+                gray   = cv2.cvtColor(img_crop, cv2.COLOR_BGR2GRAY) \
+                         if len(img_crop.shape) == 3 else img_crop
+                kernel = np.ones((2, 2), np.uint8)
+                inv    = cv2.bitwise_not(gray)
                 dilated = cv2.dilate(inv, kernel, iterations=1)
                 img_crop = cv2.bitwise_not(dilated)
                 if len(img_crop.shape) == 2:
                     img_crop = cv2.cvtColor(img_crop, cv2.COLOR_GRAY2RGB)
-            
-            pil_img = PILImage.fromarray(img_crop)
-            pixel_values = self.troc_processor(pil_img, return_tensors="pt").pixel_values
-            pixel_values = pixel_values.to(self.device)
-            
-            # 2. BEAM SEARCH: Use more beams for critical handwritten fields
-            gen_kwargs = {
-                "max_length": 64,
-                "num_beams": 10 if high_precision else 5,
-                "early_stopping": True,
-                "repetition_penalty": 1.2
-            }
-            
-            generated_ids = self.troc_model.generate(pixel_values, **gen_kwargs)
-            text = self.troc_processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-            
-            return text.strip()
-        except Exception as e:
-            logger.warning(f"[PROCESSOR] TrOCR extraction failed: {e}")
+
+            pil_img  = PILImage.fromarray(img_crop)
+            pixel_v  = self.troc_processor(pil_img, return_tensors="pt").pixel_values
+            pixel_v  = pixel_v.to(self.device)
+
+            with torch.no_grad():
+                ids = self.troc_model.generate(
+                    pixel_v,
+                    max_length=64,
+                    num_beams=10 if high_precision else 4,
+                    early_stopping=True,
+                    repetition_penalty=1.2,
+                )
+            return self.troc_processor.batch_decode(ids, skip_special_tokens=True)[0].strip()
+        except Exception as exc:
+            logger.warning(f"[TROCR] Failed: {exc}")
             return ""
 
-    def _semantic_correction(self, text):
-        """V9.0 Technical Lexicon Mapping. Corrects common handwriting/OCR artifacts."""
-        if not text: return ""
-        
-        mapping = {
-            "twirted": "(Write)",
-            "cfuid": "(Full)",
-            "fvii": "(Full)",
-            "fvll": "(Full)",
-            "fvill": "(Full)",
+    def _claude_verify_crop(self, img_crop: np.ndarray, context_label: str) -> str:
+        """
+        Claude claude-opus-4-6 vision fallback for crops with confidence < 0.45.
+        Requires ANTHROPIC_API_KEY env variable.
+        """
+        if not ANTHROPIC_AVAILABLE:
+            return ""
+        try:
+            rgb  = cv2.cvtColor(img_crop, cv2.COLOR_BGR2RGB) \
+                   if len(img_crop.shape) == 3 else img_crop
+            pil  = PILImage.fromarray(rgb)
+            buf  = io.BytesIO()
+            pil.save(buf, format="PNG")
+            b64  = base64.b64encode(buf.getvalue()).decode()
+
+            client = anthropic.Anthropic()
+            msg    = client.messages.create(
+                model="claude-opus-4-6",
+                max_tokens=64,
+                messages=[{
+                    "role": "user",
+                    "content": [
+                        {
+                            "type":   "image",
+                            "source": {
+                                "type":       "base64",
+                                "media_type": "image/png",
+                                "data":       b64,
+                            },
+                        },
+                        {
+                            "type": "text",
+                            "text": (
+                                f"This is a cropped field from a form labelled '{context_label}'. "
+                                "Return ONLY the exact text you can read. "
+                                "If it is a signature, return [SIGNATURE]. "
+                                "If it is blank or empty, return [BLANK]. "
+                                "No explanation, no punctuation outside the answer."
+                            ),
+                        },
+                    ],
+                }],
+            )
+            result = msg.content[0].text.strip()
+            logger.info(f"[CLAUDE] Verified crop '{context_label}' → {result!r}")
+            return result
+        except Exception as exc:
+            logger.warning(f"[CLAUDE] Verify failed: {exc}")
+            return ""
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Structural detection
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _detect_table_cells(self, img: np.ndarray) -> Tuple[bool, List[Dict]]:
+        """
+        Try img2table first (handles borderless tables).
+        Fall back to contour-based detection.
+        """
+        if IMG2TABLE_AVAILABLE and self.img2table_ocr is not None:
+            cells = self._detect_via_img2table(img)
+            if cells:
+                logger.info(f"[TABLE] img2table found {len(cells)} cells")
+                return True, cells
+
+        return self._detect_via_contours(img)
+
+    def _detect_via_img2table(self, img: np.ndarray) -> List[Dict]:
+        try:
+            rgb     = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            pil_img = PILImage.fromarray(rgb)
+            doc     = Img2TableImage(src=pil_img)
+            tables  = doc.extract_tables(
+                ocr=self.img2table_ocr,
+                implicit_rows=True,
+                borderless_tables=True,
+                min_confidence=50,
+            )
+            cells = []
+            for table in tables:
+                for row in table.content.values():
+                    for cell in row:
+                        if cell.bbox is None:
+                            continue
+                        x1, y1, x2, y2 = (
+                            cell.bbox.x1, cell.bbox.y1,
+                            cell.bbox.x2, cell.bbox.y2,
+                        )
+                        cells.append({
+                            "x": x1, "y": y1,
+                            "w": x2 - x1, "h": y2 - y1,
+                            "bbox": (x1, y1, x2, y2),
+                            "text": cell.value or "",
+                        })
+            return cells
+        except Exception as exc:
+            logger.warning(f"[IMG2TABLE] Failed: {exc}")
+            return []
+
+    def _detect_via_contours(self, img: np.ndarray) -> Tuple[bool, List[Dict]]:
+        try:
+            gray   = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            _, bw  = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            contours, _ = cv2.findContours(bw, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+            img_area = img.shape[0] * img.shape[1]
+            cells    = []
+            for cnt in contours:
+                x, y, w, h = cv2.boundingRect(cnt)
+                area = w * h
+                if area < img_area * 0.0005:
+                    continue
+                if not (15 < w < img.shape[1] * 0.8 and 15 < h < img.shape[0] * 0.8):
+                    continue
+                ar = w / float(h)
+                if not (0.4 < ar < 12):
+                    continue
+                cells.append({"x": x, "y": y, "w": w, "h": h, "bbox": (x, y, x+w, y+h)})
+
+            if not cells:
+                return False, []
+
+            rects = [[c["x"], c["y"], c["w"], c["h"]] for c in cells]
+            rects, _ = cv2.groupRectangles(rects, 1, 0.2)
+            dedup = [{"x":r[0],"y":r[1],"w":r[2],"h":r[3],"bbox":(r[0],r[1],r[0]+r[2],r[1]+r[3])}
+                     for r in rects]
+
+            pruned = []
+            for i, c1 in enumerate(dedup):
+                if c1["w"] > img.shape[1] * 0.4:
+                    pruned.append(c1)
+                    continue
+                has_sibling = any(
+                    i != j and
+                    np.hypot(c1["x"] - c2["x"], c1["y"] - c2["y"]) < 250
+                    for j, c2 in enumerate(dedup)
+                )
+                if has_sibling:
+                    pruned.append(c1)
+
+            logger.info(f"[CONTOURS] {len(cells)} raw → {len(dedup)} dedup → {len(pruned)} pruned")
+            return len(pruned) > 0, pruned
+        except Exception as exc:
+            logger.warning(f"[CONTOURS] Failed: {exc}")
+            return False, []
+
+    def _detect_signature(self, img_crop: np.ndarray) -> bool:
+        """
+        Improved signature detection:
+        density + max-component ratio + wide aspect ratio guard.
+        """
+        try:
+            if img_crop is None or img_crop.size == 0:
+                return False
+            gray = cv2.cvtColor(img_crop, cv2.COLOR_BGR2GRAY) \
+                   if len(img_crop.shape) == 3 else img_crop
+            _, bw = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            density = cv2.countNonZero(bw) / bw.size
+
+            n, _, stats, _ = cv2.connectedComponentsWithStats(bw)
+            if n < 2:
+                return False
+
+            areas = stats[1:, cv2.CC_STAT_AREA]
+            max_ratio = np.max(areas) / bw.size
+
+            h, w = img_crop.shape[:2]
+            aspect = w / max(h, 1)
+
+            # Signatures: dense ink, large connected mass, typically wide
+            return density > 0.12 and max_ratio > 0.04 and aspect > 1.5
+        except Exception:
+            return False
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Semantic correction
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    def _semantic_correction(self, text: str) -> str:
+        if not text or len(text.strip()) < 2:
+            return text
+
+        # 1. Rapidfuzz fuzzy match against domain vocabulary
+        if RAPIDFUZZ_AVAILABLE and len(text) > 2:
+            try:
+                match, score, _ = fuzz_process.extractOne(
+                    text, self.vocab, scorer=fuzz.WRatio
+                )
+                # Only accept correction when very similar AND not much longer
+                if score >= 88 and abs(len(text) - len(match)) <= 4:
+                    return match
+            except Exception:
+                pass
+
+        # 2. Legacy static mapping (kept as last resort for the most common artifacts)
+        _STATIC_MAP = {
+            "twirted":    "(Write)",
+            "fvll":       "(Full)",
+            "fvill":      "(Full)",
+            "cfuid":      "(Full)",
             "read-onlyy": "(Read-Only)",
-            "vieww": "View",
-            "insert": "Insert",
-            "update": "(Update)",
-            "delete": "Delete",
-            "exemptt": "Exempt"
+            "vieww":      "View",
+            "exemptt":    "Exempt",
         }
-        
-        low_text = text.lower().strip()
-        # Direct word mapping
-        for k, v in mapping.items():
-            if k in low_text:
+        low = text.lower().strip()
+        for k, v in _STATIC_MAP.items():
+            if k in low:
                 return v
-
-        # Pattern-based healing for Technical Terms
-        tech_words = ["analyst", "engineer", "admin", "manager", "read-only", "write", "full", "view", "select"]
-        for word in tech_words:
-            # If word is largely similar (80%+ characters)
-            if word in low_text or (len(low_text) > 3 and word[:len(low_text)] == low_text):
-                # Capitalize nicely or keep pattern
-                if word == "full": return "(Full)"
-                if word == "write": return "(Write)"
-                if word == "read-only": return "(Read-Only)"
-                return word.capitalize()
-
-        # Specific patterns for (Fvll) or (Full) style errors
-        if "fv" in low_text or "fl" in low_text and "(" in text:
-            return "(Full)"
 
         return text
 
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Layout reconstruction
+    # ═══════════════════════════════════════════════════════════════════════════
 
-    def _parse_table_structure(self, table, cv_image):
-        import time
-        start_time = time.time()
-        questions = []
-        score_logs = {}
-        
-        stats = {
-            "rows_processed": len(table.content) if hasattr(table, 'content') else 0,
-            "merges_performed": 0,
-            "failed_rows": 0
-        }
+    def _reconstruct_universal(
+        self,
+        boxes: List[Dict],
+        text_regions: List[Dict],
+        img: np.ndarray,
+        quality: Dict,
+    ) -> Dict[str, Any]:
+        questions: List[Dict] = []
 
-        last_question = None
-        rows = table.content.values() if hasattr(table, 'content') else []
-        for row_idx, row in enumerate(rows):
-            try:
-                cell_texts = [cell.value.strip() if cell.value else "" for cell in row]
-                if len(cell_texts) < 2: continue
-
-                q_text = ""
-                o_cells = []
-                
-                if len(cell_texts[0]) > 5:
-                    q_text = cell_texts[0]
-                    o_cells = row[1:]
-                elif len(cell_texts) > 1 and len(cell_texts[1]) > 5:
-                    q_text = cell_texts[1]
-                    o_cells = row[2:]
-                
-                # Merge logic
-                if not q_text and o_cells and last_question:
-                    stats["merges_performed"] += 1
-                    s_data = self._detect_mark(o_cells, cv_image)
-                    if s_data["selected"]:
-                        last_question["selected"] = s_data["selected"]
-                        last_question["confidence"] = s_data["confidence"]
-                        last_question["status"] = s_data["status"]
-                    continue
-
-                if not q_text:
-                    stats["failed_rows"] += 1
-                    continue
-
-                # Detect mark
-                s_data = self._detect_mark(o_cells, cv_image)
-                
-                # Log scores for diagnostics
-                q_id = f"q{len(questions) + 1}"
-                score_logs[q_id] = {
-                    "scores": s_data["all_scores"],
-                    "status": s_data["status"],
-                    "winner": s_data["selected"]
-                }
-
-                new_q = {
-                    "id": q_id,
-                    "question": q_text,
-                    "options": [c.value if c.value else f"Option {i+1}" for i, c in enumerate(o_cells)],
-                    "selected": s_data["selected"],
-                    "confidence": s_data["confidence"],
-                    "status": s_data["status"],
-                    "suggestions": s_data["suggestions"]
-                }
-                questions.append(new_q)
-                last_question = new_q
-            except:
-                stats["failed_rows"] += 1
-
-        stats["processing_time_ms"] = int((time.time() - start_time) * 1000)
-        stats["score_map"] = score_logs # Detailed accuracy logging
-        return {"questions": questions, "diagnostics": stats}
-
-    def _detect_mark(self, cells, cv_image):
-        scores = []
-        
-        for cell in cells:
-            try:
-                # ROI Resolution-Independent Normalization
-                x1, y1, x2, y2 = cell.bbox.x1, cell.bbox.y1, cell.bbox.x2, cell.bbox.y2
-                h, w = y2 - y1, x2 - x1
-                py, px = int(h * 0.1), int(w * 0.1)
-                
-                crop = cv_image[y1+py:y2-py, x1+px:x2-px]
-                if crop.size == 0:
-                    scores.append(0)
-                    continue
-                    
-                gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
-                
-                # Metric 0: Statistical Adaptive Threshold
-                mean, std = cv2.meanStdDev(gray)
-                mean_val, std_val = float(mean[0][0]), float(std[0][0])
-                
-                # Local threshold based on mean and intensity spread
-                # factor 0.8 is tuned for standard ink on paper
-                t_val = mean_val - (std_val * 0.8)
-                _, thresh = cv2.threshold(gray, t_val, 255, cv2.THRESH_BINARY_INV)
-
-                # Metric 1: Dark Pixel Ratio (DPR) - 50% Weight
-                dpr = cv2.countNonZero(thresh) / thresh.size
-                
-                # Metric 2: Edge Density (ED) - 30% Weight
-                edges = cv2.Canny(gray, 50, 150)
-                ed = cv2.countNonZero(edges) / edges.size
-                
-                # Metric 3: Continuity (Connected Components) - 20% Weight
-                # Intentional marks have 1-2 main components. Noise has many small specks.
-                num_labels, labels = cv2.connectedComponents(thresh)
-                # Normalize continuity: perfect = 1.0, noisy = low
-                # (excluding background label 0)
-                continuity = 1.0 / max(1, num_labels - 1) 
-                
-                # Weighted Final Score
-                score = (dpr * 0.5) + (ed * 0.3) + (continuity * 0.2)
-                scores.append(round(score, 4))
-            except:
-                scores.append(0)
-
-        if not scores:
-            return {"selected": None, "confidence": 0, "status": "NOT_DETECTED", "all_scores": [], "suggestions": []}
-
-        # Build ranked candidates list
-        indexed = [(s, i) for i, s in enumerate(scores)]
-        ranked = sorted(indexed, key=lambda x: x[0], reverse=True)
-        
-        # Build suggestions (top 2 candidates always)
-        suggestions = []
-        for score_val, idx in ranked[:2]:
-            cell = cells[idx]
-            label = cell.value if cell.value else f"Option {idx + 1}"
-            suggestions.append({"value": label, "score": round(score_val, 4)})
-
-        max_score = ranked[0][0]
-        
-        # Accuracy Floor: If the best score is too noisy or faint, reject.
-        if max_score < 0.04:
+        if not text_regions:
             return {
-                "selected": None, 
-                "confidence": max_score, 
-                "status": "NOT_DETECTED", 
-                "all_scores": scores,
-                "suggestions": suggestions
+                "questions": [],
+                "diagnostics": {"logic": "EMPTY_PAGE"},
             }
-            
-        status = "OK"
-        selected_val = None
-        
-        # Ambiguity Check: Ensure a clear winner
-        if len(ranked) > 1:
-            second_max = ranked[1][0]
-            if (max_score - second_max) < (max_score * 0.15):
-                status = "LOW_CONFIDENCE"
-                selected_val = None 
+
+        text_regions.sort(key=lambda t: (t["bbox"][1], t["bbox"][0]))
+        claimed_boxes: set = set()
+        claimed_text: set  = set()
+
+        # ── Pass A: checkbox / MCQ mapping ───────────────────────────────────
+        for i, t in enumerate(text_regions):
+            if t["conf"] < 0.1:
+                continue
+            tx, ty = t["center"]
+
+            nearby = []
+            for j, b in enumerate(boxes):
+                if j in claimed_boxes:
+                    continue
+                bx = b["x"] + b["w"] / 2
+                by = b["y"] + b["h"] / 2
+                if np.hypot(tx - bx, ty - by) < 350:
+                    nearby.append((np.hypot(tx - bx, ty - by), j, b))
+
+            valid = [n for n in nearby if abs(n[2]["y"] - t["bbox"][1]) < 60]
+            if not valid:
+                continue
+
+            claimed_text.add(i)
+            valid.sort(key=lambda x: x[0])
+            selected_val = None
+            max_dark     = 0.0
+
+            for dist, idx, b in valid:
+                claimed_boxes.add(idx)
+                crop = img[b["bbox"][1]:b["bbox"][3], b["bbox"][0]:b["bbox"][2]]
+                if crop.size > 0:
+                    g = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+                    th = cv2.adaptiveThreshold(
+                        g, 255,
+                        cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,
+                        11, 2,
+                    )
+                    dr = cv2.countNonZero(th) / th.size
+                    if dr > max_dark and dr > 0.1:
+                        max_dark     = dr
+                        selected_val = t["text"]
+
+            questions.append({
+                "question":  self._semantic_correction(t["text"]),
+                "options":   [f"Option {k+1}" for k in range(len(valid))],
+                "selected":  selected_val,
+                "confidence": t["conf"],
+                "status":    "OK" if selected_val else "UNSELECTED",
+            })
+
+        # ── Pass B: key-value / list mapping for unclaimed text ───────────────
+        unclaimed = sorted(
+            [i for i in range(len(text_regions))
+             if i not in claimed_text and text_regions[i]["conf"] > 0.1],
+            key=lambda i: text_regions[i]["bbox"][1],
+        )
+
+        rows: List[List[int]] = []
+        if unclaimed:
+            cur_row   = [unclaimed[0]]
+            row_y_sum = text_regions[unclaimed[0]]["bbox"][1]
+            for idx in unclaimed[1:]:
+                avg_y = row_y_sum / len(cur_row)
+                if abs(text_regions[idx]["bbox"][1] - avg_y) < 55:
+                    cur_row.append(idx)
+                    row_y_sum += text_regions[idx]["bbox"][1]
+                else:
+                    rows.append(cur_row)
+                    cur_row   = [idx]
+                    row_y_sum = text_regions[idx]["bbox"][1]
+            if cur_row:
+                rows.append(cur_row)
+
+        for row_idx_list in rows:
+            if len(row_idx_list) >= 2:
+                row_idx_list.sort(key=lambda i: text_regions[i]["bbox"][0])
+                key_i, val_i = row_idx_list[0], row_idx_list[-1]
+                key_text = self._semantic_correction(text_regions[key_i]["text"])
+                val_text = self._semantic_correction(text_regions[val_i]["text"])
+
+                # Crop of the value region for hash + signature check
+                vb      = text_regions[val_i]["bbox"]
+                crop_v  = img[
+                    max(0, vb[1]-5):min(img.shape[0], vb[3]+5),
+                    max(0, vb[0]-5):min(img.shape[1], vb[2]+5),
+                ]
+                v_hash  = self._get_image_hash(crop_v)
+                conf    = (text_regions[key_i]["conf"] + text_regions[val_i]["conf"]) / 2
+
+                # Check memory first
+                if v_hash in self._memory_cache:
+                    val_text = self._memory_cache[v_hash]
+                    status   = "LEARNED_MATCH"
+                    conf     = 1.0
+                elif self._detect_signature(crop_v):
+                    val_text = "[SIGNATURE_DETECTED]"
+                    status   = "SIGNATURE"
+                    conf     = 0.95
+                else:
+                    if text_regions[val_i]["conf"] < 0.7:
+                        skel    = self._skeletonize(crop_v)
+                        refined = self._extract_text_with_troc(skel, high_precision=True)
+                        if refined:
+                            val_text = self._semantic_correction(refined)
+
+                    # Last resort: Claude vision fallback
+                    if conf < 0.45 and crop_v.size > 0:
+                        claude_text = self._claude_verify_crop(crop_v, key_text)
+                        if claude_text and claude_text not in ("[BLANK]",):
+                            val_text = claude_text
+                            conf     = 0.95
+
+                    status = "LIST_PAIR"
+
+                if self._is_noisy_label(key_text) and status == "SIGNATURE":
+                    key_text = "Signature / Verification Field"
+
+                questions.append({
+                    "question":   key_text,
+                    "selected":   val_text,
+                    "options":    [],
+                    "confidence": round(conf, 4),
+                    "status":     status,
+                    "imageHash":  v_hash,
+                })
+
             else:
-                winner_cell = cells[ranked[0][1]]
-                selected_val = winner_cell.value if winner_cell.value else f"Option {ranked[0][1] + 1}"
-        else:
-            winner_cell = cells[ranked[0][1]]
-            selected_val = winner_cell.value if winner_cell.value else f"Option {ranked[0][1] + 1}"
+                # Standalone note
+                idx    = row_idx_list[0]
+                t      = text_regions[idx]
+                tb     = t["bbox"]
+                crop   = img[tb[1]:tb[3], tb[0]:tb[2]]
+                v_hash = self._get_image_hash(crop)
+                text   = self._semantic_correction(t["text"])
+                conf   = t["conf"]
+
+                if v_hash in self._memory_cache:
+                    text   = self._memory_cache[v_hash]
+                    status = "LEARNED_MATCH"
+                    conf   = 1.0
+                else:
+                    # Apply TrOCR for low-confidence handwritten notes
+                    if conf < 0.55:
+                        refined = self._extract_text_with_troc(crop, high_precision=False)
+                        if refined:
+                            text = self._semantic_correction(refined)
+
+                    # Claude fallback
+                    if conf < 0.45 and crop.size > 0:
+                        claude_text = self._claude_verify_crop(crop, "standalone field")
+                        if claude_text and claude_text not in ("[BLANK]",):
+                            text = claude_text
+                            conf = 0.95
+
+                    status = "HANDWRITTEN_NOTE"
+
+                questions.append({
+                    "question":   text,
+                    "selected":   text,
+                    "options":    [],
+                    "confidence": round(conf, 4),
+                    "status":     status,
+                    "imageHash":  v_hash,
+                })
 
         return {
-            "selected": selected_val,
-            "confidence": max_score,
-            "status": status,
-            "all_scores": scores,
-            "suggestions": suggestions
+            "questions": questions,
+            "diagnostics": {
+                "logic":      "UNIVERSAL_V11",
+                "text_count": len(text_regions),
+                "box_count":  len(boxes),
+                "row_count":  len(rows),
+            },
         }
 
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Utility helpers
+    # ═══════════════════════════════════════════════════════════════════════════
 
+    def _detect_vertical_gutters(self, text_regions: List[Dict], img_width: int) -> List[float]:
+        if not text_regions:
+            return []
+        xs = sorted(t["center"][0] for t in text_regions)
+        cols: List[List[float]] = [[xs[0]]]
+        for x in xs[1:]:
+            if x - cols[-1][-1] < 250:
+                cols[-1].append(x)
+            else:
+                cols.append([x])
+        return [sum(c) / len(c) for c in cols]
 
-    def _is_noisy_label(self, text):
-        """Detect if a text label is likely OCR artifacting/noise."""
-        if not text: return True
-        # If text is too short or contains high density of special chars
-        special_chars = sum(1 for c in text if not c.isalnum() and c != ' ')
-        if special_chars / len(text) > 0.4: return True
-        if len(text) < 3: return True
-        # Common noise patterns
-        if any(p in text.lower() for p in ["prg", "round", "#", "__"]): return True
-        return False
+    @staticmethod
+    def _get_image_hash(img_crop: np.ndarray) -> str:
+        try:
+            if img_crop is None or img_crop.size == 0:
+                return "0"
+            gray    = cv2.cvtColor(img_crop, cv2.COLOR_BGR2GRAY) \
+                      if len(img_crop.shape) == 3 else img_crop
+            resized = cv2.resize(gray, (9, 8), interpolation=cv2.INTER_AREA)
+            diff    = resized[:, 1:] > resized[:, :-1]
+            return hex(int("".join(diff.flatten().astype(int).astype(str)), 2))[2:]
+        except Exception:
+            return "0"
+
+    @staticmethod
+    def _is_noisy_label(text: str) -> bool:
+        if not text or len(text) < 3:
+            return True
+        special = sum(1 for c in text if not c.isalnum() and c != " ")
+        if special / len(text) > 0.4:
+            return True
+        noisy = ["prg", "round", "#", "__", "none", "null"]
+        return any(p in text.lower() for p in noisy)
