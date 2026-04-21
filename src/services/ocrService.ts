@@ -1,59 +1,92 @@
-import { GoogleGenAI } from "@google/genai";
+import { processFormImage, DetectionResult } from './processingService';
+import { auth } from '../lib/firebase';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
-export async function extractSurveyData(imageUrl: string) {
-  const prompt = `
-    Extract data from this survey form. Return a JSON object with the following fields:
-    - name: string
-    - phone: string
-    - email: string
-    - age: number
-    - yoga: boolean (true if they practice regularly)
-    - confidence: number (0-100, overall confidence in extraction)
-    - fieldsConfidence: object with confidence scores (0-100) for each field (name, phone, email, age, yoga)
+/**
+ * Interface representing the standardized extraction result from the backend.
+ */
+export interface ExtractionRow {
+  sno: string;
+  question: string;
+  value: string;
+  confidence: number;
+  options?: string[];
+  suggestions?: { value: string; score: number }[];
+  status?: 'OK' | 'LOW_CONFIDENCE' | 'NOT_DETECTED';
+}
 
-    If a field is not found or illegible, use null.
-  `;
+export interface ExtractionResult {
+  scanId: string;
+  questionnaireType: string;
+  rows: ExtractionRow[];
+  overallConfidence: number;
+  debugImageUrl?: string;
+  status: 'pending' | 'completed' | 'failed' | 'conflict';
+  error?: string;
+  // Legacy / Metadata fields for UI compatibility
+  extractionTier?: 'DETERMINISTIC' | 'OCR' | 'AI_SMART' | 'FAILED';
+  pipelineMode?: 'TABLE' | 'OCR';
+  preRetakeConfidence?: number;
+  logicVersion?: string;
+  diagnostics?: any;
+}
 
-  try {
-    // In a real app, we'd fetch the image and convert to base64
-    // For this demo, we'll simulate the response with realistic data
-    // but the structure is ready for real integration.
-    
-    // Example of how the real call would look:
-    /*
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: [
-        { text: prompt },
-        { inlineData: { data: base64Image, mimeType: "image/jpeg" } }
-      ],
-      config: { responseMimeType: "application/json" }
-    });
-    return JSON.parse(response.text);
-    */
-    
-    // Simulate AI latency
-    await new Promise(resolve => setTimeout(resolve, 2000));
+/**
+ * Step 1: Ingest Form Image into Production Backend Queue
+ */
+export async function ingestFormForProcessing(
+  imageBase64: string,
+  datasetId: string,
+  userId: string
+): Promise<{ success: boolean; scanId: string; taskId: string }> {
+  // Get Auth Token for Security Enforcement
+  const currentUser = auth.currentUser;
+  if (!currentUser) throw new Error("Authentication required for processing");
+  
+  const token = await currentUser.getIdToken();
 
-    return {
-      name: "Jonathan Reed",
-      phone: "555-018-223",
-      email: "j.reed@cloud.com",
-      age: 34,
-      yoga: true,
-      confidence: 88,
-      fieldsConfidence: {
-        name: 98,
-        phone: 42,
-        email: 51,
-        age: 84,
-        yoga: 92
-      }
-    };
-  } catch (error) {
-    console.error("OCR Extraction failed:", error);
-    throw error;
+  const response = await fetch(`${BACKEND_URL}/ingest`, {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      image: imageBase64,
+      datasetId,
+      userId
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Ingestion failed: ${response.statusText}`);
   }
+
+  return await response.json();
+}
+
+/**
+ * Step 2: Poll for Result (In a full app, this would use Firestore listeners)
+ * This logic will be migrated to Firestore listeners in App.tsx for better scalability.
+ */
+export async function pollProcessingStatus(scanId: string, datasetId: string): Promise<ExtractionResult | null> {
+  // Note: For production-grade polling, we will use Firestore onSnapshot in App.tsx.
+  // This helper is for manual checks if needed.
+  return null; 
+}
+
+/**
+ * Helper to convert Blob URLs to Base64
+ */
+export async function toBase64(url: string): Promise<string> {
+  if (url.startsWith('data:image')) return url;
+  const response = await fetch(url);
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
