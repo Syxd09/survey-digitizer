@@ -8,8 +8,7 @@ class MetricsEngine:
 
     def get_dataset_summary(self, dataset_id: str) -> Dict[str, Any]:
         """Aggregate performance and quality metrics for a given dataset."""
-        scans_ref = self.storage.db.collection('datasets').document(dataset_id).collection('scans')
-        scans = scans_ref.stream()
+        scans = self.storage.get_all_scans(dataset_id)
         
         durations = []
         confidences = []
@@ -18,8 +17,7 @@ class MetricsEngine:
         
         total_count = 0
         
-        for doc in scans:
-            data = doc.to_dict()
+        for data in scans:
             total_count += 1
             
             status = data.get("status", "unknown").lower()

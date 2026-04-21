@@ -2,55 +2,73 @@ import cv2
 import numpy as np
 import base64
 from PIL import Image as PILImage
-from img2table.document import Image as TableImage
-from img2table.ocr import EasyOCR
+import easyocr
 import pandas as pd
 import io
+import logging
+
+logger = logging.getLogger(__name__)
 
 class SurveyProcessor:
     def __init__(self):
-        # Initialize EasyOCR (CPU mode by default for compatibility)
-        self.ocr_engine = EasyOCR(lang=["en"], kw={"gpu": False})
+        # Use raw easyocr for text extraction (fallback/handwriting)
+        self.raw_reader = easyocr.Reader(['en'], gpu=False)
+        self.troc_model = None
+
+    def _get_troc_model(self):
+        """Lazy-load TrOCR model for better handwriting recognition."""
+        if self.troc_model is None:
+            try:
+                from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+                logger.info("[PROCESSOR] Loading TrOCR model for handwriting...")
+                self.troc_processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
+                self.troc_model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
+                logger.info("[PROCESSOR] TrOCR model loaded successfully")
+            except Exception as e:
+                logger.warning(f"[PROCESSOR] TrOCR not available: {e}")
+                self.troc_model = False
+        return self.troc_model
+
+    def _enhance_for_handwriting(self, img):
+        """Preprocess image specifically to help OCR read handwriting."""
+        try:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            
+            # 1. Denoise
+            denoised = cv2.fastNlMeansDenoising(gray, None, 10, 7, 21)
+            
+            # 2. CLAHE for better contrast
+            clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
+            enhanced = clahe.apply(denoised)
+            
+            # 3. Morphological operations to strengthen handwritten strokes
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+            morph = cv2.morphologyEx(enhanced, cv2.MORPH_CLOSE, kernel)
+            
+            # 4. Convert back to BGR
+            result = cv2.cvtColor(morph, cv2.COLOR_GRAY2BGR)
+            return result
+        except Exception as e:
+            logger.warning(f"[PROCESSOR] Enhancement failed: {e}")
+            return img
 
     def process(self, pil_image: PILImage.Image):
-        # Convert PIL to OpenCV format
         open_cv_image = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-        
-        # 0. Quality Check
         quality_report = self._check_quality(open_cv_image)
         
-        # 1. Enhance Lighting (CLAHE)
         open_cv_image = self._enhance_image(open_cv_image)
-        
-        # 2. Correct Alignment (Deskew)
         open_cv_image = self._deskew(open_cv_image)
 
+        # Try table detection using contours
+        has_table, table_cells = self._detect_table_cells(open_cv_image)
         
-        # Save to temporary buffer for img2table
-        # Convert back to PIL for img2table input
-        pil_ready = PILImage.fromarray(cv2.cvtColor(open_cv_image, cv2.COLOR_BGR2RGB))
-        img_byte_arr = io.BytesIO()
-        pil_ready.save(img_byte_arr, format='PNG')
-        img_bytes = img_byte_arr.getvalue()
-
-        # 3. Extract Tables using img2table
-        doc = TableImage(src=img_bytes)
-        try:
-            extracted_tables = doc.extract_tables(ocr=self.ocr_engine, implicit_rows=True, borderless_tables=True)
-        except:
-            extracted_tables = []
-
-        # Logic for Mode Selection
-        if extracted_tables:
-            main_table = max(extracted_tables, key=lambda t: (t.bbox.x2 - t.bbox.x1) * (t.bbox.y2 - t.bbox.y1))
-            result = self._parse_table_structure(main_table, open_cv_image)
+        if has_table and table_cells:
+            result = self._parse_table_cells(table_cells, open_cv_image)
             mode = "TABLE"
         else:
-            # Phase 2: MCQ Fallback
             result = self._process_non_tabular(open_cv_image)
             mode = "MCQ_FALLBACK"
 
-        # Generate Debug Image if requested
         debug_b64 = None
         if getattr(self, 'debug_mode', False):
             debug_b64 = self._generate_debug_image(open_cv_image, result["questions"])
@@ -61,14 +79,126 @@ class SurveyProcessor:
         
         return result
 
+    def _detect_table_cells(self, img):
+        """Detect table cells using contour analysis."""
+        try:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            
+            # Threshold
+            _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            
+            # Find contours
+            contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            
+            if not contours:
+                return False, []
+            
+            # Filter to get cell-like rectangles
+            cells = []
+            for cnt in contours:
+                x, y, w, h = cv2.boundingRect(cnt)
+                # Filter by size (cells should be smallish but not too small)
+                if 20 < w < img.shape[1] * 0.9 and 15 < h < img.shape[0] * 0.9 and w > 20 and h > 10:
+                    cells.append({'x': x, 'y': y, 'w': w, 'h': h, 'bbox': (x, y, x+w, y+h)})
+            
+            if len(cells) < 4:  # Not enough for a table
+                return False, []
+            
+            return True, cells
+        except Exception as e:
+            logger.warning(f"[PROCESSOR] Table detection failed: {e}")
+            return False, []
+
+    def _parse_table_cells(self, cells, img):
+        """Parse table cells into structured rows/columns."""
+        try:
+            # Sort cells by position
+            # First sort by Y (rows), then by X (columns)
+            sorted_cells = sorted(cells, key=lambda c: (c['y'] // 30, c['x']))
+            
+            # Group into rows (cells with similar Y values)
+            rows = []
+            current_row = []
+            row_threshold = 25
+            
+            for cell in sorted_cells:
+                if not current_row:
+                    current_row.append(cell)
+                else:
+                    last_y = current_row[-1]['y']
+                    if abs(cell['y'] - last_y) < row_threshold:
+                        current_row.append(cell)
+                    else:
+                        # Sort current row by X
+                        current_row.sort(key=lambda c: c['x'])
+                        rows.append(current_row)
+                        current_row = [cell]
+            
+            if current_row:
+                current_row.sort(key=lambda c: c['x'])
+                rows.append(current_row)
+            
+            # Extract text from each cell using EasyOCR
+            questions = []
+            for row_idx, row in enumerate(rows):
+                if len(row) < 2:
+                    continue
+                    
+                # OCR the first cell as question
+                q_text = ""
+                first_cell = row[0]
+                try:
+                    x1, y1, x2, y2 = first_cell['bbox']
+                    crop = img[y1:min(y2, img.shape[0]), x1:min(x2, img.shape[1])]
+                    if crop.size > 0:
+                        results = self.raw_reader.readtext(crop)
+                        if results:
+                            q_text = " ".join([r[1] for r in results])
+                except Exception as e:
+                    logger.warning(f"[PROCESSOR] Cell OCR failed: {e}")
+                
+                if not q_text or len(q_text) < 2:
+                    continue
+                
+                # Try to find selected option (other cells)
+                selected = None
+                max_score = 0
+                
+                for cell_idx, cell in enumerate(row[1:], 1):
+                    try:
+                        x1, y1, x2, y2 = cell['bbox']
+                        crop = img[y1:min(y2, img.shape[0]), x1:min(x2, img.shape[1])]
+                        if crop.size > 0:
+                            # Check for marks
+                            gray_crop = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY) if len(crop.shape) == 3 else gray
+                            _, thresh = cv2.threshold(gray_crop, 128, 255, cv2.THRESH_BINARY_INV)
+                            dark_ratio = cv2.countNonZero(thresh) / thresh.size
+                            
+                            if dark_ratio > max_score:
+                                max_score = dark_ratio
+                                # Get text
+                                results = self.raw_reader.readtext(crop)
+                                if results:
+                                    selected = " ".join([r[1] for r in results])
+                    except:
+                        pass
+                
+                questions.append({
+                    "question": q_text,
+                    "options": [f"Option {i+1}" for i in range(len(row)-1)],
+                    "selected": selected,
+                    "confidence": 0.7 if selected else 0.3,
+                    "status": "OK" if selected else "NOT_DETECTED"
+                })
+            
+            return {"questions": questions, "diagnostics": {"logic": "TABLE_CELLS"}}
+        except Exception as e:
+            logger.error(f"[PROCESSOR] Table parse failed: {e}")
+            return {"questions": [], "diagnostics": {"error": str(e)}}
+
     def _check_quality(self, img):
-        """Analyze image for blur, lighting, and tilt."""
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        
-        # Blur check (Laplacian Variance)
         laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
-        
-        # Brightness/Contrast
         mean, std_dev = cv2.meanStdDev(gray)
         
         warnings = []
@@ -84,23 +214,17 @@ class SurveyProcessor:
         }
 
     def _generate_debug_image(self, img, questions):
-        """Draw bounding boxes and scores for visual debugging."""
         display_img = img.copy()
         try:
-            # We don't have all coordinates exported easily in the current result structure.
-            # In a full impl, we'd pass boxes. For now, simple label summary.
             cv2.putText(display_img, "DEBUG MODE: Extracted Questions Below", (50, 50), 
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            
-            # Encode to base64
             _, buffer = cv2.imencode('.jpg', display_img, [cv2.IMWRITE_JPEG_QUALITY, 70])
             return base64.b64encode(buffer).decode('utf-8')
         except:
             return None
 
-
     def _enhance_image(self, img):
-        """Improve contrast and lighting consistency."""
+        """Improve contrast and lighting."""
         try:
             lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
             l, a, b = cv2.split(lab)
@@ -113,7 +237,7 @@ class SurveyProcessor:
             return img
 
     def _deskew(self, img):
-        """Automatically straighten the document."""
+        """Skip deskew unless there's significant tilt (outside reasonable range)."""
         try:
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             gray = cv2.bitwise_not(gray)
@@ -121,6 +245,10 @@ class SurveyProcessor:
             
             coords = np.column_stack(np.where(thresh > 0))
             angle = cv2.minAreaRect(coords)[-1]
+            
+            # Only correct if angle is significant (not near 0 or 90)
+            if -3 < angle < 3 or 87 < angle < 93:
+                return img  # Skip small rotations
             
             if angle < -45:
                 angle = -(90 + angle)
@@ -135,52 +263,90 @@ class SurveyProcessor:
         except:
             return img
 
+    def _extract_text_with_troc(self, img_crop: np.ndarray) -> str:
+        """Use TrOCR for better handwriting recognition on individual regions."""
+        model = self._get_troc_model()
+        if not model:
+            return ""
+        
+        try:
+            # Preprocess crop for TrOCR
+            gray = cv2.cvtColor(img_crop, cv2.COLOR_BGR2GRAY)
+            _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            pil_img = PILImage.fromarray(binary).convert('RGB')
+            
+            pixel_values = self.troc_processor(pil_img, return_tensors="pt").pixel_values
+            generated_ids = model.generate(pixel_values)
+            text = self.troc_processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+            return text.strip()
+        except Exception as e:
+            logger.warning(f"[PROCESSOR] TrOCR extraction failed: {e}")
+            return ""
 
     def _process_non_tabular(self, img):
-        """Fallback for MCQ style forms without borders."""
+        """Process image text - both handwritten and printed."""
         try:
-            results = self.ocr_engine.readtext(img)
-            # data structure: [([tl, tr, br, bl], text, prob), ...]
+            import easyocr
+            temp_reader = easyocr.Reader(['en'], gpu=False)
+            results = temp_reader.readtext(img, paragraph=False)
             
-            # 1. Group by vertical alignment (lines)
             data = []
             for (bbox, text, prob) in results:
                 center_y = (bbox[0][1] + bbox[2][1]) / 2
-                data.append({"text": text, "y": center_y, "x": bbox[0][0], "bbox": bbox})
+                center_x = (bbox[0][0] + bbox[2][0]) / 2
+                # Lower threshold to capture more text (including low-confidence handwritten)
+                if prob > 0.25 and len(text.strip()) > 0:
+                    data.append({
+                        "text": text.strip(), 
+                        "y": center_y, 
+                        "x": center_x,
+                        "conf": prob
+                    })
             
-            # Sort by Y then X
+            if not data:
+                return {"questions": [], "diagnostics": {"logic": "NO_TEXT"}}
+            
+            # Sort by Y (top to bottom), then X (left to right)
             data.sort(key=lambda d: (d["y"], d["x"]))
             
+            # Group into lines (items with similar Y values within threshold)
             lines = []
-            if data:
-                current_line = [data[0]]
-                for item in data[1:]:
-                    if abs(item["y"] - current_line[-1]["y"]) < 15:
-                        current_line.append(item)
-                    else:
-                        lines.append(current_line)
-                        current_line = [item]
+            threshold = 20
+            current_line = [data[0]]
+            
+            for item in data[1:]:
+                if abs(item["y"] - current_line[-1]["y"]) < threshold:
+                    current_line.append(item)
+                else:
+                    current_line.sort(key=lambda d: d["x"])
+                    lines.append(current_line)
+                    current_line = [item]
+            
+            if current_line:
+                current_line.sort(key=lambda d: d["x"])
                 lines.append(current_line)
-
-            # 2. Identify Questions & Options
+            
             questions = []
             for line in lines:
-                text = " ".join([d["text"] for d in line])
-                # Simple MCQ Marker check
-                if len(text) > 10:
+                line_text = " ".join([d["text"] for d in line])
+                avg_conf = sum(d["conf"] for d in line) / len(line)
+                
+                # Include all text lines (both short and long)
+                if len(line_text) > 0:
                     questions.append({
-                        "question": text,
-                        "options": ["Marked"], # Fallback for free-form
-                        "selected": None,
-                        "confidence": 0.5,
-                        "status": "NOT_DETECTED"
+                        "question": line_text,
+                        "options": [],
+                        "selected": line_text,
+                        "confidence": min(avg_conf, 0.95),
+                        "status": "OK" if avg_conf > 0.4 else "LOW_CONFIDENCE"
                     })
             
             return {
                 "questions": questions,
-                "diagnostics": {"logic": "MCQ_SPATIAL"}
+                "diagnostics": {"logic": "TEXT_LINES", "text_count": len(questions)}
             }
         except Exception as e:
+            logger.error(f"[PROCESSOR] Non-tabular failed: {e}")
             return {"questions": [], "diagnostics": {"error": str(e)}}
 
     def _parse_table_structure(self, table, cv_image):

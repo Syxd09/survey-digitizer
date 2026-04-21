@@ -48,33 +48,19 @@ import {
 
 
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  onAuthStateChanged, 
-  User 
-} from 'firebase/auth';
-import { 
-  collection, 
-  onSnapshot, 
-  query, 
-  orderBy, 
-  limit, 
-  addDoc, 
-  serverTimestamp,
-  doc,
-  updateDoc,
-  deleteDoc,
-  getDocs,
-  getDocFromServer,
-  where,
-  increment,
-  collectionGroup
-} from 'firebase/firestore';
-import { auth, db, signIn, signOut, signUpWithEmail, signInWithEmail } from './lib/firebase';
+import {
+  onAuthStateChanged,
+  signOut,
+  signUpWithEmail,
+  signInWithEmail,
+  getCurrentUser,
+  LocalUser
+} from './lib/localAuth';
 import { DistributionChart, MiniSparkline } from './components/DataCharts';
 import { analyticsService } from './services/analyticsService';
 import { DiagnosticsDashboard } from './components/DiagnosticsDashboard';
 import { Point, Quad, analyzeImageQuality, detectQuad } from './services/alignmentService';
-import { ingestFormForProcessing, toBase64, ExtractionResult, BACKEND_URL } from './services/ocrService';
+import { ingestFormForProcessing, processFormLocally, toBase64, ExtractionResult, BACKEND_URL } from './services/ocrService';
 import { DetectionResult, ExtractedRow } from './services/processingService';
 import { formatterService } from './services/formatterService';
 import { StructuredTable } from './components/StructuredTable';
@@ -90,55 +76,24 @@ import DigitizingOverlay from './components/DigitizingOverlay';
 
 
 
-enum OperationType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LIST = 'list',
-  GET = 'get',
-  WRITE = 'write',
+// --- localStorage helpers ---
+const DATASETS_KEY = 'survey_digitizer_datasets';
+const ACTIVITIES_KEY = 'survey_digitizer_activities';
+const SCANS_KEY = 'survey_digitizer_scans';
+
+function loadFromStorage<T>(key: string): T[] {
+  try {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : [];
+  } catch { return []; }
 }
 
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId: string | undefined;
-    email: string | null | undefined;
-    emailVerified: boolean | undefined;
-    isAnonymous: boolean | undefined;
-    tenantId: string | null | undefined;
-    providerInfo: {
-      providerId: string;
-      displayName: string | null;
-      email: string | null;
-      photoUrl: string | null;
-    }[];
-  }
+function saveToStorage(key: string, data: any) {
+  localStorage.setItem(key, JSON.stringify(data));
 }
 
-function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
-        providerId: provider.providerId,
-        displayName: provider.displayName,
-        email: provider.email,
-        photoUrl: provider.photoURL
-      })) || []
-    },
-    operationType,
-    path
-  }
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  // Removed throw to avoid breaking the app if not caught
+function generateId(): string {
+  return crypto.randomUUID();
 }
 
 type Screen = 'HOME' | 'SCANNER' | 'REVIEW' | 'TEMPLATE' | 'DATASETS' | 'EVALUATION_REPORT';
@@ -157,7 +112,7 @@ interface Dataset {
 
 function AppContent() {
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<LocalUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   
@@ -191,7 +146,7 @@ function AppContent() {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
+    const unsubscribe = onAuthStateChanged((u) => {
       setUser(u);
       setLoading(false);
     });
@@ -200,86 +155,37 @@ function AppContent() {
 
   const handleSignOut = () => {
     setUser(null);
-    signOut(); // Clear Firebase session
+    signOut();
     setCurrentScreen('HOME');
   };
 
 
-  useEffect(() => {
+  // Load data from localStorage whenever user changes
+  const refreshLocalData = () => {
     if (!user) return;
 
-    // Handle Mock Data for Local Admin
-    if (user.uid.startsWith('local-') || user.uid.startsWith('demo-')) {
-      setDatasets([
-        { id: 'mock-dataset-1', name: 'Field Survey Phase 1', entryCount: 12, modifiedAt: new Date().toISOString() },
-        { id: 'mock-dataset-2', name: 'Evaluation Samples', entryCount: 5, modifiedAt: new Date().toISOString() }
-      ]);
-      setActivities([
-        { id: 'act-1', type: 'scan', description: 'Processed Survey #1041', createdAt: new Date().toISOString() },
-        { id: 'act-2', type: 'correction', description: 'Updated Q4 on Survey #1039', createdAt: new Date().toISOString() }
-      ]);
-      setAllScans([]);
-      return;
-    }
+    const storedDatasets = loadFromStorage<any>(DATASETS_KEY)
+      .filter((d: any) => d.ownerId === user.uid)
+      .sort((a: any, b: any) => new Date(b.modifiedAt).getTime() - new Date(a.modifiedAt).getTime())
+      .slice(0, 10);
+    setDatasets(storedDatasets);
+    if (storedDatasets.length > 0 && !activeDataset) setActiveDataset(storedDatasets[0] as Dataset);
 
-    const datasetsPath = 'datasets';
-    const datasetsQuery = query(
-      collection(db, datasetsPath), 
-      where('ownerId', '==', user.uid),
-      orderBy('modifiedAt', 'desc'), 
-      limit(10)
-    );
-    const unsubDatasets = onSnapshot(datasetsQuery, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setDatasets(data);
-      if (data.length > 0 && !activeDataset) setActiveDataset(data[0] as Dataset);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, datasetsPath);
-    });
+    const storedActivities = loadFromStorage<any>(ACTIVITIES_KEY)
+      .filter((a: any) => a.userId === user.uid)
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5);
+    setActivities(storedActivities);
 
-    const activitiesPath = 'activities';
-    const activitiesQuery = query(
-      collection(db, activitiesPath), 
-      where('userId', '==', user.uid),
-      orderBy('createdAt', 'desc'), 
-      limit(5)
-    );
-    const unsubActivities = onSnapshot(activitiesQuery, (snapshot) => {
-      setActivities(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, activitiesPath);
-    });
+    const storedScans = loadFromStorage<any>(SCANS_KEY)
+      .filter((s: any) => s.userId === user.uid)
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 100);
+    setAllScans(storedScans);
+  };
 
-    const scansCollection = collectionGroup(db, 'scans');
-    const scansQuery = query(scansCollection, where('userId', '==', user.uid), orderBy('createdAt', 'desc'), limit(100));
-    const unsubscribeScans = onSnapshot(scansQuery, (snapshot) => {
-      const scansData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
-      setAllScans(scansData);
-
-      // Check for updates to captured pages that are currently "pending"
-      setCapturedPages(prev => prev.map(page => {
-        const matchingScan = scansData.find((s: any) => s.scanId === (page.data as any).scanId);
-        if (matchingScan && matchingScan.status === 'completed' && (page.data as any).status === 'pending') {
-          return {
-            ...page,
-            data: {
-              ...(matchingScan.extractedData as any),
-              scanId: matchingScan.scanId,
-              status: matchingScan.status,
-              questionnaireType: matchingScan.questionnaireType || 'Processed Form',
-              extractionTier: 'DETERMINISTIC'
-            }
-          };
-        }
-        return page;
-      }));
-    });
-
-    return () => {
-      unsubDatasets();
-      unsubActivities();
-      unsubscribeScans();
-    };
+  useEffect(() => {
+    refreshLocalData();
   }, [user]);
 
   // SYNC PRODUCTION METRICS
@@ -381,17 +287,7 @@ function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleGoogleSignIn = async () => {
-    setError('');
-    setLoading(true);
-    try {
-      await signIn();
-    } catch (err: any) {
-      setError(err.message || 'Sign-in failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -492,19 +388,7 @@ function LoginScreen() {
           </button>
         </div>
 
-        <div className="relative py-2">
-          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-outline-variant/30"></div></div>
-          <div className="relative flex justify-center text-[10px] uppercase font-bold text-outline bg-surface-container-low px-4">Or continue with</div>
-        </div>
 
-        <button 
-          onClick={handleGoogleSignIn}
-          disabled={loading}
-          className="w-full py-4 bg-surface border border-outline-variant rounded-[24px] font-bold flex items-center justify-center gap-3 hover:bg-surface-container transition-all active:scale-[0.98] disabled:opacity-50 shadow-sm"
-        >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
-          <span>Google Account</span>
-        </button>
 
         <div className="text-center pt-2">
             <p className="text-[10px] text-outline font-medium px-8 leading-relaxed">
@@ -808,7 +692,7 @@ function Dashboard({ onNavigate, datasets, activities, scans, setShowDiagnostics
                     <div>
                       <h4 className="font-bold text-on-surface">{item.name}</h4>
                       <p className="text-xs font-medium text-on-surface-variant">
-                        {item.entryCount} Entries • Modified {new Date(item.modifiedAt?.seconds * 1000).toLocaleDateString()}
+                        {item.entryCount} Entries • Modified {new Date(item.modifiedAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -843,7 +727,7 @@ function Dashboard({ onNavigate, datasets, activities, scans, setShowDiagnostics
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 rounded-full bg-primary shadow-sm" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
-                        {new Date(activity.createdAt?.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(activity.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                     <p className="text-sm font-bold text-on-surface leading-snug">{activity.title}</p>
@@ -977,29 +861,33 @@ function Scanner({ onNavigate, onPageProcessed, currentPages, isProcessing, setI
         if (confidence < 0.9) {
           setReviewImage({ url, quad, processingStart });
         } else {
-          // PRODUCTION REDESIGN: Use Async Ingestion
+          // Smart Processing: try backend, fall back to local
+          setDigitizingUrl(url);
           const base64 = await toBase64(url);
-          const { scanId } = await ingestFormForProcessing(
+          const { scanId, taskId } = await ingestFormForProcessing(
             base64, 
             activeDataset?.id || 'default', 
             user?.uid || 'temp'
           );
           
-          // Result will be picked up by the Firestore listener in AppContent
-          console.log(`[INGESTION] Form queued with ID: ${scanId}`);
-          
-          // Add temporary local entry with "processing" status
-          setPendingResults({
-            url,
-            data: { 
-              scanId,
-              status: 'pending',
-              questionnaireType: 'Queued...',
-              rows: [],
-              overallConfidence: 0
-            }
-          });
-          setDigitizingUrl(url);
+          // If backend was unavailable (local fallback), process locally
+          if (taskId.startsWith('local-')) {
+            console.log(`[PROCESSING] Backend unavailable, using local pipeline for ${scanId}`);
+            const localResult = await processFormLocally(url);
+            setPendingResults({ url, data: { ...localResult, scanId } });
+          } else {
+            console.log(`[INGESTION] Form queued on backend with ID: ${scanId}`);
+            setPendingResults({
+              url,
+              data: { 
+                scanId,
+                status: 'pending',
+                questionnaireType: 'Backend Processing...',
+                rows: [],
+                overallConfidence: 0
+              }
+            });
+          }
         }
       } catch (error) {
         console.error("Processing failed:", error);
@@ -1013,24 +901,23 @@ function Scanner({ onNavigate, onPageProcessed, currentPages, isProcessing, setI
     if (!reviewImage) return;
     setIsProcessing(true);
     try {
+      setDigitizingUrl(reviewImage.url);
       const base64Image = await toBase64(reviewImage.url);
-      const { scanId } = await ingestFormForProcessing(
+      const { scanId, taskId } = await ingestFormForProcessing(
         base64Image, 
         activeDataset?.id || 'default', 
         user?.uid || 'temp'
       );
       
-      setPendingResults({
-        url: reviewImage.url,
-        data: { 
-          scanId,
-          status: 'pending',
-          questionnaireType: 'Queued...',
-          rows: [],
-          overallConfidence: 0
-        }
-      });
-      setDigitizingUrl(reviewImage.url);
+      if (taskId.startsWith('local-')) {
+        const localResult = await processFormLocally(reviewImage.url);
+        setPendingResults({ url: reviewImage.url, data: { ...localResult, scanId } });
+      } else {
+        setPendingResults({
+          url: reviewImage.url,
+          data: { scanId, status: 'pending', questionnaireType: 'Backend Processing...', rows: [], overallConfidence: 0 }
+        });
+      }
       setReviewImage(null);
     } catch (error) {
        alert("Processing failed after adjustment.");
@@ -1042,29 +929,26 @@ function Scanner({ onNavigate, onPageProcessed, currentPages, isProcessing, setI
   const handleCameraCapture = async (blob: Blob, quad: Quad) => {
     setShowCamera(false);
     setIsProcessing(true);
-    const processingStart = performance.now();
     try {
       const url = URL.createObjectURL(blob);
+      setDigitizingUrl(url);
       const base64 = await toBase64(url);
       
-      const { scanId } = await ingestFormForProcessing(
+      const { scanId, taskId } = await ingestFormForProcessing(
         base64, 
         activeDataset?.id || 'default', 
         user?.uid || 'temp'
       );
       
-      setPendingResults({
-        url,
-        data: { 
-          scanId,
-          status: 'pending',
-          questionnaireType: 'Live Extract...',
-          rows: [],
-          overallConfidence: 0,
-          extractionTier: 'AI_SMART'
-        }
-      });
-      setDigitizingUrl(url);
+      if (taskId.startsWith('local-')) {
+        const localResult = await processFormLocally(url);
+        setPendingResults({ url, data: { ...localResult, scanId } });
+      } else {
+        setPendingResults({
+          url,
+          data: { scanId, status: 'pending', questionnaireType: 'Backend Processing...', rows: [], overallConfidence: 0, extractionTier: 'AI_SMART' }
+        });
+      }
     } catch (error) {
        alert("Capture processing failed.");
     } finally {
@@ -1234,7 +1118,7 @@ function Scanner({ onNavigate, onPageProcessed, currentPages, isProcessing, setI
 function Review({ onNavigate, bundle, user, datasetId, diagnosticsEnabled, evaluationMode, currentPages }: { 
   onNavigate: (s: Screen) => void, 
   bundle: {url: string, data: ExtractionResult}[], 
-  user: User, 
+  user: LocalUser, 
   datasetId?: string,
   diagnosticsEnabled: boolean,
   evaluationMode: boolean,
@@ -1276,50 +1160,56 @@ function Review({ onNavigate, bundle, user, datasetId, diagnosticsEnabled, evalu
 
     setIsSaving(true);
     
-    const scansPath = `datasets/${datasetId}/scans`;
     try {
-      const updateData = {
+      const scanData = {
+        id: (bundle[0]?.data as any).scanId || generateId(),
         extractedData: questions.map((q, i) => ({
           sno: (i + 1).toString(),
           question: q.question,
           value: q.selected || 'undetected',
-          confidence: 1.0, // Human verified
+          confidence: 1.0,
           options: q.options
         })),
         status: 'completed',
         humanVerified: true,
-        verifiedAt: serverTimestamp()
+        verifiedAt: new Date().toISOString(),
+        imageUrls: bundle.map(p => p.url),
+        createdAt: new Date().toISOString(),
+        userId: user.uid,
+        datasetId: datasetId,
+        scanId: (bundle[0]?.data as any).scanId || generateId()
       };
 
-      // Update the existing scan entry (idempotency)
-      const scanId = (bundle[0]?.data as any).scanId;
-      if (scanId) {
-        // Find document path in datasets/datasetId/scans/scanId
-        const scanRef = doc(db, 'datasets', datasetId, 'scans', scanId);
-        await updateDoc(scanRef, updateData);
+      // Save scan to localStorage
+      const allScansStored = loadFromStorage<any>(SCANS_KEY);
+      const existingIdx = allScansStored.findIndex((s: any) => s.scanId === scanData.scanId);
+      if (existingIdx >= 0) {
+        allScansStored[existingIdx] = { ...allScansStored[existingIdx], ...scanData };
       } else {
-        await addDoc(collection(db, scansPath), {
-          ...updateData,
-          imageUrls: bundle.map(p => p.url),
-          createdAt: serverTimestamp(),
-          userId: user.uid,
-          datasetId: datasetId
-        });
+        allScansStored.push(scanData);
       }
-      
-      const datasetRef = doc(db, 'datasets', datasetId);
-      await updateDoc(datasetRef, {
-        entryCount: increment(1),
-        modifiedAt: serverTimestamp()
-      });
+      saveToStorage(SCANS_KEY, allScansStored);
 
-      await addDoc(collection(db, 'activities'), {
+      // Update dataset entry count
+      const allDatasets = loadFromStorage<any>(DATASETS_KEY);
+      const dsIdx = allDatasets.findIndex((d: any) => d.id === datasetId);
+      if (dsIdx >= 0) {
+        allDatasets[dsIdx].entryCount = (allDatasets[dsIdx].entryCount || 0) + 1;
+        allDatasets[dsIdx].modifiedAt = new Date().toISOString();
+        saveToStorage(DATASETS_KEY, allDatasets);
+      }
+
+      // Log activity
+      const allActivities = loadFromStorage<any>(ACTIVITIES_KEY);
+      allActivities.push({
+        id: generateId(),
         title: 'New Response Digitized',
         description: `Successfully processed ${questions.length} questions.`,
         type: 'primary',
-        createdAt: serverTimestamp(),
+        createdAt: new Date().toISOString(),
         userId: user.uid
       });
+      saveToStorage(ACTIVITIES_KEY, allActivities);
 
       // Evaluation Tracking
       if (evaluationMode) {
@@ -1331,7 +1221,7 @@ function Review({ onNavigate, bundle, user, datasetId, diagnosticsEnabled, evalu
           id: `eval_${Date.now()}`,
           timestamp: new Date().toISOString(),
           pipelineMode: bundle[0]?.data.pipelineMode || 'OCR',
-          processingTime: performance.now() - (currentPages[0] as any).processingStart, // Approximate
+          processingTime: performance.now() - (currentPages[0] as any).processingStart,
           questionCount: questions.length,
           nullCount: metrics.null_rate * questions.length,
           correctionCount: editCount,
@@ -1342,7 +1232,7 @@ function Review({ onNavigate, bundle, user, datasetId, diagnosticsEnabled, evalu
       
       onNavigate('HOME');
     } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, scansPath);
+      console.error('Save error:', error);
     } finally {
       setIsSaving(false);
     }
@@ -1767,7 +1657,7 @@ function LogInspector({ scan, onClose }: { scan: any, onClose: () => void }) {
               <div className="flex-1">
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-[10px] font-black uppercase tracking-widest text-on-surface">{step.stage}</span>
-                  <span className="text-[10px] font-mono text-outline">{step.timestamp?.seconds ? new Date(step.timestamp.seconds * 1000).toLocaleTimeString() : '...'}</span>
+                  <span className="text-[10px] font-mono text-outline">{step.timestamp ? new Date(step.timestamp).toLocaleTimeString() : '...'}</span>
                 </div>
                 {step.metadata && (
                   <div className="bg-surface-container-lowest p-3 rounded-xl border border-outline-variant/10 text-[10px] font-mono text-on-surface-variant overflow-x-auto">
@@ -1790,7 +1680,7 @@ function LogInspector({ scan, onClose }: { scan: any, onClose: () => void }) {
   );
 }
 
-function DatasetView({ onNavigate, datasets, user }: { onNavigate: (s: Screen) => void, datasets: any[], user: User }) {
+function DatasetView({ onNavigate, datasets, user }: { onNavigate: (s: Screen) => void, datasets: any[], user: LocalUser }) {
   const [scans, setScans] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedDatasetId, setSelectedDatasetId] = useState<string>(datasets[0]?.id || '');
@@ -1800,34 +1690,31 @@ function DatasetView({ onNavigate, datasets, user }: { onNavigate: (s: Screen) =
   useEffect(() => {
     if (!selectedDatasetId) return;
     setLoading(true);
-    const scansPath = `datasets/${selectedDatasetId}/scans`;
-    const scansQuery = query(collection(db, scansPath), orderBy('createdAt', 'desc'));
-    const unsub = onSnapshot(scansQuery, (snapshot) => {
-      setScans(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, scansPath);
-    });
-    return () => unsub();
+    const allScansStored = loadFromStorage<any>(SCANS_KEY)
+      .filter((s: any) => s.datasetId === selectedDatasetId)
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    setScans(allScansStored);
+    setLoading(false);
   }, [selectedDatasetId]);
 
-  const handleCreateDataset = async () => {
+  const handleCreateDataset = () => {
     const name = prompt("Enter dataset name:");
     if (!name) return;
     
-    const datasetsPath = 'datasets';
-    try {
-      await addDoc(collection(db, datasetsPath), {
-        name,
-        ownerId: user.uid,
-        createdAt: serverTimestamp(),
-        modifiedAt: serverTimestamp(),
-        entryCount: 0,
-        type: 'medical'
-      });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, datasetsPath);
-    }
+    const newDataset = {
+      id: generateId(),
+      name,
+      ownerId: user.uid,
+      createdAt: new Date().toISOString(),
+      modifiedAt: new Date().toISOString(),
+      entryCount: 0,
+      type: 'medical'
+    };
+    const allDatasets = loadFromStorage<any>(DATASETS_KEY);
+    allDatasets.push(newDataset);
+    saveToStorage(DATASETS_KEY, allDatasets);
+    // Force re-render by reloading the page
+    window.location.reload();
   };
 
   const exportCSV = () => {

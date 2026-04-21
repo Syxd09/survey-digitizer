@@ -13,10 +13,9 @@ from services.orchestrator import ExtractionOrchestrator
 # Initialize services
 orchestrator = ExtractionOrchestrator()
 # User Logic Version
-LOGIC_VERSION = "Hydra-v2.0"
-# Use project id
-project_id = "gen-lang-client-0362910217"
-storage = StorageService(project_id)
+LOGIC_VERSION = "Hydra-v5.7-LOCAL"
+# Use local storage
+storage = StorageService()
 
 def run_digitization_task(dataset_id: str, scan_id: str, image_b64: str, user_id: str):
     """

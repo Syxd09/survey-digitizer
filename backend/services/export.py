@@ -11,21 +11,17 @@ class ExcelExportService:
         """
         Fetch completed scans for a dataset and generate a multi-sheet Excel file.
         """
-        # 1. Fetch data from Firestore
-        scans_ref = self.storage.db.collection('datasets').document(dataset_id).collection('scans')
+        # 1. Fetch data from local storage
         # ENFORCED EXPORT GATE: Only export 'good' or 'partial' validated scans
-        query = scans_ref.where('status', 'in', ['good', 'partial']).stream()
+        scans = self.storage.get_scans_by_status(dataset_id, ['good', 'partial'])
         
         q2_data = []
         q3_data = []
         
-        for doc in query:
-            scan = doc.to_dict()
+        for scan in scans:
             extracted = scan.get("extractedData", {})
             rows = extracted.get("questions", [])
-            q_type = extracted.get("diagnostics", {}).get("mode", "UNKNOWN") 
-            # In a real impl, we'd use the detected questionnaireType (e.g. SSIAR Q2)
-            actual_type = scan.get("questionnaireType", "Q2") # Fallback
+            actual_type = scan.get("questionnaireType", "Q2")  # Fallback
             
             entry = {
                 "ScanID": scan.get("scanId"),
@@ -36,7 +32,7 @@ class ExcelExportService:
             
             # Flatten questions into columns
             for i, q in enumerate(rows):
-                entry[f"Q{i+1}_{q.get('question')[:20]}"] = q.get("selected")
+                entry[f"Q{i+1}_{q.get('question', '')[:20]}"] = q.get("selected")
             
             if "Q3" in actual_type:
                 q3_data.append(entry)
@@ -52,17 +48,12 @@ class ExcelExportService:
         
         with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
             if q2_data:
-                pd.DataFrame(q2_data).to_sheet(writer, sheet_name="Questionnaire_Q2", index=False)
+                pd.DataFrame(q2_data).to_excel(writer, sheet_name="Questionnaire_Q2", index=False)
             if q3_data:
-                pd.DataFrame(q3_data).to_sheet(writer, sheet_name="Questionnaire_Q3", index=False)
+                pd.DataFrame(q3_data).to_excel(writer, sheet_name="Questionnaire_Q3", index=False)
             
             if not q2_data and not q3_data:
                 # Create empty sheet if no data
-                pd.DataFrame([{"Message": "No data found"}]).to_sheet(writer, sheet_name="Empty", index=False)
+                pd.DataFrame([{"Message": "No data found"}]).to_excel(writer, sheet_name="Empty", index=False)
 
         return file_path
-
-# Monkey patch for pandas ExcelWriter version compatibility if needed
-def to_sheet(df, writer, sheet_name, index=False):
-    df.to_excel(writer, sheet_name=sheet_name, index=index)
-pd.DataFrame.to_sheet = to_sheet

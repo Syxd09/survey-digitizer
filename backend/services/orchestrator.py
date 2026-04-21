@@ -13,40 +13,45 @@ from dotenv import load_dotenv
 from PIL import Image as PILImage
 from services.processor import SurveyProcessor
 
-# Load credentials
 load_dotenv()
-
 logger = logging.getLogger(__name__)
 
-# SYSTEM PROMPT FOR PRECISION DIGITIZATION
 PRECISION_PROMPT = """
-Analyze the provided image of a survey form and extract all question-response pairs with 100% precision.
-The form may contain tables with checkmarks, circled numbers (Likert scales), or handwritten text.
+You are an expert at reading handwritten survey forms. Analyze the provided image carefully.
 
-OUTPUT SCHEMA (Strict JSON):
+HANDWRITING RULES:
+- Handwritten text is common on surveys - read it carefully using context clues
+- Look for checkmarks (✓), crosses (X), circles around numbers, underlines
+- For Likert scales (1-5, 1-7), detect which number is circled or marked
+- Handwritten responses may be messy - use context from nearby questions to help decode
+- Numbers like 1, 2, 3, 4, 5 should be read even if poorly written
+- Date fields often contain dates like DD/MM/YYYY or similar formats
+- Names are often capitalized and can have mixed handwriting quality
+
+OUTPUT SCHEMA (Strict JSON - no markdown):
 {
   "questions": [
     {
       "id": "q1",
-      "question": "Exact text of the question",
+      "question": "Exact question text or inferred from context",
       "options": ["Option 1", "Option 2", ...],
-      "selected": "The exact text or number of the marked/circled option",
+      "selected": "The marked/circled option or handwritten value",
       "confidence": 0.0 to 1.0,
-      "status": "OK" or "LOW_CONFIDENCE" (if ambiguous)
+      "status": "OK" or "LOW_CONFIDENCE"
     }
   ],
   "diagnostics": {
     "avg_confidence": 0.0,
     "null_rate": 0.0,
-    "logic_version": "Hydra-v5.0-LOCAL-FIRST"
+    "logic_version": "Hydra-v5.6-HANDWRITING"
   }
 }
 
-RULES:
-1. If a row has no mark, set "selected" to null and confidence to 1.0.
-2. If multiple marks exist for one question, set status to "LOW_CONFIDENCE".
-3. Maintain the order of questions as they appear on the page.
-4. Extract the EXACT text of the question.
+CRITICAL:
+- Always return valid JSON
+- For unmarked questions, selected=null, confidence=0.9, status="OK"
+- For handwritten text, confidence should be 0.5-0.8 range
+- For clearly printed text, confidence can be 0.9-1.0
 """
 
 class ExtractionOrchestrator:
@@ -83,37 +88,72 @@ class ExtractionOrchestrator:
             self.gemini_model = None
 
     async def digitize(self, image_b64: str) -> Dict[str, Any]:
-        """Orchestrate multi-model extraction with LOCAL-FIRST priority."""
-        # LOCAL is now #1 to bypass API credit limits and ensure 100% uptime
+        """Orchestrate extraction using LOCAL OCR only (no cloud dependencies)."""
+        # Always try local OCR first - it's reliable and works offline
         engines = [
             ("LOCAL_OCR", self._digitize_local),
-            ("OPENROUTER", self._digitize_openrouter),
-            ("GROQ_LAVA", self._digitize_groq),
-            ("GEMINI_DIRECT", self._digitize_gemini)
         ]
 
         errors = []
         for name, engine_fn in engines:
             try:
-                logger.info(f"[HYDRA] Attempting extraction with engine: {name}")
+                logger.info(f"[HYDRA] Trying engine: {name}")
                 result = await engine_fn(image_b64)
+                
                 if result and result.get("questions") and len(result["questions"]) > 0:
+                    avg_conf = result.get("diagnostics", {}).get("avg_confidence", 0)
+                    null_rate = result.get("diagnostics", {}).get("null_rate", 1.0)
+                    
+                    # Lower threshold for local OCR (it's reliable for most cases)
+                    threshold = 0.15
+                    
+                    if avg_conf < threshold:
+                        logger.warning(f"[HYDRA] {name} too low conf ({avg_conf:.2f}<{threshold}).")
+                        errors.append(f"{name}: conf={avg_conf:.2f}")
+                        continue
+                    
                     result["diagnostics"]["engine"] = name
+                    result["diagnostics"]["handwriting_mode"] = self._detect_handwriting(image_b64)
+                    logger.info(f"[HYDRA] Success: {name}, conf={avg_conf:.2f}, null={null_rate:.2f}, questions={len(result['questions'])}")
                     return result
             except Exception as e:
-                logger.error(f"[HYDRA] Engine {name} failed: {str(e)}")
-                errors.append(f"{name}: {str(e)}")
+                logger.error(f"[HYDRA] {name} failed: {e}")
+                errors.append(f"{name}: {e}")
 
-        # Final Fallback: Return empty result with error details
         return {
             "questions": [],
-            "diagnostics": {
-                "error": "All AI engines failed",
-                "details": errors,
-                "engine": "NONE",
-                "v": "5.0-RESCUE"
-            }
+            "diagnostics": {"error": "OCR processing failed", "details": errors, "engine": "NONE", "v": "5.7"}
         }
+
+    def _detect_handwriting(self, image_b64: str) -> bool:
+        """Detect if image contains handwriting using OCR confidence analysis."""
+        try:
+            img_data = base64.b64decode(image_b64)
+            nparr = np.frombuffer(img_data, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            
+            if img is None:
+                return True
+            
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            
+            # Use a fresh reader here to be 100% safe against attribute shadowing
+            import easyocr
+            temp_reader = easyocr.Reader(['en'], gpu=False)
+            results = temp_reader.readtext(img)
+            
+            # Close/Cleanup if needed (easyocr doesn't require explicit close for CPU)
+            
+            if not results:
+                return True
+            
+            low_conf = sum(1 for r in results if len(r) >= 3 and r[2] < 0.6)
+            total = len(results)
+            
+            return total > 0 and (low_conf / total) > 0.25
+        except Exception as e:
+            logger.warning(f"[HYDRA] Handwriting detection error: {e}")
+            return True
 
     async def _digitize_local(self, image_b64: str) -> Optional[Dict[str, Any]]:
         """Run local Python OCR engine as the primary processor."""
@@ -125,20 +165,23 @@ class ExtractionOrchestrator:
             # Use the existing SurveyProcessor
             local_result = self.local_processor.process(pil_img)
             
+            questions = local_result.get("questions", [])
+            avg_conf = sum(q.get("confidence", 0) for q in questions) / max(1, len(questions)) if questions else 0
+            
             return {
-                "questions": local_result.get("questions", []),
+                "questions": questions,
                 "diagnostics": {
-                    "avg_confidence": sum(q.get("confidence", 0) for q in local_result.get("questions", [])) / max(1, len(local_result.get("questions", []))),
-                    "null_rate": sum(1 for q in local_result.get("questions", []) if q.get("selected") is None) / max(1, len(local_result.get("questions", []))),
-                    "logic_version": "Hydra-v5.0-LOCAL"
+                    "avg_confidence": avg_conf,
+                    "null_rate": sum(1 for q in questions if q.get("selected") is None) / max(1, len(questions)) if questions else 1,
+                    "logic_version": "Hydra-v5.7-LOCAL"
                 }
             }
         except Exception as e:
             logger.error(f"[HYDRA] Local engine failed: {str(e)}")
             return None
 
-    def _resize_image_for_ai(self, image_b64: str, max_size: int = 1500) -> str:
-        """Shrink high-res images to save token costs on cloud AI."""
+    def _resize_image_for_ai(self, image_b64: str, max_size: int = 2048) -> str:
+        """Shrink high-res images to save token costs on cloud AI while preserving detail."""
         try:
             img_data = base64.b64decode(image_b64)
             nparr = np.frombuffer(img_data, np.uint8)

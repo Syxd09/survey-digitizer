@@ -1,0 +1,65 @@
+{
+  "datasetId": "default",
+  "userId": "local-28f8b8d7-5721-44a1-8d53-cda6e0406b43",
+  "scanId": "499e8308-9c23-41f5-8402-9eb537b14ccf",
+  "status": "bad",
+  "confidence": 0,
+  "imageUrl": "PENDING",
+  "createdAt": "2026-04-21T09:33:07.263111+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-21T09:33:07.263111+00:00"
+    },
+    {
+      "stage": "PROCESSING",
+      "timestamp": "2026-04-21T09:33:11.759221+00:00",
+      "metadata": {}
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-21T09:33:14.961488+00:00",
+      "metadata": {
+        "status": "bad",
+        "export_allowed": false
+      }
+    }
+  ],
+  "lastUpdatedAt": "2026-04-21T09:33:11.759221+00:00",
+  "exportAllowed": false,
+  "nullRate": 0,
+  "extractedData": {
+    "questions": [],
+    "diagnostics": {
+      "error": "All AI engines failed or confidence too low",
+      "details": [
+        "OPENROUTER: Error code: 400 - {'error': {'message': 'Provider returned error', 'code': 400, 'metadata': {'raw': '{\\n  \"error\": {\\n    \"code\": 400,\\n    \"message\": \"Invalid value at \\'contents[0].parts[1].inline_data.data\\' (TYPE_BYTES), Base64 decoding failed for \\\\\"data:image/jpeg;base64\\\\\"\",\\n    \"status\": \"INVALID_ARGUMENT\",\\n    \"details\": [\\n      {\\n        \"@type\": \"type.googleapis.com/google.rpc.BadRequest\",\\n        \"fieldViolations\": [\\n          {\\n            \"field\": \"contents[0].parts[1].inline_data.data\",\\n            \"description\": \"Invalid value at \\'contents[0].parts[1].inline_data.data\\' (TYPE_BYTES), Base64 decoding failed for \\\\\"data:image/jpeg;base64\\\\\"\"\\n          }\\n        ]\\n      }\\n    ]\\n  }\\n}\\n', 'provider_name': 'Google', 'is_byok': False}}, 'user_id': 'user_2u24U8ih9XYe5y9Fb1oVDPoCRt5'}",
+        "GEMINI_DIRECT: 400 API key expired. Please renew the API key. [reason: \"API_KEY_INVALID\"\ndomain: \"googleapis.com\"\nmetadata {\n  key: \"service\"\n  value: \"generativelanguage.googleapis.com\"\n}\n, locale: \"en-US\"\nmessage: \"API key expired. Please renew the API key.\"\n]"
+      ],
+      "engine": "NONE",
+      "v": "5.5-RESCUE",
+      "null_rate": 0,
+      "avg_confidence": 0,
+      "processing_duration": 3.2,
+      "logic_version": "Hydra-v2.0",
+      "timestamp": 1776763994.9553976
+    },
+    "logic_version": "Hydra-v2.0"
+  },
+  "diagnostics": {
+    "error": "All AI engines failed or confidence too low",
+    "details": [
+      "OPENROUTER: Error code: 400 - {'error': {'message': 'Provider returned error', 'code': 400, 'metadata': {'raw': '{\\n  \"error\": {\\n    \"code\": 400,\\n    \"message\": \"Invalid value at \\'contents[0].parts[1].inline_data.data\\' (TYPE_BYTES), Base64 decoding failed for \\\\\"data:image/jpeg;base64\\\\\"\",\\n    \"status\": \"INVALID_ARGUMENT\",\\n    \"details\": [\\n      {\\n        \"@type\": \"type.googleapis.com/google.rpc.BadRequest\",\\n        \"fieldViolations\": [\\n          {\\n            \"field\": \"contents[0].parts[1].inline_data.data\",\\n            \"description\": \"Invalid value at \\'contents[0].parts[1].inline_data.data\\' (TYPE_BYTES), Base64 decoding failed for \\\\\"data:image/jpeg;base64\\\\\"\"\\n          }\\n        ]\\n      }\\n    ]\\n  }\\n}\\n', 'provider_name': 'Google', 'is_byok': False}}, 'user_id': 'user_2u24U8ih9XYe5y9Fb1oVDPoCRt5'}",
+      "GEMINI_DIRECT: 400 API key expired. Please renew the API key. [reason: \"API_KEY_INVALID\"\ndomain: \"googleapis.com\"\nmetadata {\n  key: \"service\"\n  value: \"generativelanguage.googleapis.com\"\n}\n, locale: \"en-US\"\nmessage: \"API key expired. Please renew the API key.\"\n]"
+    ],
+    "engine": "NONE",
+    "v": "5.5-RESCUE",
+    "null_rate": 0,
+    "avg_confidence": 0,
+    "processing_duration": 3.2,
+    "logic_version": "Hydra-v2.0",
+    "timestamp": 1776763994.9553976
+  },
+  "processedAt": "2026-04-21T09:33:14.961488+00:00",
+  "logicVersion": "Hydra-v2.0"
+}
