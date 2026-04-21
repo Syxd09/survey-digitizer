@@ -92,6 +92,57 @@ class ExtractionOrchestrator:
         )
         return result
 
+    async def digitize_survey(self, image_b64: str) -> Dict[str, Any]:
+        """
+        Decode base64 image and run survey-specific extraction in the thread pool.
+        Forces the SurveyExtractor path regardless of classification.
+        """
+        loop = asyncio.get_event_loop()
+        try:
+            pil_img = await loop.run_in_executor(
+                self.executor,
+                self._decode_image,
+                image_b64,
+            )
+        except Exception as exc:
+            logger.error(f"[ORCH] Image decode failed: {exc}")
+            return self._error_result("Image decode failed")
+
+        try:
+            result = await loop.run_in_executor(
+                self.executor,
+                self.processor.process_survey,
+                pil_img,
+            )
+        except Exception as exc:
+            logger.error(f"[ORCH] Survey extraction failed: {exc}")
+            return self._error_result(f"Survey extraction failed: {exc}")
+
+        # Enrich diagnostics
+        questions = result.get("questions", [])
+        avg_conf = (
+            sum(q.get("confidence", 0) for q in questions) / len(questions)
+            if questions else 0.0
+        )
+        null_rate = (
+            sum(1 for q in questions if q.get("selected") is None) / len(questions)
+            if questions else 1.0
+        )
+
+        diag = result.setdefault("diagnostics", {})
+        diag.update({
+            "engine": "LOCAL_HYDRA_SURVEY",
+            "avg_confidence": round(avg_conf, 4),
+            "null_rate": round(null_rate, 4),
+            "question_count": len(questions),
+        })
+
+        logger.info(
+            f"[ORCH] Survey done — {len(questions)} questions, "
+            f"avg_conf={avg_conf:.2f}"
+        )
+        return result
+
     def register_correction(self, image_hash: str, corrected_text: str) -> bool:
         """Persist a user correction into the active-learning memory."""
         try:

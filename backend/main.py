@@ -216,6 +216,81 @@ async def process_image(
         raise HTTPException(status_code=500, detail=str(exc))
 
 
+# ── Survey processing endpoint ────────────────────────────────────────────
+
+class SurveyProcessRequest(BaseModel):
+    image:     str = Field(..., description="Base64-encoded image")
+    datasetId: str = Field("default", description="Dataset to associate this scan with")
+    userId:    str = Field("anon", description="User submitting the scan")
+
+class ApproveRequest(BaseModel):
+    scanId:    str
+    datasetId: str = "default"
+    questions: list = Field(..., description="Reviewed/edited survey questions")
+
+
+@app.post("/process-survey", tags=["OCR"])
+async def process_survey(
+    request:      SurveyProcessRequest,
+    orchestrator = Depends(get_orchestrator),
+    storage      = Depends(get_storage),
+):
+    """
+    Process image specifically as a survey form.
+    Returns structured survey data with question numbers, text, and selected answers.
+    """
+    scan_id = str(uuid.uuid4())
+
+    try:
+        result    = await orchestrator.digitize_survey(request.image)
+        questions = result.get("questions", [])
+        survey    = result.get("survey_data", {})
+        diag      = result.get("diagnostics", {})
+
+        # Persist
+        try:
+            storage.create_form_entry(request.datasetId, request.userId, scan_id, "")
+            storage.update_scan_results(request.datasetId, scan_id, result, diag)
+        except Exception as store_exc:
+            logger.warning(f"[SURVEY] Storage write failed (non-fatal): {store_exc}")
+
+        return {
+            "success":       True,
+            "scanId":        scan_id,
+            "questions":     questions,
+            "survey_data":   survey,
+            "total":         len(questions),
+            "avgConfidence": diag.get("avg_confidence", 0),
+            "diagnostics":   diag,
+        }
+    except Exception as exc:
+        logger.error(f"[SURVEY] Error for scan {scan_id}: {exc}")
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/approve-survey", tags=["OCR"])
+async def approve_survey(
+    request: ApproveRequest,
+    storage = Depends(get_storage),
+):
+    """
+    Save reviewed/edited survey results after human approval.
+    """
+    try:
+        result = {
+            "questions": request.questions,
+            "status": "approved",
+        }
+        storage.update_scan_results(
+            request.datasetId, request.scanId, result,
+            {"approved": True, "status": "approved"}
+        )
+        return {"success": True, "scanId": request.scanId, "status": "approved"}
+    except Exception as exc:
+        logger.error(f"[APPROVE] Failed: {exc}")
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
 # ── Background ingest endpoint ────────────────────────────────────────────────
 
 @app.post("/ingest", tags=["OCR"])

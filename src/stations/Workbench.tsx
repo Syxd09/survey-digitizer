@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Database, Download, CheckCircle2, AlertCircle, RefreshCcw, FileText, Search } from 'lucide-react';
 import { useHydraStore } from '../store/useHydraStore';
 import { hydraApi, ExtractionQuestion } from '../services/api';
+import { DigitalSurveyForm } from '../components/DigitalSurveyForm';
 import './Workbench.css';
 
 export const Workbench: React.FC = () => {
@@ -26,6 +27,33 @@ export const Workbench: React.FC = () => {
     // Register feedback to Hydra Memory Vault
     if (target.imageHash) {
       await hydraApi.registerFeedback(target.imageHash, newValue);
+    }
+  };
+
+  const handleApproveSurvey = async (approvedQuestions: ExtractionQuestion[]) => {
+    if (!activeDoc) return;
+    
+    try {
+      setIsExporting(true); // Re-using export state for loading indicator
+      const response = await fetch('http://localhost:8000/approve-survey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scanId: activeDoc.id,
+          datasetId: 'default-authority',
+          questions: approvedQuestions
+        })
+      });
+      if (response.ok) {
+        alert('Survey data approved and saved successfully!');
+      } else {
+        alert('Failed to save survey approval.');
+      }
+    } catch (e) {
+      console.error('Survey approval failed:', e);
+      alert('Survey approval failed. Ensure backend is running.');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -99,48 +127,58 @@ export const Workbench: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid-container">
-              <div className="grid-header">
-                <div>SURVEY FIELD</div>
-                <div>EXTRACTED VALUE (EDITABLE)</div>
-                <div>CONFIDENCE</div>
-              </div>
+            {activeDoc.result?.extractedData?.survey_data ? (
+              <DigitalSurveyForm
+                scanId={activeDoc.id}
+                surveyData={activeDoc.result.extractedData.survey_data}
+                questions={activeDoc.result.extractedData.questions}
+                onApprove={handleApproveSurvey}
+                isApproving={isExporting}
+              />
+            ) : (
+              <div className="grid-container">
+                <div className="grid-header">
+                  <div>SURVEY FIELD</div>
+                  <div>EXTRACTED VALUE (EDITABLE)</div>
+                  <div>CONFIDENCE</div>
+                </div>
 
-              <div className="grid-body">
-                {(activeDoc.status === 'processing' || activeDoc.status === 'uploaded') ? (
-                  <div className="grid-loading">
-                    <RefreshCcw size={40} className="spin" />
-                    <p>Hydra is extracting data... ({activeDoc.status})</p>
-                  </div>
-                ) : activeDoc.result?.extractedData?.questions ? (
-                  activeDoc.result.extractedData.questions.map((q, idx) => (
-                    <div key={idx} className="grid-row">
-                      <div className="field-label">
-                        <span className="row-num">{idx + 1}</span>
-                        {q.question}
-                      </div>
-                      <div className="input-wrapper">
-                        <input
-                          type="text"
-                          defaultValue={q.selected || ''}
-                          onBlur={(e) => handleFieldChange(idx, e.target.value)}
-                          className={q.confidence > 0.85 ? 'high-conf' : ''}
-                        />
-                        {q.confidence > 0.95 && <div className="neural-glow-line" />}
-                      </div>
-                      <div className={`confidence-pill ${q.confidence > 0.9 ? 'certified' : ''}`}>
-                        {(q.confidence * 100).toFixed(1)}%
-                      </div>
+                <div className="grid-body">
+                  {(activeDoc.status === 'processing' || activeDoc.status === 'uploaded') ? (
+                    <div className="grid-loading">
+                      <RefreshCcw size={40} className="spin" />
+                      <p>Hydra is extracting data... ({activeDoc.status})</p>
                     </div>
-                  ))
-                ) : (
-                  <div className="grid-loading">
-                    <AlertCircle size={40} color="var(--error)" />
-                    <p>Extraction failed or no data found.</p>
-                  </div>
-                )}
+                  ) : activeDoc.result?.extractedData?.questions ? (
+                    activeDoc.result.extractedData.questions.map((q, idx) => (
+                      <div key={idx} className="grid-row">
+                        <div className="field-label">
+                          <span className="row-num">{idx + 1}</span>
+                          {q.question}
+                        </div>
+                        <div className="input-wrapper">
+                          <input
+                            type="text"
+                            defaultValue={q.selected || ''}
+                            onBlur={(e) => handleFieldChange(idx, e.target.value)}
+                            className={q.confidence > 0.85 ? 'high-conf' : ''}
+                          />
+                          {q.confidence > 0.95 && <div className="neural-glow-line" />}
+                        </div>
+                        <div className={`confidence-pill ${q.confidence > 0.9 ? 'certified' : ''}`}>
+                          {(q.confidence * 100).toFixed(1)}%
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="grid-loading">
+                      <AlertCircle size={40} color="var(--error)" />
+                      <p>Extraction failed or no data found.</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         ) : (
           <div className="workbench-intro">

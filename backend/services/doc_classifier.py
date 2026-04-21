@@ -27,8 +27,22 @@ DOC_TYPES = {
             r"\bPROBLEMS\b", r"\bTERMINAL\b", r"\bCONSOLE\b", r"\bOUTPUT\b",
         ],
     },
+    "survey_form": {
+        "description": "Survey / questionnaire with table + checkmarks or circled responses",
+        "signals": [
+            r"\bQuestionnaire\b", r"\bS\.?\s*No\b", r"\bQuestions?\b",
+            r"\bNot\s*True\b", r"\bSomewhat\s*True\b", r"\bCertainly\s*True\b",
+            r"\bStrongly\s*Agree\b", r"\bStrongly\s*Disagree\b",
+            r"\bAgree\b", r"\bDisagree\b", r"\bNeutral\b",
+            r"\bTrue\b", r"\bFalse\b",
+            r"\bStudy\s*Code\b", r"\bForm\s*No\b",
+            r"\bexperience\b", r"\bbasis\s*of\b",
+            r"\binstruction\b", r"\bplease\s*read\b",
+            r"\bNOTE\b", r"\bmark\s*the\b",
+        ],
+    },
     "form": {
-        "description": "Survey form / questionnaire / application",
+        "description": "Generic form / application",
         "signals": [
             r"\bName\b", r"\bAddress\b", r"\bDate\b", r"\bSignature\b",
             r"\bPhone\b", r"\bEmail\b", r"\bAge\b", r"\bGender\b",
@@ -115,6 +129,9 @@ class DocumentClassifier:
         # Table boost from detected grid lines
         if hints.get("has_table_lines", False):
             scores["table"] = max(scores.get("table", 0), 0.5)
+            # Survey forms have table lines + survey signals
+            if scores.get("survey_form", 0) > 0:
+                scores["survey_form"] = max(scores["survey_form"] * 1.5, 0.65)
 
         # Dark background boost for code screenshots
         if hints.get("has_dark_bg", False):

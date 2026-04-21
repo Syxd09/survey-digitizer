@@ -19,6 +19,11 @@ export interface ScanStatusResponse {
   confidence: number;
   extractedData?: {
     questions: ExtractionQuestion[];
+    survey_data?: {
+      form_type: string;
+      column_headers: string[];
+      raw_text: string;
+    };
   };
   diagnostics?: any;
   error?: string;

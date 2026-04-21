@@ -34,6 +34,7 @@ from .ensemble import get_voter
 from .graph_recon import get_layout_graph
 from .validator import get_validator
 from .vector_memory import get_vector_memory
+from .survey_extractor import SurveyExtractor
 from .llm_refiner import get_llm_refiner
 
 # Core OCR Engines
@@ -77,6 +78,13 @@ class SurveyProcessor:
         # ── OCR Engine Pool ──────────────────────────────────────────────
         self.paddle_ocr    = self._load_paddle()
         self.easy_reader   = self._load_easyocr()
+
+        # ── Survey Extractor (shares OCR engines) ────────────────────────
+        ocr_engines = {}
+        if self.easy_reader:
+            ocr_engines["easyocr"] = self.easy_reader
+        self.survey_extractor = SurveyExtractor(ocr_engines=ocr_engines)
+        logger.info("[HYDRA-v12.5] SurveyExtractor initialised")
 
         # ── Local Memory (SQLite fallback) ───────────────────────────────
         self.memory_path = "backend/feedback_loop/memory.db"
@@ -149,6 +157,15 @@ class SurveyProcessor:
         quick_texts = [r["text"] for r in e_res] + [r["text"] for r in t_res[:20]]
         doc_class = self.classifier.classify(img_bgr, quick_texts)
         doc_type = doc_class["type"]
+
+        # ── 4b. Survey Form Fast-Path ────────────────────────────────────
+        if doc_type == "survey_form":
+            logger.info("[HYDRA] Survey form detected — routing to SurveyExtractor")
+            survey_result = self.survey_extractor.extract(img_bgr)
+            elapsed = round(time.time() - t_start, 2)
+            return self._format_survey_result(survey_result, doc_class, vision_diag, elapsed, {
+                "paddle": len(p_res), "easyocr": len(e_res), "tesseract": len(t_res)
+            })
 
         # ── 5. Ensemble Voting (Levenshtein Scaffold+Patch) ──────────────
         voted_regions = self.voter.consolidate(p_res, e_res, t_res)
@@ -331,6 +348,70 @@ class SurveyProcessor:
         except Exception as exc:
             logger.warning(f"[TESSERACT] OCR failed: {exc}")
             return []
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Survey Processing
+    # ═══════════════════════════════════════════════════════════════════════
+
+    def process_survey(self, input_source: Union[str, PILImage.Image]) -> Dict[str, Any]:
+        """
+        Dedicated survey processing endpoint — skips generic OCR,
+        uses SurveyExtractor directly for table-based forms.
+        """
+        t_start = time.time()
+
+        if isinstance(input_source, str):
+            pil_image = PILImage.open(input_source).convert("RGB")
+        else:
+            pil_image = input_source.convert("RGB")
+
+        img_bgr = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
+
+        # Run quick OCR for classification
+        _, img_for_others, vision_diag = self.restorer.process(img_bgr)
+        e_res = self._run_easy_ocr(img_for_others)
+        t_res = self._run_tesseract_ocr(img_for_others)
+        quick_texts = [r["text"] for r in e_res] + [r["text"] for r in t_res[:20]]
+        doc_class = self.classifier.classify(img_bgr, quick_texts)
+
+        # Extract survey data
+        survey_result = self.survey_extractor.extract(img_bgr)
+        elapsed = round(time.time() - t_start, 2)
+
+        return self._format_survey_result(survey_result, doc_class, vision_diag, elapsed, {
+            "easyocr": len(e_res), "tesseract": len(t_res)
+        })
+
+    def _format_survey_result(
+        self, survey_result, doc_class, vision_diag, elapsed, ocr_counts
+    ) -> Dict[str, Any]:
+        """Format SurveyResult into the standard API response."""
+        survey_dict = survey_result.to_dict()
+
+        # Also build legacy questions format for backward compat
+        questions = []
+        for q in survey_result.questions:
+            questions.append({
+                "question": f"{q.number}. {q.text}" if q.number else q.text,
+                "selected": q.selected_column,
+                "confidence": q.confidence,
+                "status": "✅ OK" if q.confidence > 0.7 else "⚠️ Low Confidence",
+            })
+
+        return {
+            "questions": questions,
+            "survey_data": survey_dict,
+            "diagnostics": {
+                "vision": vision_diag,
+                "doc_type": doc_class,
+                "ocr_counts": ocr_counts,
+                "form_type": survey_result.form_type,
+                "columns_detected": survey_result.columns,
+                "questions_extracted": len(survey_result.questions),
+                "duration": elapsed,
+                "logic_version": "Hydra-v12.5-SURVEY",
+            },
+        }
 
     # ═══════════════════════════════════════════════════════════════════════
     # Feedback / Learning

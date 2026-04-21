@@ -1,0 +1,292 @@
+{
+  "1.jpeg": {
+    "form_metadata": {
+      "raw_header": "Fort No Study Code: SSIAR 19 010 CARETULLY BEFORE BEGINNING PLEASE READ ALL INSTRUCTIONS = Read each queston carefully and honesily: So share truthfully Respond with Ihe responses r 4S per All answers Will be kept confidential order thal (hcy hcre questions answcred in the same Tlic Iyou have any doubt; then ask fcclings and thoughts The following questions = you aboui YOur Somewhat True or Certainly True For each item; please mark the box for Not True; based on how you think: doing Mark ofyour on the basis of Last four days NOTE: Please answer the below questions experience Certainly Not Soniewhat SNo Questions True True True respfd expericuce  and lile }our prinled Jsk",
+      "study_code": "SSIAR"
+    },
+    "columns": [
+      "5g",
+      "2",
+      "tried t0 be nice (0 Olher people: I cared about tneir Teelings",
+      "bal",
+      "aa",
+      "a"
+    ],
+    "questions": [
+      {
+        "number": 1,
+        "text": "WaS resiless; could not Stay still for long",
+        "selected_column": "bal",
+        "selected_index": 2,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 2,
+        "text": "gol Iot of headaches, stomach-aches O sickness",
+        "selected_column": "aa",
+        "selected_index": 3,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 3,
+        "text": "usually shared others (food, games; pens etc ) with",
+        "selected_column": "a",
+        "selected_index": 4,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 4,
+        "text": "got very angry and often lost my lemper",
+        "selected_column": "aa",
+        "selected_index": 3,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 5,
+        "text": "usually on my own generally played alone or kcpt t0 mysclf",
+        "selected_column": "bal",
+        "selected_index": 2,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 6,
+        "text": "usually did as / was told",
+        "selected_column": "aa",
+        "selected_index": 3,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      }
+    ],
+    "form_type": "checkmark",
+    "header_text": "",
+    "instructions": ""
+  },
+  "2.jpeg": {
+    "form_metadata": {
+      "raw_header": ""
+    },
+    "columns": [
+      "STRUCHONS CARHHULY BEFORE BEGINNI respond honestly sweT; your responses are 4S per your life expen idcntial; red in the same order that they are printed here sk admmnistrator. 4about your feelings and thoughts: or disagree WIth cach of th hows how much you agtee the basis of Last four day elow questions 0n Strongly Agrec c and",
+      "G\nenc\nfol\n: 0)",
+      "lowing 'your Stro Dix",
+      "re\ngly\ngree\n5"
+    ],
+    "questions": [
+      {
+        "number": 1,
+        "text": "Strongly Agrec Strongly Agree",
+        "selected_column": "re\ngly\ngree\n5",
+        "selected_index": 2,
+        "confidence": 0.748,
+        "mark_type": "likert"
+      }
+    ],
+    "form_type": "likert",
+    "header_text": "",
+    "instructions": ""
+  },
+  "3.jpeg": {
+    "form_metadata": {
+      "raw_header": "Nut"
+    },
+    "columns": [
+      "@",
+      "70",
+      "(parents; teachers, chikalren)",
+      "=",
+      "=",
+      "x"
+    ],
+    "questions": [
+      {
+        "number": 1,
+        "text": "thought belone: did thmngs",
+        "selected_column": "=",
+        "selected_index": 3,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 2,
+        "text": "Took things that were not mine fromn home, school Or elsewhere",
+        "selected_column": "=",
+        "selected_index": 2,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 3,
+        "text": "got on better with adults than with people of my Own age",
+        "selected_column": "=",
+        "selected_index": 2,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 4,
+        "text": "Lhad many fears. Iwas casily scared",
+        "selected_column": "=",
+        "selected_index": 2,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 5,
+        "text": "Kfinished thc work was doing: My = good",
+        "selected_column": "=",
+        "selected_index": 3,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 6,
+        "text": "_\u2014_",
+        "selected_column": null,
+        "selected_index": null,
+        "confidence": 0.0,
+        "mark_type": "none"
+      }
+    ],
+    "form_type": "checkmark",
+    "header_text": "",
+    "instructions": ""
+  },
+  "4.jpeg": {
+    "form_metadata": {
+      "raw_header": ""
+    },
+    "columns": [
+      ",",
+      "|",
+      "_",
+      "Nol",
+      "e"
+    ],
+    "questions": [
+      {
+        "number": 1,
+        "text": "Womcd Iol",
+        "selected_column": "e",
+        "selected_index": 3,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 2,
+        "text": "was helpful if someone was hurt, upset or felt ill",
+        "selected_column": "e",
+        "selected_index": 3,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 3,
+        "text": "fidgeling or squiming",
+        "selected_column": "Nol",
+        "selected_index": 2,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 4,
+        "text": "Ihad one good Iricnd or more",
+        "selected_column": "e",
+        "selected_index": 3,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 5,
+        "text": "could make olher people do whal [",
+        "selected_column": "Nol",
+        "selected_index": 2,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 6,
+        "text": "Other people of my age were generally like me was casily distracled, found it difficult t0 concentrale was nervous in situattons. easily lost confidence was kind /0 younger children new",
+        "selected_column": "e",
+        "selected_index": 3,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 7,
+        "text": "was oflen accused of lying Or cheating",
+        "selected_column": "|",
+        "selected_index": 1,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 8,
+        "text": "Other children or young peoplc on me Or bullied me picked 5",
+        "selected_column": "|",
+        "selected_index": 1,
+        "confidence": 1.0,
+        "mark_type": "checkmark"
+      },
+      {
+        "number": 9,
+        "text": "=",
+        "selected_column": null,
+        "selected_index": null,
+        "confidence": 0.0,
+        "mark_type": "none"
+      }
+    ],
+    "form_type": "checkmark",
+    "header_text": "",
+    "instructions": ""
+  },
+  "5.jpeg": {
+    "form_metadata": {
+      "raw_header": "Suongly topetherness Wah"
+    },
+    "columns": [
+      ",",
+      "T did not fccl related t0 anyone:",
+      "Strongly Agree",
+      "2",
+      "3",
+      ".",
+      "5",
+      "Strongly Disagree"
+    ],
+    "questions": [
+      {
+        "number": 1,
+        "text": "caught mysell losing all sensc 0f connecledness Wth society.",
+        "selected_column": ".",
+        "selected_index": 4,
+        "confidence": 0.768,
+        "mark_type": "likert"
+      },
+      {
+        "number": 2,
+        "text": "Even among my friends. there was no scnsc of brother/sisterhood",
+        "selected_column": "5",
+        "selected_index": 5,
+        "confidence": 0.716,
+        "mark_type": "likert"
+      },
+      {
+        "number": 3,
+        "text": "Tdid not feel that participated wilhi anyone OT any group",
+        "selected_column": ".",
+        "selected_index": 4,
+        "confidence": 0.716,
+        "mark_type": "likert"
+      }
+    ],
+    "form_type": "likert",
+    "header_text": "",
+    "instructions": ""
+  }
+}
