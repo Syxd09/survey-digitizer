@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Free Map with Search + Routing</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Routing -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+
+    <style>
+        body {
+            font-family: Arial;
+        }
+
+        #map {
+            height: 500px;
+            margin-top: 10px;
+        }
+
+        input,
+        button {
+            padding: 8px;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>My Map App</h2>
+
+    <button onclick="getLocation()">📍 My Location</button>
+    <button onclick="routeToBusiness()">🧭 Route to Business</button>
+    <br>
+
+    <input type="text" id="place" placeholder="Search place (Delhi, Mumbai...)">
+    <button onclick="searchPlace()">🔍 Search</button>
+
+    <div id="map"></div>
+
+    <!-- JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+    <script>
+        // Initialize map
+        var map = L.map('map').setView([20.5937, 78.9629], 5);
+
+        // Tiles
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var currentMarker;
+        var routingControl;
+
+        // 🔴 YOUR BUSINESS LOCATION (CHANGE THIS)
+        const business = [28.6139, 77.2090]; // Example: Delhi
+
+        L.marker(business)
+            .addTo(map)
+            .bindPopup("My Business")
+            .openPopup();
+
+        // 📍 Get current location
+        function getLocation() {
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+
+                    if (currentMarker) map.removeLayer(currentMarker);
+
+                    currentMarker = L.marker([lat, lng])
+                        .addTo(map)
+                        .bindPopup("You are here")
+                        .openPopup();
+
+                    map.setView([lat, lng], 15);
+                },
+                function () {
+                    alert("Location permission denied");
+                }
+            );
+        }
+
+        // 🔍 Search place (Nominatim)
+        async function searchPlace() {
+            const query = document.getElementById("place").value;
+
+            if (!query) {
+                alert("Enter a place");
+                return;
+            }
+
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}`;
+
+            const res = await fetch(url);
+            const data = await res.json();
+
+            if (data.length === 0) {
+                alert("Place not found");
+                return;
+            }
+
+            const lat = data[0].lat;
+            const lon = data[0].lon;
+
+            L.marker([lat, lon])
+                .addTo(map)
+                .bindPopup(query)
+                .openPopup();
+
+            map.setView([lat, lon], 13);
+        }
+
+        // 🧭 Route to business
+        function routeToBusiness() {
+            navigator.geolocation.getCurrentPosition(function (pos) {
+                const user = [pos.coords.latitude, pos.coords.longitude];
+
+                if (routingControl) {
+                    map.removeControl(routingControl);
+                }
+
+                routingControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(user[0], user[1]),
+                        L.latLng(business[0], business[1])
+                    ],
+                    routeWhileDragging: false
+                }).addTo(map);
+
+            }, function () {
+                alert("Enable location for routing");
+            });
+        }
+
+        // 📌 Add marker on click
+        map.on('click', function (e) {
+            L.marker([e.latlng.lat, e.latlng.lng])
+                .addTo(map)
+                .bindPopup(`Lat: ${e.latlng.lat.toFixed(4)}, Lng: ${e.latlng.lng.toFixed(4)}`)
+                .openPopup();
+        });
+
+    </script>
+
+</body>
+
+</html>

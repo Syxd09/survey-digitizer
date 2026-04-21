@@ -58,6 +58,10 @@ service cloud.firestore {
     // Rules
     // ===============================================================
 
+    match /{path=**}/scans/{scanId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
     match /datasets/{datasetId} {
       allow read: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
       
