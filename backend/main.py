@@ -17,14 +17,15 @@ Key architectural decisions
 """
 
 import asyncio
+import json
 import logging
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Set
 
 from dotenv import load_dotenv
-from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
@@ -48,6 +49,38 @@ class AppState:
 
 
 app_state = AppState()
+
+
+# ── WebSocket Connection Manager ─────────────────────────────────────────────
+
+class ConnectionManager:
+    """Manages WebSocket connections for real-time push updates."""
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+        logger.info(f"[WS] Client connected. Total: {len(self.active_connections)}")
+
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+        logger.info(f"[WS] Client disconnected. Total: {len(self.active_connections)}")
+
+    async def broadcast(self, message: dict):
+        """Send a JSON message to all connected clients."""
+        dead = []
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except Exception:
+                dead.append(connection)
+        for d in dead:
+            self.disconnect(d)
+
+
+ws_manager = ConnectionManager()
 
 
 # ── FastAPI lifespan — runs once at startup, tears down at shutdown ───────────
@@ -327,17 +360,32 @@ async def ingest_form(
 
     async def _bg_task():
         try:
-            result = await orchestrator.digitize(request.image)
+            # Always use survey pipeline to ensure LLM refinement is applied
+            result = await orchestrator.digitize_survey(request.image)
             diag   = result.get("diagnostics", {})
             storage.update_scan_results(request.datasetId, scan_id, result, diag)
             logger.info(
                 f"[INGEST] {scan_id} done — "
                 f"{len(result.get('questions', []))} fields"
             )
+
+            # Push real-time update to all connected WebSocket clients
+            from services.storage import _read_json
+            scan_data = _read_json(storage._scan_path(request.datasetId, scan_id))
+            await ws_manager.broadcast({
+                "type": "scan_complete",
+                "scanId": scan_id,
+                "data": scan_data
+            })
         except Exception as exc:
             logger.error(f"[INGEST] Background task failed for {scan_id}: {exc}")
             try:
                 storage.mark_failed(request.datasetId, scan_id, str(exc))
+                await ws_manager.broadcast({
+                    "type": "scan_failed",
+                    "scanId": scan_id,
+                    "error": str(exc)
+                })
             except Exception:
                 pass
 
@@ -427,6 +475,78 @@ async def export_excel(
     except Exception as exc:
         logger.error(f"[EXPORT] Failed: {exc}")
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+# ── WebSocket endpoint ────────────────────────────────────────────────────────
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    """
+    Real-time push channel. Replaces polling for scan status, vault, and metrics.
+    
+    Messages FROM server:
+      - {"type": "scan_complete", "scanId": "...", "data": {...}}
+      - {"type": "scan_failed", "scanId": "...", "error": "..."}
+      - {"type": "vault_update", "data": [...]}
+      - {"type": "metrics_update", "data": {...}}
+      - {"type": "pong"}
+
+    Messages FROM client:
+      - {"type": "ping"} → keepalive
+      - {"type": "request_vault"} → trigger vault refresh
+      - {"type": "request_metrics"} → trigger metrics refresh
+    """
+    await ws_manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_json()
+            msg_type = data.get("type", "")
+
+            if msg_type == "ping":
+                await websocket.send_json({"type": "pong"})
+
+            elif msg_type == "request_vault":
+                try:
+                    storage = app_state.storage
+                    scans = storage.get_all_scans("default-authority")
+                    await websocket.send_json({
+                        "type": "vault_update",
+                        "data": scans
+                    })
+                except Exception as e:
+                    logger.warning(f"[WS] Vault fetch failed: {e}")
+
+            elif msg_type == "request_metrics":
+                try:
+                    metrics_svc = app_state.metrics
+                    m = metrics_svc.get_dataset_summary("default-authority")
+                    await websocket.send_json({
+                        "type": "metrics_update",
+                        "data": m
+                    })
+                except Exception as e:
+                    logger.warning(f"[WS] Metrics fetch failed: {e}")
+
+            elif msg_type == "request_scan_status":
+                try:
+                    scan_id = data.get("scanId")
+                    storage = app_state.storage
+                    from services.storage import _read_json
+                    scan_data = _read_json(storage._scan_path("default-authority", scan_id))
+                    if scan_data:
+                        await websocket.send_json({
+                            "type": "scan_update",
+                            "scanId": scan_id,
+                            "data": scan_data
+                        })
+                except Exception as e:
+                    logger.warning(f"[WS] Scan status fetch failed: {e}")
+
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket)
+    except Exception as e:
+        logger.warning(f"[WS] Connection error: {e}")
+        ws_manager.disconnect(websocket)
 
 
 # ── Dev server entry point ────────────────────────────────────────────────────

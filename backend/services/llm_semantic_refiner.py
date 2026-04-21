@@ -20,7 +20,10 @@ class CorrectionResponse(BaseModel):
 
 class LLMSemanticRefiner:
     def __init__(self):
-        self.memory_file = "backend/feedback_loop/corrections.json"
+        self.memory_file = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "feedback_loop", "corrections.json"
+        )
         
         # Ensure memory directory exists
         os.makedirs(os.path.dirname(self.memory_file), exist_ok=True)

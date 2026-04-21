@@ -39,8 +39,10 @@ interface HydraState {
   updatePageStatus: (scanId: string, status: ScannedPage['status'], result?: ScanStatusResponse) => void;
   removePage: (scanId: string) => void;
   setEngineHealth: (health: HydraState['engineHealth']) => void;
+  setVaultScans: (scans: ScanStatusResponse[]) => void;
+  setMetrics: (metrics: DatasetMetrics) => void;
   
-  // Async fetches
+  // Async fetches (legacy — kept for fallback)
   fetchVault: () => Promise<void>;
   fetchMetrics: () => Promise<void>;
   pollPendingScans: () => Promise<void>;
@@ -92,6 +94,10 @@ export const useHydraStore = create<HydraState>((set, get) => ({
     })),
 
   setEngineHealth: (health) => set({ engineHealth: health }),
+
+  setVaultScans: (scans) => set({ vaultScans: scans }),
+
+  setMetrics: (metrics) => set({ metrics }),
 
   fetchVault: async () => {
     try {

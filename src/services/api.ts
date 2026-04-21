@@ -68,6 +68,23 @@ export const hydraApi = {
   },
 
   /**
+   * Synchronous Survey Processing: processes image and returns structured survey data
+   */
+  processSurvey: async (imageBase64: string): Promise<{ scanId: string; questions: ExtractionQuestion[]; survey_data: any }> => {
+    const response = await fetch(`${API_BASE}/process-survey`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        image: imageBase64,
+        datasetId: 'default-authority',
+        userId: 'admin'
+      })
+    });
+    if (!response.ok) throw new Error('Survey processing failed');
+    return response.json();
+  },
+
+  /**
    * Poll for scan status/results
    */
   getScanStatus: async (scanId: string): Promise<ScanStatusResponse> => {
