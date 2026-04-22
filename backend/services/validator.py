@@ -1,29 +1,31 @@
 """
-Hydra v12.5 — Domain-Aware Validation Layer
+Hydra v13.0 — Domain-Aware Validation Layer
 =============================================
+Three-tier validation:
+  1. Field-level: pattern matching, confidence checks
+  2. Cross-field: sum validation, date consistency
+  3. Schema-level: required fields per document type
+
 Rule engine per document type. No hardcoded regex for specific images.
 Loads correction rules from document classifier hints.
 
 Supports:
 - code_screenshot: Pylance rule names, [Ln N, Col N] format, bracket balance
 - form: date/phone/email patterns
-- invoice: currency/amount patterns
+- invoice: currency/amount patterns, total validation
+- survey_form: response consistency, column matching
 - Correction dictionary from known OCR error mappings
 """
 
 import re
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
 
 # ── Known OCR Error Mappings (domain-agnostic) ──────────────────────────────
-# These are common OCR misreads that happen across all engines.
-# NOT hardcoded for a specific image — these are universal patterns.
-
 OCR_CORRECTIONS = {
-    # Pylance rule names (common OCR garbles)
     "reportUndefinedVariable": [
         r"reporUndefinedVariable",
         r"reportUndetinedVariable",
@@ -39,25 +41,21 @@ OCR_CORRECTIONS = {
     "reportMissingImports": [
         r"reportMissingImport",
     ],
-    # Common technical OCR errors
     "sklearn.datasets": ["sklearn datasets", "skleam datasets", "sklearn dataset5", "skleam.datasets"],
     "sklearn": ["skleam", "sk1earn"],
     "datasets": ["dataset5", "datas3ts"],
-    # Common bracket/quote confusions in code context
     "\"[\" was not closed": ["\"T\"was not closed", "\"T\" was not closed", "[\" was not closed"],
     "prg5.py": ["prgS py", "prg5 py", "prgS.py", "prgs.py"],
     "round2": ["roundz", "round?"],
 }
 
-# Known IDE icon OCR artifacts (these are icons, not text)
 ICON_ARTIFACTS = [
-    r"^[QⓘⓆ⊗°©®]\s*",       # Info/warning icons
-    r"^[AⒶ][\\XY]\s*",        # Warning triangle variants
-    r"^~\s*®?\s*",             # Tilde + registered mark
-    r"^[▲△⚠⚡]\s*",           # Triangle variants
+    r"^[QⓘⓆ⊗°©®]\s*",
+    r"^[AⒶ][\\XY]\s*",
+    r"^~\s*®?\s*",
+    r"^[▲△⚠⚡]\s*",
 ]
 
-# Pylance rule name patterns (for validation)
 PYLANCE_RULES = {
     "reportUndefinedVariable",
     "reportMissingModuleSource",
@@ -70,6 +68,22 @@ PYLANCE_RULES = {
     "reportOperatorIssue",
 }
 
+# ── Schema Definitions (expected fields per document type) ───────────────────
+SCHEMA_DEFINITIONS = {
+    "invoice": {
+        "required": ["Total", "Amount", "Date"],
+        "optional": ["Subtotal", "Tax", "Invoice Number", "Due Date"],
+    },
+    "form": {
+        "required": ["Name"],
+        "optional": ["Date", "Address", "Phone", "Email", "Signature"],
+    },
+    "survey_form": {
+        "required": [],  # Questions are dynamic
+        "optional": ["Study Code", "Form No"],
+    },
+}
+
 
 class ContentValidator:
     def __init__(self):
@@ -79,16 +93,20 @@ class ContentValidator:
             "email": re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),
             "phone": re.compile(r"\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b"),
             "code_location": re.compile(r"\[Ln\s*\d+,?\s*Col\s*\d+\]"),
+            "currency": re.compile(r"[\$£€¥]\s*[\d,]+\.?\d*"),
+            "number": re.compile(r"^\d+\.?\d*$"),
         }
         
-        # Compile icon artifact patterns
         self.icon_patterns = [re.compile(p) for p in ICON_ARTIFACTS]
         
-        # Compile OCR correction patterns
         self.correction_map = {}
         for correct, variants in OCR_CORRECTIONS.items():
             for variant in variants:
                 self.correction_map[variant.lower()] = correct
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Tier 1: Field-Level Validation
+    # ═══════════════════════════════════════════════════════════════════════
 
     def validate_field(self, key: str, value: str, confidence: float) -> Dict[str, Any]:
         """
@@ -111,10 +129,185 @@ class ContentValidator:
 
         return {"status": "OK", "correction_required": False}
 
+    # ═══════════════════════════════════════════════════════════════════════
+    # Tier 2: Cross-Field Validation (NEW in v13.0)
+    # ═══════════════════════════════════════════════════════════════════════
+
+    def validate_document(
+        self,
+        entries: List[Dict],
+        vlm_skeleton: Optional[Dict],
+        doc_type: str,
+    ) -> Dict[str, Any]:
+        """
+        Document-level validation — checks relationships BETWEEN fields.
+        
+        Returns:
+        {
+            "valid": True/False,
+            "issues": [...],
+            "warnings": [...],
+        }
+        """
+        issues = []
+        warnings = []
+
+        # Cross-field validation
+        if doc_type == "invoice":
+            issues += self._validate_invoice_totals(entries)
+
+        # Date consistency
+        issues += self._validate_date_consistency(entries)
+
+        # Schema validation (required fields)
+        schema_issues = self._validate_schema(entries, doc_type)
+        warnings += schema_issues  # Schema issues are warnings, not hard errors
+
+        # Context validation (VLM expected types vs actual values)
+        if vlm_skeleton and vlm_skeleton.get("status") == "ok":
+            context_issues = self._validate_field_types(entries, vlm_skeleton)
+            warnings += context_issues
+
+        # Survey-specific: response consistency
+        if doc_type == "survey_form":
+            issues += self._validate_survey_responses(entries)
+
+        return {
+            "valid": len(issues) == 0,
+            "issues": issues,
+            "warnings": warnings,
+        }
+
+    def _validate_invoice_totals(self, entries: List[Dict]) -> List[str]:
+        """Check: Total should equal sum of line items (if parseable)."""
+        issues = []
+        total_value = None
+        line_items = []
+
+        for entry in entries:
+            label = entry.get("question", "").lower()
+            value = entry.get("selected", "")
+
+            if "total" in label and "sub" not in label:
+                total_value = self._parse_currency(value)
+            elif "subtotal" in label:
+                pass  # Track separately
+            elif any(kw in label for kw in ("line item", "item", "amount")):
+                parsed = self._parse_currency(value)
+                if parsed is not None:
+                    line_items.append(parsed)
+
+        if total_value is not None and line_items:
+            expected_total = sum(line_items)
+            if abs(total_value - expected_total) > 0.01:
+                issues.append(
+                    f"Total mismatch: declared ${total_value:.2f} vs "
+                    f"sum of items ${expected_total:.2f}"
+                )
+
+        return issues
+
+    def _validate_date_consistency(self, entries: List[Dict]) -> List[str]:
+        """Check that all dates in the document are in a consistent format."""
+        issues = []
+        date_formats_found = set()
+
+        for entry in entries:
+            value = entry.get("selected", "")
+            if self.patterns["date"].search(value):
+                # Detect format: MM/DD/YYYY vs DD/MM/YYYY vs YYYY-MM-DD
+                if re.search(r"\d{4}[-/]\d{1,2}[-/]\d{1,2}", value):
+                    date_formats_found.add("ISO")
+                elif re.search(r"\d{1,2}/\d{1,2}/\d{4}", value):
+                    date_formats_found.add("US")
+                elif re.search(r"\d{1,2}-\d{1,2}-\d{4}", value):
+                    date_formats_found.add("EU")
+
+        if len(date_formats_found) > 1:
+            issues.append(
+                f"Inconsistent date formats detected: {', '.join(date_formats_found)}"
+            )
+
+        return issues
+
+    def _validate_schema(self, entries: List[Dict], doc_type: str) -> List[str]:
+        """Check that required fields for the doc type are present."""
+        schema = SCHEMA_DEFINITIONS.get(doc_type)
+        if not schema:
+            return []
+
+        warnings = []
+        entry_labels = {e.get("question", "").lower() for e in entries}
+
+        for required_field in schema.get("required", []):
+            found = any(
+                required_field.lower() in label
+                for label in entry_labels
+            )
+            if not found:
+                warnings.append(f"Missing required field: {required_field}")
+
+        return warnings
+
+    def _validate_field_types(
+        self, entries: List[Dict], vlm_skeleton: Dict
+    ) -> List[str]:
+        """
+        Context validation: check that OCR text matches the expected type
+        defined by VLM skeleton.
+        """
+        warnings = []
+        vlm_fields = vlm_skeleton.get("fields", [])
+
+        for entry in entries:
+            vlm_label = entry.get("vlm_label")
+            if not vlm_label:
+                continue
+
+            # Find matching VLM field
+            for vf in vlm_fields:
+                if vf.get("label") == vlm_label:
+                    expected_type = vf.get("type", "")
+                    value = entry.get("selected", "")
+
+                    if expected_type == "question" and not value:
+                        warnings.append(
+                            f"Question '{vlm_label}' has no answer"
+                        )
+                    break
+
+        return warnings
+
+    def _validate_survey_responses(self, entries: List[Dict]) -> List[str]:
+        """
+        Survey-specific: check response consistency.
+        e.g., all responses should be from the same set of options.
+        """
+        issues = []
+        responses = [
+            e.get("selected", "")
+            for e in entries
+            if e.get("selected") and e.get("selected") != "[UNMARKED]"
+        ]
+
+        if not responses:
+            return issues
+
+        # Check for suspicious patterns: all same answer
+        if len(set(responses)) == 1 and len(responses) > 5:
+            issues.append(
+                f"All {len(responses)} responses are identical: '{responses[0]}' — "
+                f"possible extraction error"
+            )
+
+        return issues
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Text Cleaning
+    # ═══════════════════════════════════════════════════════════════════════
+
     def clean_text(self, text: str, doc_type: str = "general") -> str:
-        """
-        Domain-aware text cleanup. Dispatches to type-specific cleaners.
-        """
+        """Domain-aware text cleanup. Dispatches to type-specific cleaners."""
         if doc_type == "code_screenshot":
             return self._clean_code_screenshot(text)
         elif doc_type == "form":
@@ -124,34 +317,14 @@ class ContentValidator:
         return self._clean_generic(text)
 
     def _clean_code_screenshot(self, text: str) -> str:
-        """
-        Clean text from code editor screenshots.
-        - Strip IDE icon artifacts
-        - Fix Pylance rule names via known corrections
-        - Fix bracket balance in locations
-        - Fix common technical term OCR errors
-        """
-        # 1. Strip icon artifacts (these are VS Code warning/error icons)
+        """Clean text from code editor screenshots."""
         for pattern in self.icon_patterns:
             text = pattern.sub("", text)
-
-        # 2. Fix known OCR error patterns
         text = self._apply_corrections(text)
-
-        # 3. Fix Pylance rule formatting
-        #    "PylancereporUndefinedVariable" → "Pylance(reportUndefinedVariable)"
-        #    "Pylanceire" → remove (partial garble)
         text = self._fix_pylance_rules(text)
-
-        # 4. Fix bracket balance in [Ln N, Col N]
         text = self._fix_location_brackets(text)
-
-        # 5. Strip tabs/header artifacts
         text = self._strip_header_artifacts(text)
-
-        # 6. Normalize whitespace
         text = re.sub(r"\s+", " ", text).strip()
-
         return text
 
     def _clean_form(self, text: str) -> str:
@@ -163,7 +336,6 @@ class ContentValidator:
     def _clean_invoice(self, text: str) -> str:
         """Clean text from invoices."""
         text = self._apply_corrections(text)
-        # Fix common currency OCR errors
         text = re.sub(r"\$\s+", "$", text)
         text = re.sub(r"(\d),(\d{3})", r"\1,\2", text)
         text = re.sub(r"\s+", " ", text).strip()
@@ -178,35 +350,24 @@ class ContentValidator:
     def _apply_corrections(self, text: str) -> str:
         """Apply known OCR correction mappings."""
         for wrong, correct in self.correction_map.items():
-            # Case-insensitive word-boundary replacement
             pattern = re.compile(re.escape(wrong), re.IGNORECASE)
             text = pattern.sub(correct, text)
         return text
 
     def _fix_pylance_rules(self, text: str) -> str:
-        """
-        Fix garbled Pylance rule references.
-        Handles patterns like:
-        - "PylancereportUndefinedVariable" → "Pylance(reportUndefinedVariable)"
-        - "Pylance(reportUndefinedVariable)" → already correct, leave alone
-        - "Pylanceire" / "Pylanceire bie" → remove (garbage)
-        """
-        # Already properly formatted
+        """Fix garbled Pylance rule references."""
         if re.search(r"Pylance\(\w+\)", text):
             return text
 
-        # Pattern: "Pylance" immediately followed by a rule name (no space/paren)
         for rule in PYLANCE_RULES:
             pattern = re.compile(r"Pylance\s*" + re.escape(rule), re.IGNORECASE)
             if pattern.search(text):
                 text = pattern.sub(f"Pylance({rule})", text)
                 return text
 
-        # Pattern: "Pylance" followed by garbled text that's close to a rule name
         pylance_tail = re.search(r"Pylance(\w{10,})", text)
         if pylance_tail:
             garbled = pylance_tail.group(1)
-            # Try to match against known rules
             from rapidfuzz import process as rfprocess, fuzz
             match = rfprocess.extractOne(
                 garbled, list(PYLANCE_RULES), scorer=fuzz.ratio, score_cutoff=50
@@ -217,35 +378,20 @@ class ContentValidator:
                     f"Pylance{garbled}", f"Pylance({matched_rule})"
                 )
 
-        # Remove partial garble like "Pylanceire" / "Pylanceire bie"
         text = re.sub(r"Pylanceire\w*\s*\w*", "", text)
-
         return text
 
     def _fix_location_brackets(self, text: str) -> str:
-        """
-        Fix bracket issues in [Ln N, Col N] location references.
-        Uses a single authoritative regex to rewrite all location refs.
-        """
-        # Fix "Lp" → "Ln" (common OCR error)
+        """Fix bracket issues in [Ln N, Col N] location references."""
         text = re.sub(r"\[Lp\b", "[Ln", text)
+        text = text.replace("&", "8")
 
-        # Fix HTML entities that sneak in
-        text = text.replace("&", "8")  # & in OCR context is usually '8'
-
-        # FIRST: Handle garbled bracket-split numbers BEFORE normal normalization
-        # Pattern: [Ln N, Col D]D] where OCR inserted ] mid-number
-        # e.g. "Col 1]4]" should become "Col 14]"
-        # e.g. "Col 2]6]" should become "Col 26]"
-        # e.g. "Col 3]1]" should become "Col 31]"
-        # e.g. "Col 4]1]" should become "Col 41]"
         text = re.sub(
             r"(Col\s*)(\d)\](\d)\]",
             r"\g<1>\g<2>\g<3>]",
             text,
         )
 
-        # SECOND: Normalize all [Ln N, Col N] to consistent format
         def _rewrite_location(m):
             ln = m.group(1)
             col = m.group(2)
@@ -257,14 +403,9 @@ class ContentValidator:
             text,
         )
 
-        # Fix closing paren → bracket: "Col N)" → "Col N]"
         text = re.sub(r"(Col\s*\d+)\)", r"\1]", text)
-
-        # Fix opening paren → bracket
         text = re.sub(r"\(Ln\s", "[Ln ", text)
 
-        # Final pass: ensure any remaining [Ln N, Col N without ] gets closed
-        # Important: use (?!\d) to ensure we don't truncate a multi-digit number
         text = re.sub(
             r"\[Ln\s*(\d+),?\s*Col\s*(\d+)(?!\d)(?!\])",
             lambda m: f"[Ln {m.group(1)}, Col {m.group(2)}]",
@@ -275,11 +416,25 @@ class ContentValidator:
 
     def _strip_header_artifacts(self, text: str) -> str:
         """Remove IDE tab header artifacts."""
-        # Remove common OCR artifacts from VS Code tabs
         artifacts = ["@)", "«=", "°©", "=~"]
         for art in artifacts:
             text = text.replace(art, "")
         return text
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # Helpers
+    # ═══════════════════════════════════════════════════════════════════════
+
+    @staticmethod
+    def _parse_currency(text: str) -> Optional[float]:
+        """Try to parse a currency value from text."""
+        match = re.search(r"[\$£€¥]?\s*([\d,]+\.?\d*)", text)
+        if match:
+            try:
+                return float(match.group(1).replace(",", ""))
+            except ValueError:
+                return None
+        return None
 
     # Legacy compatibility
     def post_process_technical(self, text: str) -> str:

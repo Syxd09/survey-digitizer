@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'http://127.0.0.1:8000';
 
 export interface ExtractionQuestion {
   question: string;
@@ -114,7 +114,13 @@ export const hydraApi = {
   /**
    * Register a correction to the Hydra Memory Vault
    */
-  registerFeedback: async (imageHash: string, correctedText: string): Promise<boolean> => {
+  registerFeedback: async (
+    imageHash: string, 
+    originalQuestion?: string,
+    correctedQuestion?: string,
+    originalAnswer?: string,
+    correctedAnswer?: string
+  ): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE}/feedback`, {
         method: 'POST',
@@ -122,7 +128,10 @@ export const hydraApi = {
         body: JSON.stringify({
           scanId: 'manual-correction',
           questionId: 'unknown',
-          correctedText,
+          originalQuestion,
+          correctedQuestion,
+          originalAnswer,
+          correctedAnswer,
           imageHash
         })
       });

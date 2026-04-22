@@ -183,10 +183,13 @@ class IngestRequest(BaseModel):
     userId:    str = "anon"
 
 class FeedbackRequest(BaseModel):
-    scanId:        str
-    questionId:    str
-    correctedText: str
-    imageHash:     str = Field(..., description="dhash of the crop being corrected")
+    scanId:            str
+    questionId:        str
+    originalQuestion:  Optional[str] = None
+    correctedQuestion: Optional[str] = None
+    originalAnswer:    Optional[str] = None
+    correctedAnswer:   Optional[str] = None
+    imageHash:         str = Field(..., description="dhash of the crop being corrected")
 
 class ExportRequest(BaseModel):
     datasetId: str
@@ -360,8 +363,8 @@ async def ingest_form(
 
     async def _bg_task():
         try:
-            # Always use survey pipeline to ensure LLM refinement is applied
-            result = await orchestrator.digitize_survey(request.image)
+            # Polymorphic routing: doc_classifier decides the pipeline
+            result = await orchestrator.digitize(request.image)
             diag   = result.get("diagnostics", {})
             storage.update_scan_results(request.datasetId, scan_id, result, diag)
             logger.info(
@@ -430,12 +433,29 @@ async def register_feedback(
 ):
     """
     Register a user correction so Hydra learns the pattern.
-    imageHash identifies the visual crop; correctedText is the ground truth.
+    Handles dual-edits (both question/label and answer/value).
     """
-    success = orchestrator.register_correction(request.imageHash, request.correctedText)
+    success = False
+    messages = []
+
+    # If the user corrected the extracted answer
+    if request.originalAnswer and request.correctedAnswer and request.originalAnswer != request.correctedAnswer:
+        ans_success = orchestrator.register_correction(request.imageHash, request.correctedAnswer)
+        if ans_success:
+            messages.append("Answer pattern learned.")
+            success = True
+
+    # If the user corrected the question label (e.g., misidentified field)
+    if request.originalQuestion and request.correctedQuestion and request.originalQuestion != request.correctedQuestion:
+        # We append a specific marker so the memory vector space knows it's a field label correction
+        q_success = orchestrator.register_correction(f"label_{request.imageHash}", request.correctedQuestion)
+        if q_success:
+            messages.append("Question pattern learned.")
+            success = True
+
     return {
         "success": success,
-        "message": "Pattern learned." if success else "Failed to save pattern.",
+        "message": " ".join(messages) if success else "No changes to learn or failed to save pattern.",
     }
 
 

@@ -11,22 +11,31 @@ export const Workbench: React.FC = () => {
     scannedPages.length > 0 ? scannedPages[0].id : null
   );
   const [isExporting, setIsExporting] = useState(false);
+  const [viewMode, setViewMode] = useState<'digital' | 'grid'>('digital');
 
   const activeDoc = scannedPages.find(p => p.id === selectedDocId);
 
-  const handleFieldChange = async (questionIndex: number, newValue: string) => {
+  const handleFeedback = async (questionIndex: number, type: 'question' | 'answer', newValue: string) => {
     if (!activeDoc || !activeDoc.result?.extractedData) return;
 
     const questions = [...activeDoc.result.extractedData.questions];
     const target = questions[questionIndex];
     
-    // Update local store immediately for UI responsiveness (optimistic)
-    // In a real app, you might want a specific action in useHydraStore for this
-    target.selected = newValue;
+    let originalQuestion = target.question;
+    let originalAnswer = target.selected || '';
     
-    // Register feedback to Hydra Memory Vault
-    if (target.imageHash) {
-      await hydraApi.registerFeedback(target.imageHash, newValue);
+    if (type === 'question') {
+      if (originalQuestion === newValue) return;
+      target.question = newValue; // optimistic update
+      if (target.imageHash) {
+        await hydraApi.registerFeedback(target.imageHash, originalQuestion, newValue, undefined, undefined);
+      }
+    } else {
+      if (originalAnswer === newValue) return;
+      target.selected = newValue; // optimistic update
+      if (target.imageHash) {
+        await hydraApi.registerFeedback(target.imageHash, undefined, undefined, originalAnswer, newValue);
+      }
     }
   };
 
@@ -49,7 +58,7 @@ export const Workbench: React.FC = () => {
     
     try {
       setIsExporting(true); // Re-using export state for loading indicator
-      const response = await fetch('http://localhost:8000/approve-survey', {
+      const response = await fetch('http://127.0.0.1:8000/approve-survey', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -144,18 +153,42 @@ export const Workbench: React.FC = () => {
               </button>
             </div>
 
-            {activeDoc.result?.extractedData?.survey_data ? (
+            {activeDoc.result && (
+              <div className="workbench-content">
+            <div className="view-controls">
+              <div className="view-toggle">
+                <button 
+                  className={viewMode === 'digital' ? 'active' : ''} 
+                  onClick={() => setViewMode('digital')}
+                  disabled={!activeDoc.result?.extractedData?.survey_data}
+                >
+                  Digital View
+                </button>
+                <button 
+                  className={viewMode === 'grid' ? 'active' : ''} 
+                  onClick={() => setViewMode('grid')}
+                >
+                  Edit Grid
+                </button>
+              </div>
+              <div className="doc-info-badge">
+                {activeDoc.result.diagnostics?.doc_type?.type?.toUpperCase() || 'DOCUMENT'}
+              </div>
+            </div>
+
+            {viewMode === 'digital' && activeDoc.result?.extractedData?.survey_data ? (
               <DigitalSurveyForm
                 scanId={activeDoc.id}
                 surveyData={activeDoc.result.extractedData.survey_data}
                 questions={activeDoc.result.extractedData.questions}
                 onApprove={handleApproveSurvey}
+                onFeedback={handleFeedback}
                 isApproving={isExporting}
               />
             ) : (
               <div className="grid-container">
                 <div className="grid-header">
-                  <div>SURVEY FIELD</div>
+                  <div>FIELD LABEL (EDITABLE)</div>
                   <div>EXTRACTED VALUE (EDITABLE)</div>
                   <div>CONFIDENCE</div>
                 </div>
@@ -171,14 +204,21 @@ export const Workbench: React.FC = () => {
                       <div key={idx} className="grid-row">
                         <div className="field-label">
                           <span className="row-num">{idx + 1}</span>
-                          {q.question}
+                          <input
+                            type="text"
+                            defaultValue={q.question}
+                            onBlur={(e) => handleFeedback(idx, 'question', e.target.value)}
+                            className="editable-label"
+                            title="Edit field label to train the system"
+                          />
                         </div>
                         <div className="input-wrapper">
                           <input
                             type="text"
                             defaultValue={q.selected || ''}
-                            onBlur={(e) => handleFieldChange(idx, e.target.value)}
+                            onBlur={(e) => handleFeedback(idx, 'answer', e.target.value)}
                             className={q.confidence > 0.85 ? 'high-conf' : ''}
+                            title="Edit extracted value"
                           />
                           {q.confidence > 0.95 && <div className="neural-glow-line" />}
                         </div>
@@ -197,13 +237,15 @@ export const Workbench: React.FC = () => {
               </div>
             )}
           </div>
-        ) : (
-          <div className="workbench-intro">
-            <Database size={64} color="var(--on-surface-muted)" />
-            <h2>Authority Workbench</h2>
-            <p>Select a document from the sidebar to review and verify extraction results.</p>
-          </div>
         )}
+      </div>
+    ) : (
+      <div className="workbench-intro">
+        <Database size={64} color="var(--on-surface-muted)" />
+        <h2>Authority Workbench</h2>
+        <p>Select a document from the sidebar to review and verify extraction results.</p>
+      </div>
+    )}
       </div>
     </div>
   );

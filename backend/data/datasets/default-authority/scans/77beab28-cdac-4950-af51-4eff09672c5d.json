@@ -1,0 +1,1639 @@
+{
+  "datasetId": "default-authority",
+  "userId": "admin",
+  "scanId": "77beab28-cdac-4950-af51-4eff09672c5d",
+  "status": "bad",
+  "confidence": 0.3413,
+  "imageUrl": "",
+  "createdAt": "2026-04-21T20:30:49.872859+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-21T20:30:49.872869+00:00"
+    },
+    {
+      "stage": "PROCESSING",
+      "timestamp": "2026-04-21T20:30:49.873409+00:00",
+      "metadata": {}
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-21T20:31:00.255344+00:00",
+      "metadata": {
+        "status": "bad",
+        "export_allowed": false
+      }
+    }
+  ],
+  "lastUpdatedAt": "2026-04-21T20:30:49.873400+00:00",
+  "exportAllowed": false,
+  "nullRate": 0.0,
+  "extractedData": {
+    "questions": [
+      {
+        "question": "Field 2",
+        "selected": "BRASCH MAVE;",
+        "confidence": 0.1056,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 3",
+        "selected": "DeiiRADUA(uti",
+        "confidence": 0.0704,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 4",
+        "selected": "Sulliiotspi Lin",
+        "confidence": 0.0926,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 5",
+        "selected": "Ratncsh",
+        "confidence": 0.5328,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 6",
+        "selected": "1772617469-",
+        "confidence": 0.7212,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 7",
+        "selected": "crifer Ajmc:",
+        "confidence": 0.5055,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 8",
+        "selected": "#souup",
+        "confidence": 0.3095,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 9",
+        "selected": "lilo3k202e",
+        "confidence": 0.1723,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 10",
+        "selected": "Tmnlct ID ( udc",
+        "confidence": 0.0375,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 11",
+        "selected": "Date e Inlaton :",
+        "confidence": 0.0494,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 12",
+        "selected": "Vcrifier In Tinc",
+        "confidence": 0.2644,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 13",
+        "selected": "#' 3#m",
+        "confidence": 0.1779,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 14",
+        "selected": "IpAw",
+        "confidence": 0.0361,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 15",
+        "selected": "Io:",
+        "confidence": 0.2199,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 16",
+        "selected": "Trrification Audit Siart Tinie",
+        "confidence": 0.1083,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 17",
+        "selected": "Tnn' (ul Time",
+        "confidence": 0.1056,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 18",
+        "selected": "Kor",
+        "confidence": 0.0194,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 19",
+        "selected": "Tip (M",
+        "confidence": 0.0372,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 20",
+        "selected": "S Ao",
+        "confidence": 0.1756,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 21",
+        "selected": "4ONM Vibek",
+        "confidence": 0.011,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 22",
+        "selected": "3nt",
+        "confidence": 0.0651,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 23",
+        "selected": "Rontauer",
+        "confidence": 0.1787,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 24",
+        "selected": "6o' Hnazdi A rt' Gum",
+        "confidence": 0.002,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 25",
+        "selected": "Mbeact",
+        "confidence": 0.1588,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 26",
+        "selected": "TedA TeGuk (lr",
+        "confidence": 0.0053,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 27",
+        "selected": "1n6an",
+        "confidence": 0.0294,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 28",
+        "selected": "Faclt",
+        "confidence": 0.0695,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 29",
+        "selected": "(4r Mismalth In",
+        "confidence": 0.4847,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 30",
+        "selected": "Urujnieni",
+        "confidence": 0.0462,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 31",
+        "selected": "(ln (.2l,",
+        "confidence": 0.0284,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 32",
+        "selected": "Co 4{7e",
+        "confidence": 0.0264,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 33",
+        "selected": "Pr CoX",
+        "confidence": 0.0622,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 34",
+        "selected": "Facked Suctr (Fhnal,",
+        "confidence": 0.0256,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 35",
+        "selected": "Gan)",
+        "confidence": 0.0494,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 36",
+        "selected": "Ic",
+        "confidence": 0.184,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 37",
+        "selected": "46+\"",
+        "confidence": 0.0046,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 38",
+        "selected": "Acidaii\" (",
+        "confidence": 0.1322,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 39",
+        "selected": "Iamptted",
+        "confidence": 0.0899,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 40",
+        "selected": "Vutau Dar",
+        "confidence": 0.4784,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 41",
+        "selected": "Ornancauion",
+        "confidence": 0.3223,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 42",
+        "selected": "Walbi",
+        "confidence": 0.0171,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 43",
+        "selected": "Ij Jtenuiln Gnie",
+        "confidence": 0.4505,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 44",
+        "selected": "Fat Azeno} (le",
+        "confidence": 0.0148,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 45",
+        "selected": "Iik o",
+        "confidence": 0.0178,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 46",
+        "selected": "(inaite",
+        "confidence": 0.042,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 47",
+        "selected": "Agerti1a Gms}",
+        "confidence": 0.5886,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 48",
+        "selected": "Dmrn:",
+        "confidence": 0.0129,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 49",
+        "selected": "Oa1ui",
+        "confidence": 0.0257,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 50",
+        "selected": "Tul",
+        "confidence": 0.4673,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 51",
+        "selected": "O~1ei",
+        "confidence": 0.0719,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 52",
+        "selected": "DulbAr",
+        "confidence": 0.4583,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 53",
+        "selected": "K<74i",
+        "confidence": 0.0285,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 54",
+        "selected": "6m",
+        "confidence": 0.1373,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 55",
+        "selected": "PO4 <",
+        "confidence": 0.2892,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 56",
+        "selected": "(Li",
+        "confidence": 0.0844,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 57",
+        "selected": "Aotei",
+        "confidence": 0.004,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 58",
+        "selected": "Lartars",
+        "confidence": 0.007,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 59",
+        "selected": "I(A",
+        "confidence": 0.1027,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 60",
+        "selected": "MICao",
+        "confidence": 0.0603,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 61",
+        "selected": "TAf [a868",
+        "confidence": 0.0316,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 62",
+        "selected": "TAF",
+        "confidence": 0.5081,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 63",
+        "selected": "FoA Ga8",
+        "confidence": 0.0736,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 64",
+        "selected": "FOA czses",
+        "confidence": 0.1848,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 65",
+        "selected": "PO | (JscS",
+        "confidence": 0.5027,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 66",
+        "selected": "Foacc",
+        "confidence": 0.0524,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 67",
+        "selected": "F() ( \u20acJ8cs",
+        "confidence": 0.0216,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 68",
+        "selected": "(Jec",
+        "confidence": 0.4011,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 69",
+        "selected": "PriSATVA",
+        "confidence": 0.0881,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 70",
+        "selected": "Ok",
+        "confidence": 0.1753,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 71",
+        "selected": "Poa",
+        "confidence": 0.7946,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 72",
+        "selected": "I1",
+        "confidence": 0.1218,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 73",
+        "selected": "WWMkusa",
+        "confidence": 0.0039,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 74",
+        "selected": "I2S6v",
+        "confidence": 0.1656,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 75",
+        "selected": "(hindr 1",
+        "confidence": 0.1519,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 76",
+        "selected": "14",
+        "confidence": 0.7497,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 77",
+        "selected": "Ile.40",
+        "confidence": 0.4202,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 78",
+        "selected": "l1S?iuz2",
+        "confidence": 0.0513,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 79",
+        "selected": "No | |lt2.40",
+        "confidence": 0.4137,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 80",
+        "selected": "I9/0312024",
+        "confidence": 0.31,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 81",
+        "selected": "Dk",
+        "confidence": 0.3386,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 82",
+        "selected": "14",
+        "confidence": 0.6616,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 83",
+        "selected": "I2sw",
+        "confidence": 0.2394,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 84",
+        "selected": "NVo",
+        "confidence": 0.3848,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 85",
+        "selected": "118445",
+        "confidence": 0.3411,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 86",
+        "selected": "ND",
+        "confidence": 0.5928,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 87",
+        "selected": "Afov",
+        "confidence": 0.1557,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 88",
+        "selected": "JSa",
+        "confidence": 0.1908,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 89",
+        "selected": "Pon",
+        "confidence": 0.2642,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 91",
+        "selected": "#ARSH: ~HANRI",
+        "confidence": 0.124,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 92",
+        "selected": "Mnsisidr",
+        "confidence": 0.0734,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 93",
+        "selected": "m|Il8uo",
+        "confidence": 0.1732,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 94",
+        "selected": "13",
+        "confidence": 0.9853,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 95",
+        "selected": "99.30",
+        "confidence": 0.2782,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 96",
+        "selected": "Is9198607 No",
+        "confidence": 0.2832,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 97",
+        "selected": "Iof: 30",
+        "confidence": 0.2417,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 98",
+        "selected": "14/0312025",
+        "confidence": 0.502,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 99",
+        "selected": "13",
+        "confidence": 0.9854,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 100",
+        "selected": "Ok",
+        "confidence": 0.3276,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 101",
+        "selected": "lio1z0/99.30",
+        "confidence": 0.2146,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 102",
+        "selected": "ND",
+        "confidence": 0.9837,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 103",
+        "selected": "No",
+        "confidence": 0.4579,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 104",
+        "selected": "Iikov _",
+        "confidence": 0.1245,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 105",
+        "selected": "Iino5",
+        "confidence": 0.1651,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 106",
+        "selected": "Por",
+        "confidence": 0.2558,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 107",
+        "selected": "0 |z60",
+        "confidence": 0.0997,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 108",
+        "selected": "MTT RATATT",
+        "confidence": 0.0829,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 109",
+        "selected": "Mhisimainjii7",
+        "confidence": 0.0164,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 110",
+        "selected": "02",
+        "confidence": 0.5917,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 111",
+        "selected": "19So",
+        "confidence": 0.9927,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 112",
+        "selected": "(sa)9e616",
+        "confidence": 0.1967,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 113",
+        "selected": "03",
+        "confidence": 0.9301,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 114",
+        "selected": "No",
+        "confidence": 0.8242,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 115",
+        "selected": "0k",
+        "confidence": 0.252,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 116",
+        "selected": "18.90",
+        "confidence": 0.9053,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 117",
+        "selected": "lin 5o |i8.90",
+        "confidence": 0.1072,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 118",
+        "selected": "2026",
+        "confidence": 0.8269,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 119",
+        "selected": "Nd",
+        "confidence": 0.5542,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 120",
+        "selected": "ND",
+        "confidence": 0.2699,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 121",
+        "selected": "Z650",
+        "confidence": 0.431,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 122",
+        "selected": "Jafex",
+        "confidence": 0.4693,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 123",
+        "selected": "76",
+        "confidence": 0.4755,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 124",
+        "selected": "Pon",
+        "confidence": 0.6178,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 125",
+        "selected": "144",
+        "confidence": 0.2023,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 126",
+        "selected": "044,00sun7 8i0",
+        "confidence": 0.0365,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 127",
+        "selected": "68 g0",
+        "confidence": 0.2235,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 128",
+        "selected": "BAAMSGi VG",
+        "confidence": 0.4111,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 129",
+        "selected": "Np",
+        "confidence": 0.7779,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 130",
+        "selected": "Ok",
+        "confidence": 0.1988,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 131",
+        "selected": "19lo31202",
+        "confidence": 0.723,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 132",
+        "selected": "IS91q8 61",
+        "confidence": 0.4188,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 133",
+        "selected": "960",
+        "confidence": 0.7813,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 134",
+        "selected": "59-70",
+        "confidence": 0.7296,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 135",
+        "selected": "6850|5940",
+        "confidence": 0.1685,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 136",
+        "selected": "ND",
+        "confidence": 0.9572,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 137",
+        "selected": "Nd",
+        "confidence": 0.2965,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 139",
+        "selected": "1900312024",
+        "confidence": 0.3764,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 141",
+        "selected": "Poa",
+        "confidence": 0.8913,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 142",
+        "selected": "6320",
+        "confidence": 0.4457,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 143",
+        "selected": "No",
+        "confidence": 0.9855,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 144",
+        "selected": "06",
+        "confidence": 0.5323,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 146",
+        "selected": "63-60|6.2+20",
+        "confidence": 0.2479,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 147",
+        "selected": "\"47oo057044i",
+        "confidence": 0.0112,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 148",
+        "selected": "ViriSh SHAM'",
+        "confidence": 0.1624,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 149",
+        "selected": "62.23",
+        "confidence": 0.6966,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 150",
+        "selected": "K9986ps",
+        "confidence": 0.1309,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 151",
+        "selected": "06",
+        "confidence": 0.9997,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 152",
+        "selected": "8o'golx",
+        "confidence": 0.1829,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 153",
+        "selected": "No",
+        "confidence": 0.9902,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 154",
+        "selected": "Nd",
+        "confidence": 0.3656,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 155",
+        "selected": "Iifd",
+        "confidence": 0.1813,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 157",
+        "selected": "Yop",
+        "confidence": 0.4066,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 158",
+        "selected": "0y",
+        "confidence": 0.1745,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 159",
+        "selected": "26,30",
+        "confidence": 0.962,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 160",
+        "selected": "4136",
+        "confidence": 0.1582,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 161",
+        "selected": "Nd",
+        "confidence": 0.7432,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 162",
+        "selected": "9-So",
+        "confidence": 0.9366,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 163",
+        "selected": "ASAR W!i",
+        "confidence": 0.6359,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 164",
+        "selected": "9-0",
+        "confidence": 0.6834,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 165",
+        "selected": "mmsm (6gox",
+        "confidence": 0.0073,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 166",
+        "selected": "19jo3/2126",
+        "confidence": 0.5,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 167",
+        "selected": "O1",
+        "confidence": 0.1682,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 168",
+        "selected": "DX",
+        "confidence": 0.2333,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 169",
+        "selected": "[sq198602",
+        "confidence": 0.4767,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 170",
+        "selected": "950",
+        "confidence": 0.6381,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 171",
+        "selected": "Nd",
+        "confidence": 0.8851,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 172",
+        "selected": "910",
+        "confidence": 0.8505,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 173",
+        "selected": "Nd",
+        "confidence": 0.7609,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 174",
+        "selected": "Afoy",
+        "confidence": 0.1329,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 175",
+        "selected": "ok",
+        "confidence": 0.3479,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 176",
+        "selected": "ly",
+        "confidence": 0.6299,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 177",
+        "selected": "NA Shi",
+        "confidence": 0.0833,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 178",
+        "selected": "Pon",
+        "confidence": 0.8049,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 179",
+        "selected": "Kaise6o8]",
+        "confidence": 0.5614,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 180",
+        "selected": "Iu",
+        "confidence": 0.6627,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 181",
+        "selected": "37-0D",
+        "confidence": 0.1655,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 182",
+        "selected": "Exuo | ox",
+        "confidence": 0.5853,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 183",
+        "selected": "Nu",
+        "confidence": 0.9724,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 184",
+        "selected": "157",
+        "confidence": 0.3381,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 185",
+        "selected": "uD.Z0",
+        "confidence": 0.5135,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 186",
+        "selected": "\" (maynsui~*21",
+        "confidence": 0.0029,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 187",
+        "selected": "14",
+        "confidence": 0.7156,
+        "status": "VALID",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 188",
+        "selected": "Un Zo",
+        "confidence": 0.4507,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 189",
+        "selected": "2a.m",
+        "confidence": 0.9654,
+        "status": "OK",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 190",
+        "selected": "claaion2g",
+        "confidence": 0.1375,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 191",
+        "selected": "No)",
+        "confidence": 0.6954,
+        "status": "MODERATE_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 192",
+        "selected": "MMav|",
+        "confidence": 0.1328,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      },
+      {
+        "question": "Field 193",
+        "selected": "Nlo)",
+        "confidence": 0.2948,
+        "status": "LOW_CONFIDENCE",
+        "source": "ocr_only",
+        "agreement": false
+      }
+    ],
+    "diagnostics": {
+      "vision": {
+        "is_dark_mode": false,
+        "enhanced_upscaled": true
+      },
+      "doc_type": {
+        "type": "table",
+        "confidence": 0.35,
+        "signals_matched": [],
+        "hints": {
+          "has_dark_bg": false,
+          "handwriting_density": 0.0974,
+          "has_table_lines": true,
+          "h_lines": 156,
+          "v_lines": 59
+        },
+        "all_scores": {
+          "code_screenshot": 0.0,
+          "survey_form": 0.0,
+          "form": 0.082,
+          "invoice": 0.0,
+          "handwritten": 0.0,
+          "table": 0.5,
+          "general": 0.0
+        },
+        "fallback": false
+      },
+      "ocr_counts": {
+        "paddle": 0,
+        "easyocr": 197,
+        "tesseract": 88
+      },
+      "ensemble_regions": 193,
+      "vlm_skeleton": {
+        "status": "ok",
+        "fields_count": 0,
+        "has_table": false,
+        "sections": [
+          "PATNESS"
+        ]
+      },
+      "mapped_entries": 187,
+      "source_breakdown": {
+        "ocr_only": 187
+      },
+      "duration": 10.34,
+      "logic_version": "Hydra-v13.0-VLM-DRIVEN",
+      "engine": "LOCAL_HYDRA_V11",
+      "avg_confidence": 0.3413,
+      "null_rate": 0.0,
+      "question_count": 187,
+      "handwriting_mode": false
+    }
+  },
+  "diagnostics": {
+    "vision": {
+      "is_dark_mode": false,
+      "enhanced_upscaled": true
+    },
+    "doc_type": {
+      "type": "table",
+      "confidence": 0.35,
+      "signals_matched": [],
+      "hints": {
+        "has_dark_bg": false,
+        "handwriting_density": 0.0974,
+        "has_table_lines": true,
+        "h_lines": 156,
+        "v_lines": 59
+      },
+      "all_scores": {
+        "code_screenshot": 0.0,
+        "survey_form": 0.0,
+        "form": 0.082,
+        "invoice": 0.0,
+        "handwritten": 0.0,
+        "table": 0.5,
+        "general": 0.0
+      },
+      "fallback": false
+    },
+    "ocr_counts": {
+      "paddle": 0,
+      "easyocr": 197,
+      "tesseract": 88
+    },
+    "ensemble_regions": 193,
+    "vlm_skeleton": {
+      "status": "ok",
+      "fields_count": 0,
+      "has_table": false,
+      "sections": [
+        "PATNESS"
+      ]
+    },
+    "mapped_entries": 187,
+    "source_breakdown": {
+      "ocr_only": 187
+    },
+    "duration": 10.34,
+    "logic_version": "Hydra-v13.0-VLM-DRIVEN",
+    "engine": "LOCAL_HYDRA_V11",
+    "avg_confidence": 0.3413,
+    "null_rate": 0.0,
+    "question_count": 187,
+    "handwriting_mode": false
+  },
+  "processedAt": "2026-04-21T20:31:00.255356+00:00",
+  "logicVersion": "Hydra-v11.0"
+}

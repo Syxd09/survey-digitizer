@@ -9,8 +9,9 @@ Strategy:
 """
 
 import logging
+import cv2
 import numpy as np
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Any
 from collections import Counter
 from rapidfuzz import fuzz, process as rfprocess
 
@@ -26,19 +27,17 @@ class EnsembleVoter:
         paddle_res: List[Dict],
         easy_res: List[Dict],
         tess_res: List[Dict],
+        handwriting_engine: Optional[Any] = None,
+        image_bgr: Optional[np.ndarray] = None,
     ) -> List[Dict]:
         """
         Multi-engine consolidation using scaffold + patch strategy.
-
-        1. Build line-level scaffolds from EasyOCR (longest reads)
-        2. For each scaffold, find overlapping Tesseract words and patch errors
-        3. Cross-validate with PaddleOCR if available
+        Now includes TrOCR-large for high-accuracy handwriting extraction.
         """
         if not easy_res and not paddle_res and not tess_res:
             return []
 
         # ── Step 1: Build scaffolds from line-level engines ──────────────
-        # EasyOCR and Paddle produce line-level reads; Tesseract is word-level
         line_engines = []
         for r in easy_res:
             line_engines.append({**r, "engine": "easy"})
@@ -49,28 +48,68 @@ class EnsembleVoter:
         for r in tess_res:
             word_engines.append({**r, "engine": "tesseract"})
 
-        # If no line-level engines, reconstruct lines from Tesseract words
         if not line_engines:
             line_engines = self._reconstruct_lines_from_words(word_engines)
 
-        # ── Step 2: Deduplicate line-level reads (EasyOCR ↔ Paddle) ──────
+        # ── Step 2: Deduplicate line-level reads ─────────────────────────
         scaffolds = self._deduplicate_lines(line_engines)
 
-        # ── Step 3: Patch each scaffold with Tesseract words ─────────────
+        # ── Step 3: Patch each scaffold with Tesseract + TrOCR ───────────
         results = []
         for scaffold in scaffolds:
-            overlapping_words = self._find_overlapping_words(
-                scaffold["bbox"], word_engines
-            )
-            patched_text, confidence = self._patch_with_words(
+            bbox = scaffold["bbox"]
+            overlapping_words = self._find_overlapping_words(bbox, word_engines)
+            
+            # Base patched text from OCR ensemble
+            patched_text, ensemble_conf = self._patch_with_words(
                 scaffold["text"], scaffold["conf"], overlapping_words
             )
 
+            final_text = patched_text
+            final_conf = ensemble_conf
+            source_engine = scaffold.get("engines", [scaffold["engine"]])
+
+            # ── Step 4: TrOCR-large Refinement (High Accuracy) ───────────
+            # Trigger TrOCR if:
+            # 1. Ensemble confidence is low (< 0.7)
+            # 2. Text looks like handwriting (detected by doc_classifier or density)
+            # 3. Handwriting engine is available
+            is_likely_handwritten = self._is_handwriting_candidate(patched_text)
+            
+            if handwriting_engine and image_bgr is not None and (ensemble_conf < 0.7 or is_likely_handwritten):
+                try:
+                    # Crop image for TrOCR
+                    x1, y1, x2, y2 = map(int, bbox)
+                    # Add small padding
+                    h, w = image_bgr.shape[:2]
+                    px1, py1 = max(0, x1-5), max(0, y1-2)
+                    px2, py2 = min(w, x2+5), min(h, y2+2)
+                    crop = image_bgr[py1:py2, px1:px2]
+                    
+                    if crop.size > 0:
+                        try:
+                            from PIL import Image as PILImage
+                            # Convert BGR (OpenCV) to RGB (PIL)
+                            crop_rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
+                            pil_crop = PILImage.fromarray(crop_rgb)
+                            
+                            trocr_text = handwriting_engine.extract_text(pil_crop)
+                            if trocr_text and len(trocr_text.strip()) > 0:
+                                # If TrOCR produces something meaningfully different, prefer it for handwritten zones
+                                if is_likely_handwritten or ensemble_conf < 0.5:
+                                    final_text = trocr_text
+                                    final_conf = 0.95  # TrOCR-large is highly trusted
+                                    source_engine.append("trocr_large")
+                        except Exception as e:
+                            logger.error(f"[ENSEMBLE] TrOCR cell extraction failed: {e}")
+                except Exception as e:
+                    logger.error(f"[ENSEMBLE] TrOCR refinement failed: {e}")
+
             results.append({
-                "text": patched_text,
-                "bbox": scaffold["bbox"],
-                "conf": confidence,
-                "engines": scaffold.get("engines", [scaffold["engine"]]),
+                "text": final_text,
+                "bbox": bbox,
+                "conf": final_conf,
+                "engines": source_engine,
                 "raw_scaffold": scaffold["text"],
             })
 
@@ -381,6 +420,30 @@ class EnsembleVoter:
         if min_area == 0:
             return 0.0
         return inter / float(min_area)
+
+
+    def _is_handwriting_candidate(self, text: str) -> bool:
+        """
+        Check if text looks like it might be handwritten.
+        Signals: messy OCR text, lowercase/mixed case inconsistency, 
+        or common handwriting OCR failure patterns.
+        """
+        if not text:
+            return False
+            
+        # Mixed case inconsistency
+        if any(c.islower() for c in text) and any(c.isupper() for c in text):
+            # If it's a long string without spaces, likely garbled handwriting
+            if len(text) > 10 and ' ' not in text:
+                return True
+        
+        # Common EasyOCR/Tesseract symbols for handwriting noise
+        noise_symbols = ['|', '/', '\\', '(', ')', '[', ']', '{', '}']
+        noise_count = sum(1 for c in text if c in noise_symbols)
+        if noise_count > 1:
+            return True
+            
+        return False
 
 
 def get_voter():

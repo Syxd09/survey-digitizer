@@ -1,0 +1,46 @@
+{
+  "datasetId": "default-authority",
+  "userId": "admin",
+  "scanId": "7941a076-9b34-41e7-a4ae-2bf4e810c320",
+  "status": "bad",
+  "confidence": 0.0,
+  "imageUrl": "",
+  "createdAt": "2026-04-22T08:46:09.254395+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-22T08:46:09.254415+00:00"
+    },
+    {
+      "stage": "PROCESSING",
+      "timestamp": "2026-04-22T08:46:09.255303+00:00",
+      "metadata": {}
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-22T08:46:10.993331+00:00",
+      "metadata": {
+        "status": "bad",
+        "export_allowed": false
+      }
+    }
+  ],
+  "lastUpdatedAt": "2026-04-22T08:46:09.255290+00:00",
+  "exportAllowed": false,
+  "nullRate": 0.0,
+  "extractedData": {
+    "questions": [],
+    "diagnostics": {
+      "error": "OCR failed: 'SurveyProcessor' object has no attribute 'handwriting_engine'",
+      "engine": "NONE",
+      "logic_version": "Hydra-v11.0-PRODUCTION"
+    }
+  },
+  "diagnostics": {
+    "error": "OCR failed: 'SurveyProcessor' object has no attribute 'handwriting_engine'",
+    "engine": "NONE",
+    "logic_version": "Hydra-v11.0-PRODUCTION"
+  },
+  "processedAt": "2026-04-22T08:46:10.993359+00:00",
+  "logicVersion": "Hydra-v11.0"
+}

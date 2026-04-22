@@ -91,12 +91,14 @@ class SurveyExtractor:
     Dynamically detects table structure, column headers, and response marks.
     """
 
-    def __init__(self, ocr_engines: Dict = None):
+    def __init__(self, ocr_engines: Dict = None, handwriting_engine=None):
         """
         Args:
             ocr_engines: dict with 'easyocr' and/or 'tesseract' reader instances
+            handwriting_engine: optional HandwritingEngine instance
         """
         self.ocr_engines = ocr_engines or {}
+        self.handwriting_engine = handwriting_engine
         self._easyocr_reader = None
         self._tesseract_available = False
         self._init_ocr()
@@ -674,7 +676,7 @@ class SurveyExtractor:
     # ─── OCR Utilities ────────────────────────────────────────────────────
 
     def _ocr_cell(self, cell_image: np.ndarray) -> str:
-        """OCR a single cell crop. Uses EasyOCR first, Tesseract as fallback."""
+        """OCR a single cell crop. Uses TrOCR for handwriting, then EasyOCR/Tesseract."""
         if cell_image.size == 0:
             return ""
 
@@ -682,13 +684,27 @@ class SurveyExtractor:
         if h < 8 or w < 8:
             return ""
 
-        # Upscale small crops for better OCR
+        # 1. Try Handwriting Engine (TrOCR-Large) first for maximum accuracy
+        # Especially if the cell is likely handwritten
+        if self.handwriting_engine:
+            try:
+                from PIL import Image as PILImage
+                # Convert BGR to RGB for TrOCR
+                cell_rgb = cv2.cvtColor(cell_image, cv2.COLOR_BGR2RGB)
+                pil_crop = PILImage.fromarray(cell_rgb)
+                text = self.handwriting_engine.extract_text(pil_crop)
+                if text.strip() and len(text.strip()) > 1:
+                    return text.strip()
+            except Exception as e:
+                logger.warning(f"[SURVEY] TrOCR cell extraction failed: {e}")
+
+        # Upscale small crops for better standard OCR
         if h < 40 or w < 80:
             scale = max(2, 60 // h)
             cell_image = cv2.resize(cell_image, None, fx=scale, fy=scale,
                                     interpolation=cv2.INTER_CUBIC)
 
-        # Try EasyOCR
+        # 2. Try EasyOCR
         if self._easyocr_reader:
             try:
                 results = self._easyocr_reader.readtext(cell_image, detail=1)
@@ -698,7 +714,7 @@ class SurveyExtractor:
             except Exception:
                 pass
 
-        # Fallback: Tesseract
+        # 3. Fallback: Tesseract
         if self._tesseract_available:
             try:
                 import pytesseract

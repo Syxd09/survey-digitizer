@@ -19,6 +19,7 @@ interface DigitalSurveyFormProps {
   };
   questions: ExtractionQuestion[];
   onApprove: (approvedQuestions: ExtractionQuestion[]) => Promise<void>;
+  onFeedback?: (index: number, type: 'question' | 'answer', newValue: string) => void;
   isApproving?: boolean;
 }
 
@@ -27,20 +28,39 @@ export const DigitalSurveyForm: React.FC<DigitalSurveyFormProps> = ({
   surveyData,
   questions: initialQuestions,
   onApprove,
+  onFeedback,
   isApproving = false
 }) => {
   const [questions, setQuestions] = useState<ExtractionQuestion[]>(initialQuestions);
 
   const handleCellClick = (qIndex: number, headerValue: string) => {
     const updated = [...questions];
-    updated[qIndex].selected = headerValue;
+    const target = updated[qIndex];
+    const originalAnswer = target.selected || '';
+    
+    if (originalAnswer === headerValue) return;
+    
+    target.selected = headerValue;
     setQuestions(updated);
+    
+    if (onFeedback && target.imageHash) {
+      onFeedback(qIndex, 'answer', headerValue);
+    }
   };
 
   const handleQuestionTextChange = (qIndex: number, newText: string) => {
     const updated = [...questions];
-    updated[qIndex].question = newText;
+    const target = updated[qIndex];
+    const originalQuestion = target.question;
+    
+    if (originalQuestion === newText) return;
+    
+    target.question = newText;
     setQuestions(updated);
+    
+    if (onFeedback && target.imageHash) {
+      onFeedback(qIndex, 'question', newText);
+    }
   };
 
   // Support both legacy column_headers and new columns array

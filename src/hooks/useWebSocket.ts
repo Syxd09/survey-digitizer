@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 
-const WS_URL = 'ws://localhost:8000/ws';
+const WS_URL = 'ws://127.0.0.1:8000/ws';
 const RECONNECT_DELAY = 3000;
 const PING_INTERVAL = 25000;
 

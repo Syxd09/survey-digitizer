@@ -1,16 +1,21 @@
 """
-Hydra v12.5 — Document Classifier
+Hydra v13.0 — Document Classifier
 ===================================
-Heuristic-based document type detection.
+Hardened heuristic-based document type detection.
 Routes the pipeline based on OCR text signals + image features.
-No ML model — pure signal analysis for zero-latency classification.
+
+v13.0 improvements:
+- Confidence threshold with fallback routing
+- Visual-only classification fallback (when OCR fails)
+- Multi-signal scoring with weighted confidence
+- Handwriting detection via edge analysis
 """
 
 import re
 import cv2
 import numpy as np
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +24,7 @@ logger = logging.getLogger(__name__)
 DOC_TYPES = {
     "code_screenshot": {
         "description": "IDE / terminal / code editor screenshot",
+        "weight": 1.0,
         "signals": [
             r"\bPylance\b", r"\bLn\s*\d+", r"\bCol\s*\d+", r"\berror\b",
             r"\bwarning\b", r"\bimport\b", r"\bdef\b", r"\bclass\b",
@@ -29,6 +35,7 @@ DOC_TYPES = {
     },
     "survey_form": {
         "description": "Survey / questionnaire with table + checkmarks or circled responses",
+        "weight": 1.2,  # Boost — primary use case
         "signals": [
             r"\bQuestionnaire\b", r"\bS\.?\s*No\b", r"\bQuestions?\b",
             r"\bNot\s*True\b", r"\bSomewhat\s*True\b", r"\bCertainly\s*True\b",
@@ -43,6 +50,7 @@ DOC_TYPES = {
     },
     "form": {
         "description": "Generic form / application",
+        "weight": 0.9,
         "signals": [
             r"\bName\b", r"\bAddress\b", r"\bDate\b", r"\bSignature\b",
             r"\bPhone\b", r"\bEmail\b", r"\bAge\b", r"\bGender\b",
@@ -51,6 +59,7 @@ DOC_TYPES = {
     },
     "invoice": {
         "description": "Invoice / receipt / financial document",
+        "weight": 1.0,
         "signals": [
             r"\bTotal\b", r"\bAmount\b", r"\bInvoice\b", r"\bReceipt\b",
             r"\$\s*\d+", r"\bTax\b", r"\bSubtotal\b", r"\bQty\b",
@@ -59,27 +68,37 @@ DOC_TYPES = {
     },
     "handwritten": {
         "description": "Handwritten note / document",
+        "weight": 1.0,
         "signals": [],  # Detected via image features, not text
     },
     "table": {
         "description": "Document dominated by tabular data",
+        "weight": 0.8,
         "signals": [
             r"\bRow\b", r"\bColumn\b", r"\bHeader\b",
         ],
     },
     "general": {
         "description": "General text document",
+        "weight": 0.5,
         "signals": [],
     },
 }
+
+# Minimum confidence to trust a classification
+CONFIDENCE_THRESHOLD = 0.3
+# Minimum signals needed for a confident classification
+MIN_SIGNALS_FOR_CONFIDENCE = 2
 
 
 class DocumentClassifier:
     """
     Classifies a document image before the pipeline runs.
-    Uses a combination of:
-    1. OCR text signal matching (fast, high-precision)
-    2. Image feature analysis (edge density, line detection for tables)
+    
+    v13.0 hardening:
+    - If confidence < threshold → fallback to "general"
+    - If no OCR text → visual-only classification
+    - Multi-signal weighted scoring
     """
 
     def classify(self, image: np.ndarray, ocr_texts: List[str]) -> Dict[str, Any]:
@@ -92,10 +111,11 @@ class DocumentClassifier:
 
         Returns:
             {
-                "type": "code_screenshot",
-                "confidence": 0.95,
-                "signals_matched": ["Pylance", "Ln", "Col"],
-                "hints": {"has_dark_bg": True, "has_table_lines": False}
+                "type": "survey_form",
+                "confidence": 0.85,
+                "signals_matched": [...],
+                "hints": {...},
+                "fallback": False,
             }
         """
         combined_text = " ".join(ocr_texts)
@@ -115,8 +135,10 @@ class DocumentClassifier:
                 if re.search(pattern, combined_text, re.IGNORECASE):
                     matches.append(pattern)
 
-            # Score = fraction of signals matched, weighted by total matches
-            scores[doc_type] = len(matches) / len(config["signals"]) if config["signals"] else 0
+            # Weighted score
+            raw_score = len(matches) / len(config["signals"]) if config["signals"] else 0
+            weight = config.get("weight", 1.0)
+            scores[doc_type] = raw_score * weight
             matched_signals[doc_type] = matches
 
         # ─── Image Feature Analysis ──────────────────────────────────────
@@ -124,8 +146,8 @@ class DocumentClassifier:
 
         # Handwriting boost from image features
         if hints.get("handwriting_density", 0) > 0.15:
-            scores["handwritten"] = 0.7
-        
+            scores["handwritten"] = max(scores.get("handwritten", 0), 0.7)
+
         # Table boost from detected grid lines
         if hints.get("has_table_lines", False):
             scores["table"] = max(scores.get("table", 0), 0.5)
@@ -137,6 +159,12 @@ class DocumentClassifier:
         if hints.get("has_dark_bg", False):
             scores["code_screenshot"] = scores.get("code_screenshot", 0) * 1.5
 
+        # ─── Visual-Only Fallback ────────────────────────────────────────
+        # If OCR produced no useful text, rely on image features only
+        if not ocr_texts or all(len(t.strip()) < 2 for t in ocr_texts):
+            logger.warning("[CLASSIFIER] No OCR text available — using visual-only classification")
+            return self._classify_visual_only(image, hints)
+
         # ─── Decision ────────────────────────────────────────────────────
         if not any(s > 0 for s in scores.values()):
             best_type = "general"
@@ -145,16 +173,84 @@ class DocumentClassifier:
             best_type = max(scores, key=scores.get)
             confidence = min(scores[best_type], 1.0)
 
+        # ─── Confidence Safety Check ─────────────────────────────────────
+        fallback = False
+        original_type = None
+        matched_count = len(matched_signals.get(best_type, []))
+
+        if confidence < CONFIDENCE_THRESHOLD and best_type != "general":
+            logger.warning(
+                f"[CLASSIFIER] Low confidence ({confidence:.2f}) for '{best_type}' — "
+                f"only {matched_count} signals matched. Falling back to 'general'."
+            )
+            original_type = best_type
+            best_type = "general"
+            fallback = True
+
+        elif matched_count < MIN_SIGNALS_FOR_CONFIDENCE and best_type not in ("general", "handwritten"):
+            # Not enough signals — reduce confidence
+            confidence *= 0.7
+            logger.info(
+                f"[CLASSIFIER] Only {matched_count} signals for '{best_type}' — "
+                f"reducing confidence to {confidence:.2f}"
+            )
+
         result = {
             "type": best_type,
             "confidence": round(confidence, 3),
             "signals_matched": matched_signals.get(best_type, []),
             "hints": hints,
             "all_scores": {k: round(v, 3) for k, v in scores.items()},
+            "fallback": fallback,
         }
-        
-        logger.info(f"[CLASSIFIER] Document type: {best_type} (confidence={confidence:.2f})")
+
+        if original_type:
+            result["original_type"] = original_type
+
+        logger.info(
+            f"[CLASSIFIER] Document type: {best_type} "
+            f"(confidence={confidence:.2f}, signals={matched_count})"
+        )
         return result
+
+    def _classify_visual_only(
+        self, image: np.ndarray, hints: Optional[Dict] = None
+    ) -> Dict[str, Any]:
+        """
+        Visual-only classification when OCR text is unavailable.
+        Uses image features: dark background, table lines, edge density.
+        """
+        if hints is None:
+            hints = self._analyze_image_features(image)
+
+        # Decision tree based on visual features
+        if hints.get("has_dark_bg", False):
+            doc_type = "code_screenshot"
+            confidence = 0.6
+        elif hints.get("has_table_lines", False):
+            # Could be survey or generic table
+            doc_type = "table"
+            confidence = 0.5
+        elif hints.get("handwriting_density", 0) > 0.15:
+            doc_type = "handwritten"
+            confidence = 0.6
+        else:
+            doc_type = "general"
+            confidence = 0.3
+
+        logger.info(
+            f"[CLASSIFIER] Visual-only: {doc_type} (confidence={confidence:.2f})"
+        )
+
+        return {
+            "type": doc_type,
+            "confidence": round(confidence, 3),
+            "signals_matched": [],
+            "hints": hints,
+            "all_scores": {},
+            "fallback": True,
+            "visual_only": True,
+        }
 
     def _analyze_image_features(self, img: np.ndarray) -> Dict[str, Any]:
         """Extract structural features from the image."""

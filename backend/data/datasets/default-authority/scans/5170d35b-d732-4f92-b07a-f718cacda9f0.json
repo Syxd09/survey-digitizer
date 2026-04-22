@@ -1,0 +1,282 @@
+{
+  "datasetId": "default-authority",
+  "userId": "admin",
+  "scanId": "5170d35b-d732-4f92-b07a-f718cacda9f0",
+  "status": "good",
+  "confidence": 0.9796,
+  "imageUrl": "",
+  "createdAt": "2026-04-21T20:08:28.162569+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-21T20:08:28.162581+00:00"
+    },
+    {
+      "stage": "PROCESSING",
+      "timestamp": "2026-04-21T20:08:28.163331+00:00",
+      "metadata": {}
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-21T20:08:51.082883+00:00",
+      "metadata": {
+        "status": "good",
+        "export_allowed": true
+      }
+    }
+  ],
+  "lastUpdatedAt": "2026-04-21T20:08:28.163316+00:00",
+  "exportAllowed": true,
+  "nullRate": 0.0,
+  "extractedData": {
+    "questions": [
+      {
+        "question": "1. Try a new",
+        "selected": "\u201cea",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "2. (| \u00b0 UELZAZZ = wEA ES.",
+        "selected": "@",
+        "confidence": 0.967,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "3. ANALYS (Read-Or T SELE ly) iEW",
+        "selected": "\u201cea",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "4. LN 4 ij Ba\u201d. ty a Viltid le 22PE\u201d \u201cbb hss",
+        "selected": "@",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "5. ENGINE (Write Er ATE",
+        "selected": "\u201cea",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "6. \\ 7 J ee. = pr pg Hw wore we Te",
+        "selected": "@",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "7. Se",
+        "selected": "@",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "8. (it ^ Doi E /MAMACE",
+        "selected": "\u201cea",
+        "confidence": 1.0,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "9. ADMIL (Fvll_ N pegs | xg el eR",
+        "selected": "ee",
+        "confidence": 0.849,
+        "status": "\u2705 OK"
+      }
+    ],
+    "survey_data": {
+      "form_metadata": {
+        "raw_header": "DATA WAREHOUSE Security AccESS MoDEL"
+      },
+      "columns": [
+        "Nf",
+        "NEE eee eee eee ee\nm~\\",
+        "@",
+        "ee",
+        "\u201cea",
+        "ee",
+        "",
+        "CC  \u2014\u2014\u2014",
+        ""
+      ],
+      "questions": [
+        {
+          "number": 1,
+          "text": "Try a new",
+          "selected_column": "\u201cea",
+          "selected_index": 1,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 2,
+          "text": "(| \u00b0 UELZAZZ = wEA ES.",
+          "selected_column": "@",
+          "selected_index": 0,
+          "confidence": 0.967,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 3,
+          "text": "ANALYS (Read-Or T SELE ly) iEW",
+          "selected_column": "\u201cea",
+          "selected_index": 1,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 4,
+          "text": "LN 4 ij Ba\u201d. ty a Viltid le 22PE\u201d \u201cbb hss",
+          "selected_column": "@",
+          "selected_index": 0,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 5,
+          "text": "ENGINE (Write Er ATE",
+          "selected_column": "\u201cea",
+          "selected_index": 1,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 6,
+          "text": "\\ 7 J ee. = pr pg Hw wore we Te",
+          "selected_column": "@",
+          "selected_index": 0,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 7,
+          "text": "Se",
+          "selected_column": "@",
+          "selected_index": 0,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 8,
+          "text": "(it ^ Doi E /MAMACE",
+          "selected_column": "\u201cea",
+          "selected_index": 1,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 9,
+          "text": "ADMIL (Fvll_ N pegs | xg el eR",
+          "selected_column": "ee",
+          "selected_index": 2,
+          "confidence": 0.849,
+          "mark_type": "checkmark"
+        }
+      ],
+      "form_type": "checkmark",
+      "header_text": "",
+      "instructions": ""
+    },
+    "diagnostics": {
+      "vision": {
+        "is_dark_mode": false
+      },
+      "doc_type": {
+        "type": "table",
+        "confidence": 0.5,
+        "signals_matched": [],
+        "hints": {
+          "has_dark_bg": false,
+          "handwriting_density": 0.0297,
+          "has_table_lines": true,
+          "h_lines": 108,
+          "v_lines": 3
+        },
+        "all_scores": {
+          "code_screenshot": 0.0,
+          "survey_form": 0.0,
+          "form": 0.0,
+          "invoice": 0.0,
+          "handwritten": 0.0,
+          "table": 0.5,
+          "general": 0.0
+        }
+      },
+      "ocr_counts": {
+        "easyocr": 18,
+        "tesseract": 24
+      },
+      "form_type": "checkmark",
+      "columns_detected": [
+        "Nf",
+        "NEE eee eee eee ee\nm~\\",
+        "@",
+        "ee",
+        "\u201cea",
+        "ee",
+        "",
+        "CC  \u2014\u2014\u2014",
+        ""
+      ],
+      "questions_extracted": 9,
+      "duration": 22.77,
+      "logic_version": "Hydra-v12.5-SURVEY",
+      "engine": "LOCAL_HYDRA_SURVEY",
+      "avg_confidence": 0.9796,
+      "null_rate": 0.0,
+      "question_count": 9
+    }
+  },
+  "diagnostics": {
+    "vision": {
+      "is_dark_mode": false
+    },
+    "doc_type": {
+      "type": "table",
+      "confidence": 0.5,
+      "signals_matched": [],
+      "hints": {
+        "has_dark_bg": false,
+        "handwriting_density": 0.0297,
+        "has_table_lines": true,
+        "h_lines": 108,
+        "v_lines": 3
+      },
+      "all_scores": {
+        "code_screenshot": 0.0,
+        "survey_form": 0.0,
+        "form": 0.0,
+        "invoice": 0.0,
+        "handwritten": 0.0,
+        "table": 0.5,
+        "general": 0.0
+      }
+    },
+    "ocr_counts": {
+      "easyocr": 18,
+      "tesseract": 24
+    },
+    "form_type": "checkmark",
+    "columns_detected": [
+      "Nf",
+      "NEE eee eee eee ee\nm~\\",
+      "@",
+      "ee",
+      "\u201cea",
+      "ee",
+      "",
+      "CC  \u2014\u2014\u2014",
+      ""
+    ],
+    "questions_extracted": 9,
+    "duration": 22.77,
+    "logic_version": "Hydra-v12.5-SURVEY",
+    "engine": "LOCAL_HYDRA_SURVEY",
+    "avg_confidence": 0.9796,
+    "null_rate": 0.0,
+    "question_count": 9
+  },
+  "processedAt": "2026-04-21T20:08:51.082903+00:00",
+  "logicVersion": "Hydra-v11.0"
+}
