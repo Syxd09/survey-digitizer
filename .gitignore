@@ -8,3 +8,4 @@ coverage/
 !.env.example
 .venv/
 __pycache__
+backend/data/datasets/*/*

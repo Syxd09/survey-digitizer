@@ -36,36 +36,52 @@ class LLMSemanticRefiner:
             self.providers.append({
                 "name": "Groq",
                 "type": "openai",
-                "client": OpenAI(api_key=groq_key, base_url="https://api.groq.com/openai/v1"),
-                "model": "llama3-70b-8192"
+                "client": OpenAI(
+                    api_key=groq_key, 
+                    base_url="https://api.groq.com/openai/v1",
+                    max_retries=0 # Don't hang on 429s
+                ),
+                "model": "llama-3.3-70b-versatile"
             })
             
-        # 2. OpenRouter (High quality models)
-        if or_key := os.getenv("VITE_OPENROUTER_API_KEY"):
-            or_model = os.getenv("VITE_AI_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
+        # 2. Cerebras (Very fast inference)
+        if cer_key := os.getenv("VITE_CEREBRAS_API_KEY"):
             self.providers.append({
-                "name": "OpenRouter",
+                "name": "Cerebras",
                 "type": "openai",
-                "client": OpenAI(api_key=or_key, base_url="https://openrouter.ai/api/v1"),
-                "model": or_model
+                "client": OpenAI(
+                    api_key=cer_key, 
+                    base_url="https://api.cerebras.ai/v1",
+                    max_retries=0
+                ),
+                "model": "llama3.1-8b"
             })
-            
+
         # 3. xAI (Grok)
         if xai_key := os.getenv("VITE_XAI_API_KEY"):
             self.providers.append({
                 "name": "xAI",
                 "type": "openai",
-                "client": OpenAI(api_key=xai_key, base_url="https://api.x.ai/v1"),
-                "model": "grok-beta"
+                "client": OpenAI(
+                    api_key=xai_key, 
+                    base_url="https://api.x.ai/v1",
+                    max_retries=0
+                ),
+                "model": "grok-2-latest"
             })
-            
-        # 4. Cerebras (Very fast inference)
-        if cer_key := os.getenv("VITE_CEREBRAS_API_KEY"):
+
+        # 4. OpenRouter (High quality models)
+        if or_key := os.getenv("VITE_OPENROUTER_API_KEY"):
+            or_model = os.getenv("VITE_AI_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
             self.providers.append({
-                "name": "Cerebras",
+                "name": "OpenRouter",
                 "type": "openai",
-                "client": OpenAI(api_key=cer_key, base_url="https://api.cerebras.ai/v1"),
-                "model": "llama3.1-8b"
+                "client": OpenAI(
+                    api_key=or_key, 
+                    base_url="https://openrouter.ai/api/v1",
+                    max_retries=0
+                ),
+                "model": or_model
             })
             
         # 5. Google Gemini (Original fallback)
@@ -145,7 +161,7 @@ Your job is to read raw, messy text extracted from a handwritten or printed '{fo
 INSTRUCTIONS:
 1. Fix spelling, grammar, and obvious OCR artifact errors.
 2. Use reasoning: If the text says "Wbat 1s your narne?", it should be "What is your name?".
-3. Do NOT change the core meaning or intention of the question.
+3. If the text is clearly NOT a question (e.g., instructions like "Read each question", fragments like "Yes | No", or noise like "---"), return an EMPTY STRING "".
 4. Output strict JSON with a "corrections" array.
 
 EXPECTED JSON SCHEMA:
@@ -163,6 +179,8 @@ FORM CONTEXT (Use this to understand the topic of the questions):
 RAW OCR QUESTIONS TO CORRECT:
 {questions_block}
 """
+
+        logger.info(f"[LLM] Raw OCR questions to refine:\n{questions_block}")
 
         for provider in self.providers:
             try:
@@ -207,6 +225,78 @@ RAW OCR QUESTIONS TO CORRECT:
                 
         logger.error("[LLM] All fallback API providers failed. Returning original text.")
         return questions
+
+    def refine_headers(self, headers: List[str]) -> List[str]:
+        """
+        Takes a list of raw OCR column headers and uses the LLM to semantically refine them.
+        """
+        if not self.enabled or not headers:
+            return headers
+
+        headers_block = "\n".join([f"[{i}] {h}" for i, h in enumerate(headers)])
+
+        prompt = f"""You are an expert Proofreader and Semantic Reasoner for an OCR extraction pipeline.
+Your job is to read raw, messy text extracted from survey column headers (e.g., Likert scale options), and return the semantically correct text.
+
+INSTRUCTIONS:
+1. Fix spelling and obvious OCR artifact errors (e.g., "nut" -> "Not", "somewha" -> "Somewhat").
+2. Column headers are typically Likert scale values. Look for patterns across the row (e.g., if you see "Not True" at [3], then [4] is likely "Somewhat True" and [5] is "Certainly True").
+3. Standardize to common survey terms: "Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree", "Not True", "Somewhat True", "Certainly True".
+4. If a header is clearly a question fragment, instructions, or OCR noise (like '|' or 'g'), return an EMPTY STRING "".
+5. DO NOT invent headers for empty columns unless they fit a clear Likert progression.
+6. If a header is a serial number column, use "SNo.". 
+7. If it's a question column, use "Questions".
+8. Output strict JSON with a "corrections" array.
+9. Maintain the exact same number of elements as the input.
+
+EXPECTED JSON SCHEMA:
+{{
+  "corrections": [
+    {{"index": 0, "corrected_text": "Corrected header text..."}}
+  ]
+}}
+
+RAW OCR HEADERS TO CORRECT:
+{headers_block}
+"""
+
+        for provider in self.providers:
+            try:
+                logger.info(f"[LLM] Attempting header refinement with {provider['name']}...")
+                response_text = self._call_provider(provider, prompt)
+                
+                if response_text is None:
+                    continue
+                    
+                response_text = response_text.strip()
+                if response_text.startswith("```json"):
+                    response_text = response_text[7:]
+                if response_text.startswith("```"):
+                    response_text = response_text[3:]
+                if response_text.endswith("```"):
+                    response_text = response_text[:-3]
+                response_text = response_text.strip()
+                
+                result_data = json.loads(response_text)
+                refined_headers = list(headers)
+                
+                success = False
+                for correction in result_data.get("corrections", []):
+                    idx = correction.get("index")
+                    corrected_text = correction.get("corrected_text")
+                    if idx is not None and 0 <= idx < len(refined_headers):
+                        logger.info(f"[LLM] Header Refined: '{refined_headers[idx]}' -> '{corrected_text}'")
+                        refined_headers[idx] = corrected_text
+                        success = True
+                
+                if success or len(result_data.get("corrections", [])) == 0:
+                    return refined_headers
+                    
+            except Exception as e:
+                logger.warning(f"[LLM] Provider {provider['name']} failed: {e}")
+                continue
+                
+        return headers
 
     def add_correction(self, original: str, corrected: str):
         """Append a user correction to the local memory file."""

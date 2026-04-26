@@ -187,7 +187,7 @@ class StorageService:
             "extractedData": results,
             "diagnostics":   diagnostics,
             "processedAt":   _now_iso(),
-            "logicVersion":  results.get("logic_version", "Hydra-v11.0"),
+            "logicVersion":  results.get("logic_version", "Pipeline-v2.0"),
             "lifecycle":     lifecycle,
         })
         _write_json(path, data)

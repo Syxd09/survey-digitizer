@@ -1,0 +1,3947 @@
+{
+    "1.jpeg": {
+        "duration": 26.87717080116272,
+        "result": {
+            "success": true,
+            "scanId": "dce771fe-5629-47b0-9ecc-9f08a99564f8",
+            "questions": [
+                {
+                    "question": "3. I am a people person.",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "f3549aa47bb86aabda036a3b9e61cfdf",
+                    "bbox": [
+                        139,
+                        633,
+                        776,
+                        714
+                    ],
+                    "value_bbox": [
+                        186,
+                        633,
+                        304,
+                        714
+                    ]
+                },
+                {
+                    "question": "4. I could not stay still for long.",
+                    "selected": "Not True",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "f1a27eff4493c6ba6f0146e8f3a5d561",
+                    "bbox": [
+                        139,
+                        714,
+                        776,
+                        779
+                    ],
+                    "value_bbox": [
+                        548,
+                        714,
+                        627,
+                        779
+                    ]
+                },
+                {
+                    "question": "3. Headaches, stomach-aches or sickness are",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "96202c36e6d924930265dd763a980e0d",
+                    "bbox": [
+                        139,
+                        779,
+                        776,
+                        847
+                    ],
+                    "value_bbox": [
+                        186,
+                        779,
+                        304,
+                        847
+                    ]
+                },
+                {
+                    "question": "4. I shared with others (food, games, pens, etc.)",
+                    "selected": "",
+                    "confidence": 0.833,
+                    "status": "\u2705 OK",
+                    "imageHash": "1960f42b3db9d8b6da6dbf8d41477326",
+                    "bbox": [
+                        139,
+                        847,
+                        776,
+                        913
+                    ],
+                    "value_bbox": [
+                        62,
+                        847,
+                        93,
+                        913
+                    ]
+                },
+                {
+                    "question": "5. and I often lost my temper",
+                    "selected": "",
+                    "confidence": 0.927,
+                    "status": "\u2705 OK",
+                    "imageHash": "34ba0325de894cd5400b06a4a0c4c1c2",
+                    "bbox": [
+                        139,
+                        913,
+                        776,
+                        982
+                    ],
+                    "value_bbox": [
+                        62,
+                        913,
+                        93,
+                        982
+                    ]
+                },
+                {
+                    "question": "8. My own friends generally played alone or with me",
+                    "selected": "Not True",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "6364e2e2de02756415840102911a74c7",
+                    "bbox": [
+                        139,
+                        982,
+                        776,
+                        1039
+                    ],
+                    "value_bbox": [
+                        548,
+                        982,
+                        627,
+                        1039
+                    ]
+                },
+                {
+                    "question": "7. Was I old",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "73a11265bb9c054f16588eb61b161e26",
+                    "bbox": [
+                        139,
+                        1039,
+                        776,
+                        1074
+                    ],
+                    "value_bbox": [
+                        186,
+                        1039,
+                        304,
+                        1074
+                    ]
+                },
+                {
+                    "question": "10. None",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "17685fd7bdd7ac1e018401d30707929a",
+                    "bbox": [
+                        139,
+                        1074,
+                        776,
+                        1224
+                    ],
+                    "value_bbox": [
+                        62,
+                        1074,
+                        93,
+                        1224
+                    ]
+                },
+                {
+                    "question": "11. None",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "17685fd7bdd7ac1e018401d30707929a",
+                    "bbox": [
+                        139,
+                        1224,
+                        776,
+                        1261
+                    ],
+                    "value_bbox": [
+                        62,
+                        1224,
+                        93,
+                        1261
+                    ]
+                },
+                {
+                    "question": "12. None",
+                    "selected": null,
+                    "confidence": 0.0,
+                    "status": "\u26a0\ufe0f Low Confidence",
+                    "imageHash": "17685fd7bdd7ac1e018401d30707929a",
+                    "bbox": [
+                        139,
+                        1261,
+                        776,
+                        1373
+                    ],
+                    "value_bbox": null
+                }
+            ],
+            "survey_data": {
+                "form_metadata": {
+                    "raw_header": "0 0"
+                },
+                "columns": [
+                    "",
+                    "",
+                    "SNo.",
+                    "",
+                    "Questions",
+                    "Not True",
+                    "Somewhat True",
+                    "Certainly True",
+                    "",
+                    ""
+                ],
+                "questions": [
+                    {
+                        "number": 3,
+                        "text": "I am a people person.",
+                        "selected_column": "",
+                        "selected_index": 2,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            139,
+                            633,
+                            776,
+                            714
+                        ],
+                        "value_bbox": [
+                            186,
+                            633,
+                            304,
+                            714
+                        ]
+                    },
+                    {
+                        "number": 4,
+                        "text": "I could not stay still for long.",
+                        "selected_column": "Not True",
+                        "selected_index": 3,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            139,
+                            714,
+                            776,
+                            779
+                        ],
+                        "value_bbox": [
+                            548,
+                            714,
+                            627,
+                            779
+                        ]
+                    },
+                    {
+                        "number": 3,
+                        "text": "Headaches, stomach-aches or sickness are",
+                        "selected_column": "",
+                        "selected_index": 2,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            139,
+                            779,
+                            776,
+                            847
+                        ],
+                        "value_bbox": [
+                            186,
+                            779,
+                            304,
+                            847
+                        ]
+                    },
+                    {
+                        "number": 4,
+                        "text": "I shared with others (food, games, pens, etc.)",
+                        "selected_column": "",
+                        "selected_index": 0,
+                        "confidence": 0.833,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            139,
+                            847,
+                            776,
+                            913
+                        ],
+                        "value_bbox": [
+                            62,
+                            847,
+                            93,
+                            913
+                        ]
+                    },
+                    {
+                        "number": 5,
+                        "text": "and I often lost my temper",
+                        "selected_column": "",
+                        "selected_index": 0,
+                        "confidence": 0.927,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            139,
+                            913,
+                            776,
+                            982
+                        ],
+                        "value_bbox": [
+                            62,
+                            913,
+                            93,
+                            982
+                        ]
+                    },
+                    {
+                        "number": 8,
+                        "text": "My own friends generally played alone or with me",
+                        "selected_column": "Not True",
+                        "selected_index": 3,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            139,
+                            982,
+                            776,
+                            1039
+                        ],
+                        "value_bbox": [
+                            548,
+                            982,
+                            627,
+                            1039
+                        ]
+                    },
+                    {
+                        "number": 7,
+                        "text": "Was I old",
+                        "selected_column": "",
+                        "selected_index": 2,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            139,
+                            1039,
+                            776,
+                            1074
+                        ],
+                        "value_bbox": [
+                            186,
+                            1039,
+                            304,
+                            1074
+                        ]
+                    },
+                    {
+                        "number": 10,
+                        "text": "None",
+                        "selected_column": "",
+                        "selected_index": 0,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            139,
+                            1074,
+                            776,
+                            1224
+                        ],
+                        "value_bbox": [
+                            62,
+                            1074,
+                            93,
+                            1224
+                        ]
+                    },
+                    {
+                        "number": 11,
+                        "text": "None",
+                        "selected_column": "",
+                        "selected_index": 0,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            139,
+                            1224,
+                            776,
+                            1261
+                        ],
+                        "value_bbox": [
+                            62,
+                            1224,
+                            93,
+                            1261
+                        ]
+                    },
+                    {
+                        "number": 12,
+                        "text": "None",
+                        "selected_column": null,
+                        "selected_index": null,
+                        "confidence": 0.0,
+                        "mark_type": "none",
+                        "bbox": [
+                            139,
+                            1261,
+                            776,
+                            1373
+                        ],
+                        "value_bbox": null
+                    }
+                ],
+                "form_type": "checkmark",
+                "header_text": "",
+                "instructions": "",
+                "orphans": [
+                    {
+                        "text": "Fort No",
+                        "bbox": [
+                            691,
+                            199,
+                            749,
+                            217
+                        ],
+                        "conf": 0.3642713440544972
+                    },
+                    {
+                        "text": "Study Code: SSIAR 19 010",
+                        "bbox": [
+                            140,
+                            234,
+                            296,
+                            260
+                        ],
+                        "conf": 0.8191050159001627
+                    },
+                    {
+                        "text": "Queslinnnire",
+                        "bbox": [
+                            436,
+                            242,
+                            541,
+                            271
+                        ],
+                        "conf": 0.2792370098665325
+                    },
+                    {
+                        "text": "CARETULLY BEFORE BEGINNING",
+                        "bbox": [
+                            493,
+                            257,
+                            777,
+                            299
+                        ],
+                        "conf": 0.7537923319559561
+                    },
+                    {
+                        "text": "PLEASE READ ALL",
+                        "bbox": [
+                            225,
+                            292,
+                            376,
+                            319
+                        ],
+                        "conf": 0.7049500409815196
+                    },
+                    {
+                        "text": "INSTRUCTIONS =",
+                        "bbox": [
+                            369,
+                            274,
+                            502,
+                            310
+                        ],
+                        "conf": 0.9757490572416287
+                    },
+                    {
+                        "text": "Read each queston carefully and",
+                        "bbox": [
+                            188,
+                            320,
+                            400,
+                            350
+                        ],
+                        "conf": 0.7872908075995562
+                    },
+                    {
+                        "text": "honesily:",
+                        "bbox": [
+                            450,
+                            312,
+                            513,
+                            333
+                        ],
+                        "conf": 0.9047221340997679
+                    },
+                    {
+                        "text": "So share",
+                        "bbox": [
+                            737,
+                            331,
+                            797,
+                            347
+                        ],
+                        "conf": 0.4526788769846117
+                    },
+                    {
+                        "text": "truthfully",
+                        "bbox": [
+                            795,
+                            326,
+                            860,
+                            350
+                        ],
+                        "conf": 0.9097338304795266
+                    },
+                    {
+                        "text": "first thowght that comes Io YOU",
+                        "bbox": [
+                            300,
+                            334,
+                            498,
+                            362
+                        ],
+                        "conf": 0.24038937864418541
+                    },
+                    {
+                        "text": "Respond with Ihe",
+                        "bbox": [
+                            187,
+                            347,
+                            304,
+                            371
+                        ],
+                        "conf": 0.38145851846848083
+                    },
+                    {
+                        "text": "responses r 4S per",
+                        "bbox": [
+                            439,
+                            348,
+                            574,
+                            373
+                        ],
+                        "conf": 0.5466712999610508
+                    },
+                    {
+                        "text": "All answers Will be kept",
+                        "bbox": [
+                            190,
+                            380,
+                            346,
+                            404
+                        ],
+                        "conf": 0.6391758642068369
+                    },
+                    {
+                        "text": "confidential",
+                        "bbox": [
+                            343,
+                            373,
+                            426,
+                            397
+                        ],
+                        "conf": 0.730787067892174
+                    },
+                    {
+                        "text": "order thal (hcy",
+                        "bbox": [
+                            471,
+                            385,
+                            569,
+                            405
+                        ],
+                        "conf": 0.6071561618557283
+                    },
+                    {
+                        "text": "hcre",
+                        "bbox": [
+                            643,
+                            377,
+                            677,
+                            391
+                        ],
+                        "conf": 0.7383321523666382
+                    },
+                    {
+                        "text": "questions",
+                        "bbox": [
+                            216,
+                            401,
+                            281,
+                            421
+                        ],
+                        "conf": 0.9441972416046241
+                    },
+                    {
+                        "text": "answcred in the same",
+                        "bbox": [
+                            330,
+                            390,
+                            472,
+                            417
+                        ],
+                        "conf": 0.6077439911512392
+                    },
+                    {
+                        "text": "Tlic",
+                        "bbox": [
+                            191,
+                            405,
+                            219,
+                            421
+                        ],
+                        "conf": 0.43606504797935486
+                    },
+                    {
+                        "text": "adnnistralor:",
+                        "bbox": [
+                            388,
+                            410,
+                            479,
+                            429
+                        ],
+                        "conf": 0.2559334511052414
+                    },
+                    {
+                        "text": "Iyou have any doubt; then ask",
+                        "bbox": [
+                            188,
+                            414,
+                            390,
+                            440
+                        ],
+                        "conf": 0.62524522288309
+                    },
+                    {
+                        "text": "fcclings and thoughts",
+                        "bbox": [
+                            468,
+                            418,
+                            612,
+                            444
+                        ],
+                        "conf": 0.944330845172763
+                    },
+                    {
+                        "text": "The following questions =",
+                        "bbox": [
+                            190,
+                            434,
+                            348,
+                            458
+                        ],
+                        "conf": 0.8189040353745284
+                    },
+                    {
+                        "text": "you aboui YOur",
+                        "bbox": [
+                            371,
+                            431,
+                            471,
+                            451
+                        ],
+                        "conf": 0.4375551666022106
+                    },
+                    {
+                        "text": "Somewhat True or Certainly True",
+                        "bbox": [
+                            499,
+                            430,
+                            728,
+                            462
+                        ],
+                        "conf": 0.8417603923157968
+                    },
+                    {
+                        "text": "thc box for Not Tnie_",
+                        "bbox": [
+                            363,
+                            447,
+                            497,
+                            467
+                        ],
+                        "conf": 0.5987447865950163
+                    },
+                    {
+                        "text": "For each iem: pleuse",
+                        "bbox": [
+                            191,
+                            455,
+                            327,
+                            475
+                        ],
+                        "conf": 0.5569797907556988
+                    },
+                    {
+                        "text": "based on how you think:",
+                        "bbox": [
+                            472,
+                            468,
+                            636,
+                            494
+                        ],
+                        "conf": 0.7248408447746821
+                    },
+                    {
+                        "text": "Please Eive",
+                        "bbox": [
+                            191,
+                            489,
+                            265,
+                            507
+                        ],
+                        "conf": 0.21339959292972077
+                    },
+                    {
+                        "text": "doing Mark",
+                        "bbox": [
+                            352,
+                            481,
+                            431,
+                            501
+                        ],
+                        "conf": 0.8508033327821728
+                    },
+                    {
+                        "text": "ofyour",
+                        "bbox": [
+                            742,
+                            490,
+                            812,
+                            514
+                        ],
+                        "conf": 0.7743660577586536
+                    },
+                    {
+                        "text": "on the basis of Last four days",
+                        "bbox": [
+                            500,
+                            494,
+                            746,
+                            526
+                        ],
+                        "conf": 0.4156187725196149
+                    },
+                    {
+                        "text": "NOTE: Please answer the below",
+                        "bbox": [
+                            164,
+                            512,
+                            422,
+                            540
+                        ],
+                        "conf": 0.8785267731220169
+                    },
+                    {
+                        "text": "experience:",
+                        "bbox": [
+                            165,
+                            537,
+                            260,
+                            563
+                        ],
+                        "conf": 0.6620642685631345
+                    },
+                    {
+                        "text": "Certainly",
+                        "bbox": [
+                            780,
+                            549,
+                            849,
+                            569
+                        ],
+                        "conf": 0.999539322245103
+                    },
+                    {
+                        "text": "Not",
+                        "bbox": [
+                            585,
+                            563,
+                            613,
+                            579
+                        ],
+                        "conf": 0.9855732555826386
+                    },
+                    {
+                        "text": "Soniewhat",
+                        "bbox": [
+                            656,
+                            555,
+                            729,
+                            575
+                        ],
+                        "conf": 0.8990834231851913
+                    },
+                    {
+                        "text": "SNo",
+                        "bbox": [
+                            145,
+                            579,
+                            181,
+                            593
+                        ],
+                        "conf": 0.5875057941311908
+                    },
+                    {
+                        "text": "Questions",
+                        "bbox": [
+                            281,
+                            575,
+                            347,
+                            591
+                        ],
+                        "conf": 0.9853363381981126
+                    },
+                    {
+                        "text": "True",
+                        "bbox": [
+                            669,
+                            593,
+                            707,
+                            609
+                        ],
+                        "conf": 0.9988067746162415
+                    },
+                    {
+                        "text": "True",
+                        "bbox": [
+                            797,
+                            587,
+                            835,
+                            603
+                        ],
+                        "conf": 0.9671818017959595
+                    },
+                    {
+                        "text": "True",
+                        "bbox": [
+                            581,
+                            597,
+                            619,
+                            613
+                        ],
+                        "conf": 0.8796426057815552
+                    },
+                    {
+                        "text": "tried t0 be nice t0 Other people",
+                        "bbox": [
+                            199,
+                            637,
+                            399,
+                            657
+                        ],
+                        "conf": 0.5113367849401496
+                    },
+                    {
+                        "text": "cared about their",
+                        "bbox": [
+                            408,
+                            633,
+                            521,
+                            653
+                        ],
+                        "conf": 0.7253494355792742
+                    },
+                    {
+                        "text": "Teelings",
+                        "bbox": [
+                            190,
+                            659,
+                            245,
+                            677
+                        ],
+                        "conf": 0.96514951129182
+                    },
+                    {
+                        "text": "WS   resiless",
+                        "bbox": [
+                            201,
+                            725,
+                            285,
+                            739
+                        ],
+                        "conf": 0.4350395530049502
+                    },
+                    {
+                        "text": "not stay still Tor Iong",
+                        "bbox": [
+                            335,
+                            721,
+                            473,
+                            739
+                        ],
+                        "conf": 0.40090607962857516
+                    },
+                    {
+                        "text": "got a lot of hcadaches, stomach-aches or sickness",
+                        "bbox": [
+                            200,
+                            784,
+                            520,
+                            810
+                        ],
+                        "conf": 0.4205327312324248
+                    },
+                    {
+                        "text": "usually shared with Others (food, games; pens etc )",
+                        "bbox": [
+                            200,
+                            850,
+                            530,
+                            874
+                        ],
+                        "conf": 0.6143636657640914
+                    },
+                    {
+                        "text": "got very angry and often lost my lemper",
+                        "bbox": [
+                            200,
+                            920,
+                            464,
+                            944
+                        ],
+                        "conf": 0.7568396523152897
+                    },
+                    {
+                        "text": "Was",
+                        "bbox": [
+                            201,
+                            995,
+                            231,
+                            1007
+                        ],
+                        "conf": 0.2471545835052849
+                    },
+                    {
+                        "text": "usually on my own",
+                        "bbox": [
+                            231,
+                            991,
+                            357,
+                            1009
+                        ],
+                        "conf": 0.6648014687051437
+                    },
+                    {
+                        "text": "generally played alone or",
+                        "bbox": [
+                            367,
+                            986,
+                            540,
+                            1010
+                        ],
+                        "conf": 0.6871380298872088
+                    },
+                    {
+                        "text": "kept t0",
+                        "bbox": [
+                            193,
+                            1013,
+                            245,
+                            1029
+                        ],
+                        "conf": 0.8123366784873014
+                    },
+                    {
+                        "text": "WaS (old",
+                        "bbox": [
+                            303,
+                            1045,
+                            361,
+                            1061
+                        ],
+                        "conf": 0.629168025786892
+                    },
+                    {
+                        "text": "respfd",
+                        "bbox": [
+                            396,
+                            316,
+                            452,
+                            339
+                        ],
+                        "conf": 0.358557452877807
+                    },
+                    {
+                        "text": "expericuce ",
+                        "bbox": [
+                            658,
+                            329,
+                            740,
+                            354
+                        ],
+                        "conf": 0.5329038061727324
+                    },
+                    {
+                        "text": "and",
+                        "bbox": [
+                            630,
+                            334,
+                            662,
+                            355
+                        ],
+                        "conf": 0.9629627320804145
+                    },
+                    {
+                        "text": "lile",
+                        "bbox": [
+                            602,
+                            336,
+                            634,
+                            357
+                        ],
+                        "conf": 0.589556097984314
+                    },
+                    {
+                        "text": "}our",
+                        "bbox": [
+                            568,
+                            339,
+                            609,
+                            364
+                        ],
+                        "conf": 0.4909828007221222
+                    },
+                    {
+                        "text": "prinled",
+                        "bbox": [
+                            589,
+                            375,
+                            645,
+                            399
+                        ],
+                        "conf": 0.7007417608396265
+                    },
+                    {
+                        "text": "Jsk",
+                        "bbox": [
+                            343,
+                            433,
+                            371,
+                            451
+                        ],
+                        "conf": 0.5679551253219087
+                    },
+                    {
+                        "text": "Mk",
+                        "bbox": [
+                            325,
+                            451,
+                            363,
+                            470
+                        ],
+                        "conf": 0.27685132382718547
+                    },
+                    {
+                        "text": "Youm =",
+                        "bbox": [
+                            261,
+                            485,
+                            300,
+                            505
+                        ],
+                        "conf": 0.21545982424062546
+                    },
+                    {
+                        "text": "questions",
+                        "bbox": [
+                            420,
+                            507,
+                            502,
+                            532
+                        ],
+                        "conf": 0.9681245174458856
+                    },
+                    {
+                        "text": "could",
+                        "bbox": [
+                            294,
+                            720,
+                            337,
+                            739
+                        ],
+                        "conf": 0.9998804736191975
+                    },
+                    {
+                        "text": "mysclf",
+                        "bbox": [
+                            242,
+                            1009,
+                            294,
+                            1030
+                        ],
+                        "conf": 0.841868089486937
+                    }
+                ],
+                "fields": []
+            },
+            "total": 10,
+            "avgConfidence": 0.876,
+            "diagnostics": {
+                "document_processing": null,
+                "restoration": {
+                    "is_dark_mode": false,
+                    "enhanced_upscaled": true
+                },
+                "doc_type": {
+                    "type": "survey_form",
+                    "confidence": 1.0,
+                    "signals_matched": [
+                        "\\bQuestionnaire\\b",
+                        "\\bQuestions?\\b",
+                        "\\bNot\\s*True\\b",
+                        "\\bSomewhat\\s*True\\b",
+                        "\\bCertainly\\s*True\\b",
+                        "\\bTrue\\b",
+                        "\\bStudy\\s*Code\\b",
+                        "\\bForm\\s*No\\b",
+                        "\\bexperience\\b",
+                        "\\bbasis\\s*of\\b",
+                        "\\bplease\\s*read\\b",
+                        "\\bNOTE\\b",
+                        "\\bmark\\s*the\\b"
+                    ],
+                    "hints": {
+                        "has_dark_bg": false,
+                        "handwriting_density": 0.0378,
+                        "has_table_lines": true,
+                        "h_lines": 33,
+                        "v_lines": 18
+                    },
+                    "all_scores": {
+                        "code_screenshot": 0.0,
+                        "survey_form": 1.114,
+                        "form": 0.0,
+                        "invoice": 0.0,
+                        "handwritten": 0.0,
+                        "table": 0.5,
+                        "general": 0.0
+                    },
+                    "fallback": false
+                },
+                "ocr_counts": {
+                    "easyocr": 66,
+                    "tesseract": 207
+                },
+                "form_type": "checkmark",
+                "columns_detected": [
+                    "",
+                    "",
+                    "SNo.",
+                    "",
+                    "Questions",
+                    "Not True",
+                    "Somewhat True",
+                    "Certainly True",
+                    "",
+                    ""
+                ],
+                "questions_extracted": 10,
+                "vlm_skeleton": {
+                    "status": "ok",
+                    "fields_count": 3
+                },
+                "duration": 26.85,
+                "logic_version": "Hydra-v13.0-SURVEY-ENHANCED",
+                "engine": "LOCAL_HYDRA_SURVEY",
+                "avg_confidence": 0.876,
+                "null_rate": 0.1,
+                "question_count": 10
+            }
+        }
+    },
+    "2.jpeg": {
+        "duration": 21.805145978927612,
+        "result": {
+            "success": true,
+            "scanId": "3beaba00-fba8-4236-a3fc-21ac576a833b",
+            "questions": [
+                {
+                    "question": "1. Read each question carefully and respond honestly. Respond with the first thought that comes to you. Share your experience truthfully. All answers will be kept confidential and should be printed here. The questions must be answered in the same order that they appear. If you have any doubt, then ask the administrator. The following questions ask you about your feelings and thoughts. For each of the following statements, show how much you agree or disagree. Circle the answer statement on the basis of your experience over the last four days. Please answer the below questions on the note that each response is about your personal experience.",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u26a0\ufe0f VLM Disagrees",
+                    "imageHash": "fbea2b9f3f1b65ec7483865276e29010",
+                    "bbox": [
+                        120,
+                        63,
+                        851,
+                        691
+                    ],
+                    "value_bbox": [
+                        14,
+                        63,
+                        39,
+                        691
+                    ],
+                    "vlm_agreement": null,
+                    "vlm_answer": null
+                },
+                {
+                    "question": "2. I have felt disconnected from the world around me. Strongly Disagree, Disagree, Agree, Strongly Agree",
+                    "selected": "",
+                    "confidence": 0.961,
+                    "status": "\u2705 OK",
+                    "imageHash": "672774166aca6faad7f63455acf32019",
+                    "bbox": [
+                        120,
+                        691,
+                        851,
+                        829
+                    ],
+                    "value_bbox": [
+                        39,
+                        691,
+                        65,
+                        829
+                    ]
+                },
+                {
+                    "question": "3. I did not feel that I really belong. Strongly Disagree, Disagree, Agree, Strongly Agree",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "fc2cc7177f4f4054c0a87b4b74f1736f",
+                    "bbox": [
+                        120,
+                        829,
+                        851,
+                        1091
+                    ],
+                    "value_bbox": [
+                        39,
+                        829,
+                        65,
+                        1091
+                    ]
+                },
+                {
+                    "question": "5. I have felt distant from people around me. Strongly Disagree, Disagree, Agree, Strongly Agree",
+                    "selected": null,
+                    "confidence": 0.0,
+                    "status": "\u26a0\ufe0f Low Confidence",
+                    "imageHash": "39db1edd14a61de6f7ceaade60d41490",
+                    "bbox": [
+                        120,
+                        1113,
+                        851,
+                        1286
+                    ],
+                    "value_bbox": null
+                },
+                {
+                    "question": "6. Not provided, please provide the text for question 4",
+                    "selected": null,
+                    "confidence": 0.0,
+                    "status": "\u26a0\ufe0f Low Confidence",
+                    "imageHash": "35b05b0b96c32b03727e339ccfa182e8",
+                    "bbox": [
+                        120,
+                        1286,
+                        851,
+                        1588
+                    ],
+                    "value_bbox": null
+                }
+            ],
+            "survey_data": {
+                "form_metadata": {},
+                "columns": [
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                "questions": [
+                    {
+                        "number": 1,
+                        "text": "Read each question carefully and respond honestly. Respond with the first thought that comes to you. Share your experience truthfully. All answers will be kept confidential and should be printed here. The questions must be answered in the same order that they appear. If you have any doubt, then ask the administrator. The following questions ask you about your feelings and thoughts. For each of the following statements, show how much you agree or disagree. Circle the answer statement on the basis of your experience over the last four days. Please answer the below questions on the note that each response is about your personal experience.",
+                        "selected_column": "",
+                        "selected_index": 0,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            120,
+                            63,
+                            851,
+                            691
+                        ],
+                        "value_bbox": [
+                            14,
+                            63,
+                            39,
+                            691
+                        ]
+                    },
+                    {
+                        "number": 2,
+                        "text": "I have felt disconnected from the world around me. Strongly Disagree, Disagree, Agree, Strongly Agree",
+                        "selected_column": "",
+                        "selected_index": 1,
+                        "confidence": 0.961,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            120,
+                            691,
+                            851,
+                            829
+                        ],
+                        "value_bbox": [
+                            39,
+                            691,
+                            65,
+                            829
+                        ]
+                    },
+                    {
+                        "number": 3,
+                        "text": "I did not feel that I really belong. Strongly Disagree, Disagree, Agree, Strongly Agree",
+                        "selected_column": "",
+                        "selected_index": 1,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            120,
+                            829,
+                            851,
+                            1091
+                        ],
+                        "value_bbox": [
+                            39,
+                            829,
+                            65,
+                            1091
+                        ]
+                    },
+                    {
+                        "number": 5,
+                        "text": "I have felt distant from people around me. Strongly Disagree, Disagree, Agree, Strongly Agree",
+                        "selected_column": null,
+                        "selected_index": null,
+                        "confidence": 0.0,
+                        "mark_type": "none",
+                        "bbox": [
+                            120,
+                            1113,
+                            851,
+                            1286
+                        ],
+                        "value_bbox": null
+                    },
+                    {
+                        "number": 6,
+                        "text": "Not provided, please provide the text for question 4",
+                        "selected_column": null,
+                        "selected_index": null,
+                        "confidence": 0.0,
+                        "mark_type": "none",
+                        "bbox": [
+                            120,
+                            1286,
+                            851,
+                            1588
+                        ],
+                        "value_bbox": null
+                    }
+                ],
+                "form_type": "checkmark",
+                "header_text": "",
+                "instructions": "",
+                "orphans": [
+                    {
+                        "text": "Read each question carelully",
+                        "bbox": [
+                            127,
+                            339,
+                            353,
+                            359
+                        ],
+                        "conf": 0.4905071559616111
+                    },
+                    {
+                        "text": "respond honestly",
+                        "bbox": [
+                            383,
+                            334,
+                            514,
+                            359
+                        ],
+                        "conf": 0.953320085327772
+                    },
+                    {
+                        "text": "Respond with the fust thought that comes (0 YOu",
+                        "bbox": [
+                            130,
+                            358,
+                            500,
+                            384
+                        ],
+                        "conf": 0.4429859243327936
+                    },
+                    {
+                        "text": "experience 50 share",
+                        "bbox": [
+                            681,
+                            364,
+                            830,
+                            391
+                        ],
+                        "conf": 0.6265875303442643
+                    },
+                    {
+                        "text": "There is no Tight or wrong answer; Your responses are 4s per your life and",
+                        "bbox": [
+                            129,
+                            369,
+                            683,
+                            407
+                        ],
+                        "conf": 0.23010403661248421
+                    },
+                    {
+                        "text": "truthfully",
+                        "bbox": [
+                            130,
+                            402,
+                            210,
+                            426
+                        ],
+                        "conf": 0.9096291992915894
+                    },
+                    {
+                        "text": "All answers will be kept conlidential.",
+                        "bbox": [
+                            132,
+                            421,
+                            420,
+                            448
+                        ],
+                        "conf": 0.4821378486731912
+                    },
+                    {
+                        "text": "printed here-",
+                        "bbox": [
+                            606,
+                            431,
+                            702,
+                            456
+                        ],
+                        "conf": 0.6393101832124694
+                    },
+                    {
+                        "text": "The questions must be answered in the same order that they",
+                        "bbox": [
+                            131,
+                            435,
+                            583,
+                            471
+                        ],
+                        "conf": 0.5199010776284765
+                    },
+                    {
+                        "text": "Ifyou have any doubu; then ask administrator.",
+                        "bbox": [
+                            134,
+                            464,
+                            484,
+                            494
+                        ],
+                        "conf": 0.4791891727439725
+                    },
+                    {
+                        "text": "The followng questions ask You about your leelings and thoughts:",
+                        "bbox": [
+                            135,
+                            477,
+                            597,
+                            515
+                        ],
+                        "conf": 0.5475944869211242
+                    },
+                    {
+                        "text": "with cach of the following",
+                        "bbox": [
+                            622,
+                            506,
+                            806,
+                            532
+                        ],
+                        "conf": 0.661082547810101
+                    },
+                    {
+                        "text": "the answer thal shows how much",
+                        "bbox": [
+                            242,
+                            524,
+                            474,
+                            550
+                        ],
+                        "conf": 0.9071985328473854
+                    },
+                    {
+                        "text": "or disagree",
+                        "bbox": [
+                            543,
+                            519,
+                            621,
+                            537
+                        ],
+                        "conf": 0.5639310466590133
+                    },
+                    {
+                        "text": "Circle",
+                        "bbox": [
+                            137,
+                            533,
+                            185,
+                            553
+                        ],
+                        "conf": 0.9913804955510055
+                    },
+                    {
+                        "text": "Stalemeni",
+                        "bbox": [
+                            143,
+                            569,
+                            217,
+                            587
+                        ],
+                        "conf": 0.7489113612485484
+                    },
+                    {
+                        "text": "the basis of Last four days of",
+                        "bbox": [
+                            507,
+                            605,
+                            761,
+                            643
+                        ],
+                        "conf": 0.8193064389792445
+                    },
+                    {
+                        "text": "NOTE: Please auswer the below questions on",
+                        "bbox": [
+                            117,
+                            621,
+                            511,
+                            661
+                        ],
+                        "conf": 0.697014209600941
+                    },
+                    {
+                        "text": "experience:",
+                        "bbox": [
+                            116,
+                            655,
+                            221,
+                            688
+                        ],
+                        "conf": 0.8603665070558137
+                    },
+                    {
+                        "text": "L] fell",
+                        "bbox": [
+                            117,
+                            701,
+                            171,
+                            717
+                        ],
+                        "conf": 0.26176693961770325
+                    },
+                    {
+                        "text": "disconnected from the",
+                        "bbox": [
+                            169,
+                            693,
+                            330,
+                            717
+                        ],
+                        "conf": 0.8600138663318416
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            373,
+                            689,
+                            435,
+                            707
+                        ],
+                        "conf": 0.9711306067415127
+                    },
+                    {
+                        "text": "around me.",
+                        "bbox": [
+                            178,
+                            716,
+                            259,
+                            736
+                        ],
+                        "conf": 0.9754905484101619
+                    },
+                    {
+                        "text": "Agree",
+                        "bbox": [
+                            373,
+                            709,
+                            419,
+                            729
+                        ],
+                        "conf": 0.9062832860259213
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            381,
+                            857,
+                            445,
+                            875
+                        ],
+                        "conf": 0.9726104787271483
+                    },
+                    {
+                        "text": "Disagne",
+                        "bbox": [
+                            791,
+                            855,
+                            857,
+                            873
+                        ],
+                        "conf": 0.717780121626254
+                    },
+                    {
+                        "text": "Even",
+                        "bbox": [
+                            143,
+                            867,
+                            181,
+                            883
+                        ],
+                        "conf": 0.9932422041893005
+                    },
+                    {
+                        "text": "Know",
+                        "bbox": [
+                            143,
+                            883,
+                            189,
+                            897
+                        ],
+                        "conf": 0.978940486907959
+                    },
+                    {
+                        "text": "did nol feel thal",
+                        "bbox": [
+                            203,
+                            875,
+                            317,
+                            895
+                        ],
+                        "conf": 0.5236742761919363
+                    },
+                    {
+                        "text": "Agrec",
+                        "bbox": [
+                            383,
+                            881,
+                            429,
+                            899
+                        ],
+                        "conf": 0.8819681904665171
+                    },
+                    {
+                        "text": "really belong",
+                        "bbox": [
+                            142,
+                            889,
+                            240,
+                            914
+                        ],
+                        "conf": 0.9807973075280211
+                    },
+                    {
+                        "text": "TTcli so dislant Trom people:",
+                        "bbox": [
+                            145,
+                            967,
+                            345,
+                            996
+                        ],
+                        "conf": 0.4211818413525165
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            384,
+                            964,
+                            450,
+                            988
+                        ],
+                        "conf": 0.9988165635439727
+                    },
+                    {
+                        "text": "Disune",
+                        "bbox": [
+                            799,
+                            967,
+                            867,
+                            985
+                        ],
+                        "conf": 0.32101800549818194
+                    },
+                    {
+                        "text": "Agree",
+                        "bbox": [
+                            389,
+                            991,
+                            435,
+                            1011
+                        ],
+                        "conf": 0.9008180077828466
+                    },
+                    {
+                        "text": "ud",
+                        "bbox": [
+                            350,
+                            337,
+                            384,
+                            357
+                        ],
+                        "conf": 0.22859946322315255
+                    },
+                    {
+                        "text": "arc",
+                        "bbox": [
+                            581,
+                            438,
+                            609,
+                            454
+                        ],
+                        "conf": 0.6145598050771601
+                    },
+                    {
+                        "text": "agtece",
+                        "bbox": [
+                            500,
+                            521,
+                            544,
+                            541
+                        ],
+                        "conf": 0.4542911016893579
+                    },
+                    {
+                        "text": "you",
+                        "bbox": [
+                            470,
+                            522,
+                            504,
+                            543
+                        ],
+                        "conf": 0.5802776012038958
+                    },
+                    {
+                        "text": "our",
+                        "bbox": [
+                            755,
+                            604,
+                            804,
+                            628
+                        ],
+                        "conf": 0.9496877818243934
+                    },
+                    {
+                        "text": "world",
+                        "bbox": [
+                            132,
+                            717,
+                            180,
+                            739
+                        ],
+                        "conf": 0.987851579807556
+                    },
+                    {
+                        "text": "people",
+                        "bbox": [
+                            232,
+                            860,
+                            286,
+                            881
+                        ],
+                        "conf": 0.9186310164144621
+                    },
+                    {
+                        "text": "around",
+                        "bbox": [
+                            178,
+                            862,
+                            234,
+                            883
+                        ],
+                        "conf": 0.7118006028971874
+                    }
+                ],
+                "fields": []
+            },
+            "total": 5,
+            "avgConfidence": 0.5922,
+            "diagnostics": {
+                "document_processing": null,
+                "restoration": {
+                    "is_dark_mode": false,
+                    "enhanced_upscaled": true
+                },
+                "doc_type": {
+                    "type": "survey_form",
+                    "confidence": 0.4,
+                    "signals_matched": [
+                        "\\bQuestions?\\b",
+                        "\\bAgree\\b",
+                        "\\bDisagree\\b",
+                        "\\bexperience\\b",
+                        "\\bbasis\\s*of\\b",
+                        "\\bplease\\s*read\\b",
+                        "\\bNOTE\\b"
+                    ],
+                    "hints": {
+                        "has_dark_bg": false,
+                        "handwriting_density": 0.0334,
+                        "has_table_lines": false,
+                        "h_lines": 40,
+                        "v_lines": 0
+                    },
+                    "all_scores": {
+                        "code_screenshot": 0.0,
+                        "survey_form": 0.4,
+                        "form": 0.0,
+                        "invoice": 0.0,
+                        "handwritten": 0.0,
+                        "table": 0.0,
+                        "general": 0.0
+                    },
+                    "fallback": false
+                },
+                "ocr_counts": {
+                    "easyocr": 57,
+                    "tesseract": 163
+                },
+                "form_type": "checkmark",
+                "columns_detected": [
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                "questions_extracted": 5,
+                "vlm_skeleton": {
+                    "status": "ok",
+                    "fields_count": 3
+                },
+                "duration": 21.78,
+                "logic_version": "Hydra-v13.0-SURVEY-ENHANCED",
+                "engine": "LOCAL_HYDRA_SURVEY",
+                "avg_confidence": 0.5922,
+                "null_rate": 0.4,
+                "question_count": 5
+            }
+        }
+    },
+    "3.jpeg": {
+        "duration": 23.105699062347412,
+        "result": {
+            "success": true,
+            "scanId": "ea7666e8-ceb3-4381-a45a-b013c39b0d27",
+            "questions": [
+                {
+                    "question": "2. Yes | No",
+                    "selected": "Somewhat True",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "14779aa5f15647fccb4df0733eed8553",
+                    "bbox": [
+                        96,
+                        319,
+                        515,
+                        379
+                    ],
+                    "value_bbox": [
+                        597,
+                        319,
+                        753,
+                        379
+                    ]
+                },
+                {
+                    "question": "3. Room",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "4bd4fd2462e567e32f919aff0bddf0a4",
+                    "bbox": [
+                        96,
+                        379,
+                        515,
+                        400
+                    ],
+                    "value_bbox": [
+                        7,
+                        379,
+                        48,
+                        400
+                    ]
+                },
+                {
+                    "question": "70. Often volunteered to help others (parents, teachers, children)",
+                    "selected": "Certainly True",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "050ca86cae9bb9cea397d00ca23c830d",
+                    "bbox": [
+                        96,
+                        400,
+                        515,
+                        493
+                    ],
+                    "value_bbox": [
+                        753,
+                        400,
+                        835,
+                        493
+                    ]
+                },
+                {
+                    "question": "5. I thought before I did things",
+                    "selected": "Somewhat True",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "019083a745fa4afa6502619b841b560d",
+                    "bbox": [
+                        96,
+                        493,
+                        515,
+                        577
+                    ],
+                    "value_bbox": [
+                        597,
+                        493,
+                        753,
+                        577
+                    ]
+                },
+                {
+                    "question": "22. Took things that were not mine from home, school or elsewhere",
+                    "selected": "Not True",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "d325354f28f3fe99179ec93ee190e8c8",
+                    "bbox": [
+                        96,
+                        577,
+                        515,
+                        663
+                    ],
+                    "value_bbox": [
+                        515,
+                        577,
+                        597,
+                        663
+                    ]
+                },
+                {
+                    "question": "23. I got on better with adults than with people of my own age",
+                    "selected": "Not True",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "6d157047fda1bf488c1f0683507f5379",
+                    "bbox": [
+                        96,
+                        663,
+                        515,
+                        752
+                    ],
+                    "value_bbox": [
+                        515,
+                        663,
+                        597,
+                        752
+                    ]
+                },
+                {
+                    "question": "24. I had many fears. I was easily scared",
+                    "selected": "Not True",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "88b1d410b3a885e710344ca97a0576a1",
+                    "bbox": [
+                        96,
+                        752,
+                        515,
+                        788
+                    ],
+                    "value_bbox": [
+                        515,
+                        752,
+                        597,
+                        788
+                    ]
+                },
+                {
+                    "question": "25. I finished the work I was doing. My attention was good",
+                    "selected": "Somewhat True",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "509427cdf11d257b0d9fcd6b7f557fc7",
+                    "bbox": [
+                        96,
+                        788,
+                        515,
+                        825
+                    ],
+                    "value_bbox": [
+                        597,
+                        788,
+                        753,
+                        825
+                    ]
+                },
+                {
+                    "question": "10. N/A",
+                    "selected": null,
+                    "confidence": 0.0,
+                    "status": "\u26a0\ufe0f Low Confidence",
+                    "imageHash": "a5a41e26c492adf6eed6f9b36e1fb2e1",
+                    "bbox": [
+                        96,
+                        825,
+                        515,
+                        1424
+                    ],
+                    "value_bbox": null
+                },
+                {
+                    "question": "11. N/A",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "a5a41e26c492adf6eed6f9b36e1fb2e1",
+                    "bbox": [
+                        96,
+                        1424,
+                        515,
+                        1481
+                    ],
+                    "value_bbox": [
+                        7,
+                        1424,
+                        48,
+                        1481
+                    ]
+                }
+            ],
+            "survey_data": {
+                "form_metadata": {
+                    "raw_header": "0 0"
+                },
+                "columns": [
+                    "",
+                    "",
+                    "SNo.",
+                    "",
+                    "Not True",
+                    "Somewhat True",
+                    "Certainly True",
+                    ""
+                ],
+                "questions": [
+                    {
+                        "number": 2,
+                        "text": "Yes | No",
+                        "selected_column": "Somewhat True",
+                        "selected_index": 3,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            96,
+                            319,
+                            515,
+                            379
+                        ],
+                        "value_bbox": [
+                            597,
+                            319,
+                            753,
+                            379
+                        ]
+                    },
+                    {
+                        "number": 3,
+                        "text": "Room",
+                        "selected_column": "",
+                        "selected_index": 0,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            96,
+                            379,
+                            515,
+                            400
+                        ],
+                        "value_bbox": [
+                            7,
+                            379,
+                            48,
+                            400
+                        ]
+                    },
+                    {
+                        "number": 70,
+                        "text": "Often volunteered to help others (parents, teachers, children)",
+                        "selected_column": "Certainly True",
+                        "selected_index": 4,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            96,
+                            400,
+                            515,
+                            493
+                        ],
+                        "value_bbox": [
+                            753,
+                            400,
+                            835,
+                            493
+                        ]
+                    },
+                    {
+                        "number": 5,
+                        "text": "I thought before I did things",
+                        "selected_column": "Somewhat True",
+                        "selected_index": 3,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            96,
+                            493,
+                            515,
+                            577
+                        ],
+                        "value_bbox": [
+                            597,
+                            493,
+                            753,
+                            577
+                        ]
+                    },
+                    {
+                        "number": 22,
+                        "text": "Took things that were not mine from home, school or elsewhere",
+                        "selected_column": "Not True",
+                        "selected_index": 2,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            96,
+                            577,
+                            515,
+                            663
+                        ],
+                        "value_bbox": [
+                            515,
+                            577,
+                            597,
+                            663
+                        ]
+                    },
+                    {
+                        "number": 23,
+                        "text": "I got on better with adults than with people of my own age",
+                        "selected_column": "Not True",
+                        "selected_index": 2,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            96,
+                            663,
+                            515,
+                            752
+                        ],
+                        "value_bbox": [
+                            515,
+                            663,
+                            597,
+                            752
+                        ]
+                    },
+                    {
+                        "number": 24,
+                        "text": "I had many fears. I was easily scared",
+                        "selected_column": "Not True",
+                        "selected_index": 2,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            96,
+                            752,
+                            515,
+                            788
+                        ],
+                        "value_bbox": [
+                            515,
+                            752,
+                            597,
+                            788
+                        ]
+                    },
+                    {
+                        "number": 25,
+                        "text": "I finished the work I was doing. My attention was good",
+                        "selected_column": "Somewhat True",
+                        "selected_index": 3,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            96,
+                            788,
+                            515,
+                            825
+                        ],
+                        "value_bbox": [
+                            597,
+                            788,
+                            753,
+                            825
+                        ]
+                    },
+                    {
+                        "number": 10,
+                        "text": "N/A",
+                        "selected_column": null,
+                        "selected_index": null,
+                        "confidence": 0.0,
+                        "mark_type": "none",
+                        "bbox": [
+                            96,
+                            825,
+                            515,
+                            1424
+                        ],
+                        "value_bbox": null
+                    },
+                    {
+                        "number": 11,
+                        "text": "N/A",
+                        "selected_column": "",
+                        "selected_index": 0,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            96,
+                            1424,
+                            515,
+                            1481
+                        ],
+                        "value_bbox": [
+                            7,
+                            1424,
+                            48,
+                            1481
+                        ]
+                    }
+                ],
+                "form_type": "checkmark",
+                "header_text": "",
+                "instructions": "",
+                "orphans": [
+                    {
+                        "text": "Nut",
+                        "bbox": [
+                            557,
+                            303,
+                            585,
+                            317
+                        ],
+                        "conf": 0.7173966050967632
+                    },
+                    {
+                        "text": "(parents; teachers chillren)",
+                        "bbox": [
+                            150,
+                            430,
+                            334,
+                            454
+                        ],
+                        "conf": 0.42420587318720243
+                    },
+                    {
+                        "text": "thought belone:",
+                        "bbox": [
+                            157,
+                            501,
+                            257,
+                            519
+                        ],
+                        "conf": 0.41946130865345926
+                    },
+                    {
+                        "text": "did things",
+                        "bbox": [
+                            265,
+                            498,
+                            335,
+                            518
+                        ],
+                        "conf": 0.5402264450125931
+                    },
+                    {
+                        "text": "took things that were not mine fromn home; school or",
+                        "bbox": [
+                            156,
+                            580,
+                            506,
+                            605
+                        ],
+                        "conf": 0.47122489542518137
+                    },
+                    {
+                        "text": "elsewhere",
+                        "bbox": [
+                            149,
+                            603,
+                            217,
+                            619
+                        ],
+                        "conf": 0.8777574387131032
+                    },
+                    {
+                        "text": "got on better With adults than With",
+                        "bbox": [
+                            155,
+                            671,
+                            383,
+                            689
+                        ],
+                        "conf": 0.7216841765916567
+                    },
+                    {
+                        "text": "people of my own",
+                        "bbox": [
+                            380,
+                            666,
+                            508,
+                            690
+                        ],
+                        "conf": 0.582177072920695
+                    },
+                    {
+                        "text": "age",
+                        "bbox": [
+                            145,
+                            691,
+                            173,
+                            707
+                        ],
+                        "conf": 0.6190044045380126
+                    },
+                    {
+                        "text": "Lhad many fears",
+                        "bbox": [
+                            143,
+                            759,
+                            249,
+                            775
+                        ],
+                        "conf": 0.972093748883563
+                    },
+                    {
+                        "text": "was casily scared",
+                        "bbox": [
+                            261,
+                            759,
+                            371,
+                            777
+                        ],
+                        "conf": 0.4949620812429223
+                    },
+                    {
+                        "text": "finished the work: was",
+                        "bbox": [
+                            151,
+                            795,
+                            289,
+                            811
+                        ],
+                        "conf": 0.6462120497575183
+                    },
+                    {
+                        "text": "doing: My attcntion was good",
+                        "bbox": [
+                            287,
+                            793,
+                            476,
+                            813
+                        ],
+                        "conf": 0.5503757861234408
+                    }
+                ],
+                "fields": []
+            },
+            "total": 10,
+            "avgConfidence": 0.9,
+            "diagnostics": {
+                "document_processing": null,
+                "restoration": {
+                    "is_dark_mode": false,
+                    "enhanced_upscaled": true
+                },
+                "doc_type": {
+                    "type": "table",
+                    "confidence": 0.35,
+                    "signals_matched": [],
+                    "hints": {
+                        "has_dark_bg": false,
+                        "handwriting_density": 0.0199,
+                        "has_table_lines": true,
+                        "h_lines": 33,
+                        "v_lines": 14
+                    },
+                    "all_scores": {
+                        "code_screenshot": 0.0,
+                        "survey_form": 0.0,
+                        "form": 0.082,
+                        "invoice": 0.0,
+                        "handwritten": 0.0,
+                        "table": 0.5,
+                        "general": 0.0
+                    },
+                    "fallback": false
+                },
+                "ocr_counts": {
+                    "easyocr": 24,
+                    "tesseract": 38
+                },
+                "form_type": "checkmark",
+                "columns_detected": [
+                    "",
+                    "",
+                    "SNo.",
+                    "",
+                    "Not True",
+                    "Somewhat True",
+                    "Certainly True",
+                    ""
+                ],
+                "questions_extracted": 10,
+                "vlm_skeleton": {
+                    "status": "ok",
+                    "fields_count": 3
+                },
+                "duration": 23.08,
+                "logic_version": "Hydra-v13.0-SURVEY-ENHANCED",
+                "engine": "LOCAL_HYDRA_SURVEY",
+                "avg_confidence": 0.9,
+                "null_rate": 0.1,
+                "question_count": 10
+            }
+        }
+    },
+    "4.jpeg": {
+        "duration": 25.032615900039673,
+        "result": {
+            "success": true,
+            "scanId": "d17beeb4-478b-4a48-89d9-6e704254d503",
+            "questions": [
+                {
+                    "question": "1. Yes",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "8e653972b3bc5f55ce2a388eac969b7a",
+                    "bbox": [
+                        158,
+                        125,
+                        526,
+                        204
+                    ],
+                    "value_bbox": [
+                        814,
+                        125,
+                        889,
+                        204
+                    ]
+                },
+                {
+                    "question": "3. Women told",
+                    "selected": "",
+                    "confidence": 0.843,
+                    "status": "\u2705 OK",
+                    "imageHash": "7d02d358ad3f4eeb3d054847adfed55e",
+                    "bbox": [
+                        158,
+                        282,
+                        526,
+                        349
+                    ],
+                    "value_bbox": [
+                        70,
+                        282,
+                        110,
+                        349
+                    ]
+                },
+                {
+                    "question": "4. It was helpful if someone was hurt, upset or felt ill",
+                    "selected": "",
+                    "confidence": 0.808,
+                    "status": "\u2705 OK",
+                    "imageHash": "8671322d3403bd86ef7593d688248658",
+                    "bbox": [
+                        158,
+                        349,
+                        526,
+                        416
+                    ],
+                    "value_bbox": [
+                        601,
+                        349,
+                        738,
+                        416
+                    ]
+                },
+                {
+                    "question": "5. Was constantly feeling or squirming",
+                    "selected": "",
+                    "confidence": 0.983,
+                    "status": "\u2705 OK",
+                    "imageHash": "34e610903da61e745baf1d66752caabd",
+                    "bbox": [
+                        158,
+                        416,
+                        526,
+                        474
+                    ],
+                    "value_bbox": [
+                        526,
+                        416,
+                        601,
+                        474
+                    ]
+                },
+                {
+                    "question": "6. Had one good friend or more",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "89b246a660c499fe25f35a8a788eedda",
+                    "bbox": [
+                        158,
+                        474,
+                        526,
+                        553
+                    ],
+                    "value_bbox": [
+                        738,
+                        474,
+                        814,
+                        553
+                    ]
+                },
+                {
+                    "question": "7. Could make other people do what I wanted",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "f5994c5906ded97e0215189b1697000d",
+                    "bbox": [
+                        158,
+                        553,
+                        526,
+                        637
+                    ],
+                    "value_bbox": [
+                        526,
+                        553,
+                        601,
+                        637
+                    ]
+                },
+                {
+                    "question": "8. Was often unhappy, down-hearted or scared",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u26a0\ufe0f VLM Disagrees",
+                    "imageHash": "1a02e9e701f91c76eb92037a50c9bdb9",
+                    "bbox": [
+                        158,
+                        637,
+                        526,
+                        702
+                    ],
+                    "value_bbox": [
+                        601,
+                        637,
+                        738,
+                        702
+                    ],
+                    "vlm_agreement": null,
+                    "vlm_answer": null
+                },
+                {
+                    "question": "9. Other people of my age were generally like me",
+                    "selected": "",
+                    "confidence": 0.782,
+                    "status": "\u2705 OK",
+                    "imageHash": "58a365d2b4c6773c72a7219598752447",
+                    "bbox": [
+                        158,
+                        702,
+                        526,
+                        766
+                    ],
+                    "value_bbox": [
+                        738,
+                        702,
+                        814,
+                        766
+                    ]
+                },
+                {
+                    "question": "10. Was easily distracted, found it difficult to concentrate",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "0c07d163f8135adf4adbc3d5304857ab",
+                    "bbox": [
+                        158,
+                        766,
+                        526,
+                        850
+                    ],
+                    "value_bbox": [
+                        601,
+                        766,
+                        738,
+                        850
+                    ]
+                },
+                {
+                    "question": "11. Was nervous in new situations, easily lost confidence",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "74fd64c58cfe1a7c5ab11be862919ad0",
+                    "bbox": [
+                        158,
+                        850,
+                        526,
+                        935
+                    ],
+                    "value_bbox": [
+                        526,
+                        850,
+                        601,
+                        935
+                    ]
+                },
+                {
+                    "question": "12. Was kind to younger children",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "d646c05b5111232d677eb98ca6a03701",
+                    "bbox": [
+                        158,
+                        935,
+                        526,
+                        1005
+                    ],
+                    "value_bbox": [
+                        601,
+                        935,
+                        738,
+                        1005
+                    ]
+                },
+                {
+                    "question": "13. Was often accused of lying or cheating",
+                    "selected": "",
+                    "confidence": 0.799,
+                    "status": "\u2705 OK",
+                    "imageHash": "503b7bee3e32de906e03d5b1d4dfe6db",
+                    "bbox": [
+                        158,
+                        1005,
+                        526,
+                        1071
+                    ],
+                    "value_bbox": [
+                        601,
+                        1005,
+                        738,
+                        1071
+                    ]
+                },
+                {
+                    "question": "14. Other children or young people picked on me or bullied me",
+                    "selected": "",
+                    "confidence": 0.793,
+                    "status": "\u2705 OK",
+                    "imageHash": "f64f4ec15ae67b14a36dfae99cc117b7",
+                    "bbox": [
+                        158,
+                        1071,
+                        526,
+                        1127
+                    ],
+                    "value_bbox": [
+                        738,
+                        1071,
+                        814,
+                        1127
+                    ]
+                },
+                {
+                    "question": "15. ",
+                    "selected": "",
+                    "confidence": 1.0,
+                    "status": "\u2705 OK",
+                    "imageHash": "e2a308e1e8265933b694b1069101b3f8",
+                    "bbox": [
+                        158,
+                        1127,
+                        526,
+                        1276
+                    ],
+                    "value_bbox": [
+                        47,
+                        1127,
+                        70,
+                        1276
+                    ]
+                },
+                {
+                    "question": "16. Yes",
+                    "selected": "",
+                    "confidence": 0.869,
+                    "status": "\u2705 OK",
+                    "imageHash": "8e653972b3bc5f55ce2a388eac969b7a",
+                    "bbox": [
+                        158,
+                        1276,
+                        526,
+                        1597
+                    ],
+                    "value_bbox": [
+                        70,
+                        1276,
+                        110,
+                        1597
+                    ]
+                }
+            ],
+            "survey_data": {
+                "form_metadata": {
+                    "raw_header": "1940s."
+                },
+                "columns": [
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                "questions": [
+                    {
+                        "number": 1,
+                        "text": "Yes",
+                        "selected_column": "",
+                        "selected_index": 6,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            125,
+                            526,
+                            204
+                        ],
+                        "value_bbox": [
+                            814,
+                            125,
+                            889,
+                            204
+                        ]
+                    },
+                    {
+                        "number": 3,
+                        "text": "Women told",
+                        "selected_column": "",
+                        "selected_index": 1,
+                        "confidence": 0.843,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            282,
+                            526,
+                            349
+                        ],
+                        "value_bbox": [
+                            70,
+                            282,
+                            110,
+                            349
+                        ]
+                    },
+                    {
+                        "number": 4,
+                        "text": "It was helpful if someone was hurt, upset or felt ill",
+                        "selected_column": "",
+                        "selected_index": 4,
+                        "confidence": 0.808,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            349,
+                            526,
+                            416
+                        ],
+                        "value_bbox": [
+                            601,
+                            349,
+                            738,
+                            416
+                        ]
+                    },
+                    {
+                        "number": 5,
+                        "text": "Was constantly feeling or squirming",
+                        "selected_column": "",
+                        "selected_index": 3,
+                        "confidence": 0.983,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            416,
+                            526,
+                            474
+                        ],
+                        "value_bbox": [
+                            526,
+                            416,
+                            601,
+                            474
+                        ]
+                    },
+                    {
+                        "number": 6,
+                        "text": "Had one good friend or more",
+                        "selected_column": "",
+                        "selected_index": 5,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            474,
+                            526,
+                            553
+                        ],
+                        "value_bbox": [
+                            738,
+                            474,
+                            814,
+                            553
+                        ]
+                    },
+                    {
+                        "number": 7,
+                        "text": "Could make other people do what I wanted",
+                        "selected_column": "",
+                        "selected_index": 3,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            553,
+                            526,
+                            637
+                        ],
+                        "value_bbox": [
+                            526,
+                            553,
+                            601,
+                            637
+                        ]
+                    },
+                    {
+                        "number": 8,
+                        "text": "Was often unhappy, down-hearted or scared",
+                        "selected_column": "",
+                        "selected_index": 4,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            637,
+                            526,
+                            702
+                        ],
+                        "value_bbox": [
+                            601,
+                            637,
+                            738,
+                            702
+                        ]
+                    },
+                    {
+                        "number": 9,
+                        "text": "Other people of my age were generally like me",
+                        "selected_column": "",
+                        "selected_index": 5,
+                        "confidence": 0.782,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            702,
+                            526,
+                            766
+                        ],
+                        "value_bbox": [
+                            738,
+                            702,
+                            814,
+                            766
+                        ]
+                    },
+                    {
+                        "number": 10,
+                        "text": "Was easily distracted, found it difficult to concentrate",
+                        "selected_column": "",
+                        "selected_index": 4,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            766,
+                            526,
+                            850
+                        ],
+                        "value_bbox": [
+                            601,
+                            766,
+                            738,
+                            850
+                        ]
+                    },
+                    {
+                        "number": 11,
+                        "text": "Was nervous in new situations, easily lost confidence",
+                        "selected_column": "",
+                        "selected_index": 3,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            850,
+                            526,
+                            935
+                        ],
+                        "value_bbox": [
+                            526,
+                            850,
+                            601,
+                            935
+                        ]
+                    },
+                    {
+                        "number": 12,
+                        "text": "Was kind to younger children",
+                        "selected_column": "",
+                        "selected_index": 4,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            935,
+                            526,
+                            1005
+                        ],
+                        "value_bbox": [
+                            601,
+                            935,
+                            738,
+                            1005
+                        ]
+                    },
+                    {
+                        "number": 13,
+                        "text": "Was often accused of lying or cheating",
+                        "selected_column": "",
+                        "selected_index": 4,
+                        "confidence": 0.799,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            1005,
+                            526,
+                            1071
+                        ],
+                        "value_bbox": [
+                            601,
+                            1005,
+                            738,
+                            1071
+                        ]
+                    },
+                    {
+                        "number": 14,
+                        "text": "Other children or young people picked on me or bullied me",
+                        "selected_column": "",
+                        "selected_index": 5,
+                        "confidence": 0.793,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            1071,
+                            526,
+                            1127
+                        ],
+                        "value_bbox": [
+                            738,
+                            1071,
+                            814,
+                            1127
+                        ]
+                    },
+                    {
+                        "number": 15,
+                        "text": "",
+                        "selected_column": "",
+                        "selected_index": 0,
+                        "confidence": 1.0,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            1127,
+                            526,
+                            1276
+                        ],
+                        "value_bbox": [
+                            47,
+                            1127,
+                            70,
+                            1276
+                        ]
+                    },
+                    {
+                        "number": 16,
+                        "text": "Yes",
+                        "selected_column": "",
+                        "selected_index": 1,
+                        "confidence": 0.869,
+                        "mark_type": "checkmark",
+                        "bbox": [
+                            158,
+                            1276,
+                            526,
+                            1597
+                        ],
+                        "value_bbox": [
+                            70,
+                            1276,
+                            110,
+                            1597
+                        ]
+                    }
+                ],
+                "form_type": "checkmark",
+                "header_text": "",
+                "instructions": "",
+                "orphans": [
+                    {
+                        "text": "(unly",
+                        "bbox": [
+                            741,
+                            203,
+                            803,
+                            219
+                        ],
+                        "conf": 0.3008029282409226
+                    },
+                    {
+                        "text": "Nol",
+                        "bbox": [
+                            551,
+                            217,
+                            579,
+                            231
+                        ],
+                        "conf": 0.6490249633789062
+                    },
+                    {
+                        "text": "ut",
+                        "bbox": [
+                            549,
+                            251,
+                            583,
+                            265
+                        ],
+                        "conf": 0.2379338647528802
+                    },
+                    {
+                        "text": "e",
+                        "bbox": [
+                            633,
+                            247,
+                            669,
+                            261
+                        ],
+                        "conf": 0.3011217688274428
+                    },
+                    {
+                        "text": "Womcd",
+                        "bbox": [
+                            161,
+                            285,
+                            217,
+                            301
+                        ],
+                        "conf": 0.3424308376248948
+                    },
+                    {
+                        "text": "Was conistanily fideeling or squiming",
+                        "bbox": [
+                            167,
+                            421,
+                            415,
+                            439
+                        ],
+                        "conf": 0.33623569259890684
+                    },
+                    {
+                        "text": "Ihad one good Iriend or more",
+                        "bbox": [
+                            159,
+                            489,
+                            357,
+                            509
+                        ],
+                        "conf": 0.40465906368819093
+                    },
+                    {
+                        "text": "fought a Iol.",
+                        "bbox": [
+                            171,
+                            557,
+                            253,
+                            575
+                        ],
+                        "conf": 0.2694540897397037
+                    },
+                    {
+                        "text": "could make other people do what",
+                        "bbox": [
+                            262,
+                            550,
+                            482,
+                            574
+                        ],
+                        "conf": 0.6565557379025133
+                    },
+                    {
+                        "text": "Wan",
+                        "bbox": [
+                            163,
+                            579,
+                            199,
+                            591
+                        ],
+                        "conf": 0.6334264018417645
+                    },
+                    {
+                        "text": "was offen unhappy: down-hearted or tcarful",
+                        "bbox": [
+                            172,
+                            634,
+                            460,
+                            660
+                        ],
+                        "conf": 0.5017115458675665
+                    },
+                    {
+                        "text": "Other people of my age were generally like me",
+                        "bbox": [
+                            166,
+                            700,
+                            476,
+                            728
+                        ],
+                        "conf": 0.5397602377571953
+                    },
+                    {
+                        "text": "was easily distracled,",
+                        "bbox": [
+                            177,
+                            770,
+                            319,
+                            791
+                        ],
+                        "conf": 0.7146363967208332
+                    },
+                    {
+                        "text": "found it difficult t0",
+                        "bbox": [
+                            327,
+                            767,
+                            459,
+                            785
+                        ],
+                        "conf": 0.601786676958801
+                    },
+                    {
+                        "text": "I5.",
+                        "bbox": [
+                            121,
+                            779,
+                            143,
+                            795
+                        ],
+                        "conf": 0.343168514299552
+                    },
+                    {
+                        "text": "concentrale",
+                        "bbox": [
+                            168,
+                            791,
+                            247,
+                            811
+                        ],
+                        "conf": 0.9997928106877216
+                    },
+                    {
+                        "text": "was nervous in",
+                        "bbox": [
+                            179,
+                            857,
+                            281,
+                            875
+                        ],
+                        "conf": 0.9962648680994624
+                    },
+                    {
+                        "text": "situattons.",
+                        "bbox": [
+                            311,
+                            855,
+                            377,
+                            871
+                        ],
+                        "conf": 0.4592211884167554
+                    },
+                    {
+                        "text": "easily lost",
+                        "bbox": [
+                            389,
+                            851,
+                            459,
+                            869
+                        ],
+                        "conf": 0.823753644597694
+                    },
+                    {
+                        "text": "confidence",
+                        "bbox": [
+                            170,
+                            874,
+                            245,
+                            895
+                        ],
+                        "conf": 0.999977569967855
+                    },
+                    {
+                        "text": "was kind /0 younger children",
+                        "bbox": [
+                            181,
+                            939,
+                            373,
+                            959
+                        ],
+                        "conf": 0.5186181592209157
+                    },
+                    {
+                        "text": "was oflen accused of lying Or cheating",
+                        "bbox": [
+                            180,
+                            1004,
+                            436,
+                            1030
+                        ],
+                        "conf": 0.7565291686006971
+                    },
+                    {
+                        "text": "Other children or young people",
+                        "bbox": [
+                            175,
+                            1079,
+                            381,
+                            1099
+                        ],
+                        "conf": 0.7429015761941942
+                    },
+                    {
+                        "text": "bullied me",
+                        "bbox": [
+                            175,
+                            1103,
+                            247,
+                            1119
+                        ],
+                        "conf": 0.940626612231481
+                    },
+                    {
+                        "text": "new",
+                        "bbox": [
+                            278,
+                            856,
+                            310,
+                            872
+                        ],
+                        "conf": 0.9833750393501831
+                    },
+                    {
+                        "text": "picked =",
+                        "bbox": [
+                            376,
+                            1072,
+                            430,
+                            1096
+                        ],
+                        "conf": 0.28387774622865297
+                    }
+                ],
+                "fields": []
+            },
+            "total": 15,
+            "avgConfidence": 0.9251,
+            "diagnostics": {
+                "document_processing": null,
+                "restoration": {
+                    "is_dark_mode": false,
+                    "enhanced_upscaled": true
+                },
+                "doc_type": {
+                    "type": "table",
+                    "confidence": 0.35,
+                    "signals_matched": [],
+                    "hints": {
+                        "has_dark_bg": false,
+                        "handwriting_density": 0.0341,
+                        "has_table_lines": true,
+                        "h_lines": 33,
+                        "v_lines": 13
+                    },
+                    "all_scores": {
+                        "code_screenshot": 0.0,
+                        "survey_form": 0.0,
+                        "form": 0.082,
+                        "invoice": 0.0,
+                        "handwritten": 0.0,
+                        "table": 0.5,
+                        "general": 0.0
+                    },
+                    "fallback": false
+                },
+                "ocr_counts": {
+                    "easyocr": 32,
+                    "tesseract": 44
+                },
+                "form_type": "checkmark",
+                "columns_detected": [
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                "questions_extracted": 15,
+                "vlm_skeleton": {
+                    "status": "ok",
+                    "fields_count": 3
+                },
+                "duration": 25.01,
+                "logic_version": "Hydra-v13.0-SURVEY-ENHANCED",
+                "engine": "LOCAL_HYDRA_SURVEY",
+                "avg_confidence": 0.9251,
+                "null_rate": 0.0,
+                "question_count": 15
+            }
+        }
+    },
+    "5.jpeg": {
+        "duration": 4878.641892910004,
+        "result": {
+            "success": true,
+            "scanId": "00eedda0-888f-4d8f-a54a-bc1a4b306f15",
+            "questions": [
+                {
+                    "question": "3. caught myself losing all sensc 0f connecledness with society.",
+                    "selected": "\u00a5",
+                    "confidence": 0.768,
+                    "status": "\u2705 OK",
+                    "imageHash": "d5c65d8391bc872bddaffcbd88a34b1b",
+                    "bbox": [
+                        99,
+                        656,
+                        329,
+                        774
+                    ],
+                    "value_bbox": [
+                        582,
+                        656,
+                        653,
+                        774
+                    ]
+                },
+                {
+                    "question": "4. Even among my friends thcre was no senSC of brather/sislerhood",
+                    "selected": ".",
+                    "confidence": 0.716,
+                    "status": "\u2705 OK",
+                    "imageHash": "2431ecaf73cc8c0ff28fa2434f0e788d",
+                    "bbox": [
+                        99,
+                        774,
+                        329,
+                        891
+                    ],
+                    "value_bbox": [
+                        653,
+                        774,
+                        725,
+                        891
+                    ]
+                },
+                {
+                    "question": "5. I did not feel that participated wilh anyone O1 any group:",
+                    "selected": "\u00a5",
+                    "confidence": 0.716,
+                    "status": "\u2705 OK",
+                    "imageHash": "cc665b32ca5295146a61869dd813a487",
+                    "bbox": [
+                        99,
+                        891,
+                        329,
+                        1009
+                    ],
+                    "value_bbox": [
+                        582,
+                        891,
+                        653,
+                        1009
+                    ]
+                }
+            ],
+            "survey_data": {
+                "form_metadata": {
+                    "raw_header": "s ."
+                },
+                "columns": [
+                    "",
+                    "Idid not fec] related t0 anyone",
+                    "Strongly Agree",
+                    "L",
+                    "\u2018",
+                    "\u00a5",
+                    ".",
+                    "Strongly Disagree"
+                ],
+                "questions": [
+                    {
+                        "number": 3,
+                        "text": "caught myself losing all sensc 0f connecledness with society.",
+                        "selected_column": "\u00a5",
+                        "selected_index": 4,
+                        "confidence": 0.768,
+                        "mark_type": "likert",
+                        "bbox": [
+                            99,
+                            656,
+                            329,
+                            774
+                        ],
+                        "value_bbox": [
+                            582,
+                            656,
+                            653,
+                            774
+                        ]
+                    },
+                    {
+                        "number": 4,
+                        "text": "Even among my friends thcre was no senSC of brather/sislerhood",
+                        "selected_column": ".",
+                        "selected_index": 5,
+                        "confidence": 0.716,
+                        "mark_type": "likert",
+                        "bbox": [
+                            99,
+                            774,
+                            329,
+                            891
+                        ],
+                        "value_bbox": [
+                            653,
+                            774,
+                            725,
+                            891
+                        ]
+                    },
+                    {
+                        "number": 5,
+                        "text": "I did not feel that participated wilh anyone O1 any group:",
+                        "selected_column": "\u00a5",
+                        "selected_index": 4,
+                        "confidence": 0.716,
+                        "mark_type": "likert",
+                        "bbox": [
+                            99,
+                            891,
+                            329,
+                            1009
+                        ],
+                        "value_bbox": [
+                            582,
+                            891,
+                            653,
+                            1009
+                        ]
+                    }
+                ],
+                "form_type": "likert",
+                "header_text": "",
+                "instructions": "",
+                "orphans": [
+                    {
+                        "text": "Td n sense of",
+                        "bbox": [
+                            127,
+                            319,
+                            245,
+                            339
+                        ],
+                        "conf": 0.20228382313101115
+                    },
+                    {
+                        "text": "Suongly",
+                        "bbox": [
+                            355,
+                            325,
+                            417,
+                            343
+                        ],
+                        "conf": 0.611138064182953
+                    },
+                    {
+                        "text": "topetherness",
+                        "bbox": [
+                            127,
+                            336,
+                            216,
+                            361
+                        ],
+                        "conf": 0.6152026401231455
+                    },
+                    {
+                        "text": "MTy",
+                        "bbox": [
+                            247,
+                            339,
+                            273,
+                            355
+                        ],
+                        "conf": 0.21556643021922925
+                    },
+                    {
+                        "text": "Aptce",
+                        "bbox": [
+                            375,
+                            347,
+                            419,
+                            365
+                        ],
+                        "conf": 0.2497122254379543
+                    },
+                    {
+                        "text": "pcets;",
+                        "bbox": [
+                            129,
+                            363,
+                            169,
+                            379
+                        ],
+                        "conf": 0.20240020745057988
+                    },
+                    {
+                        "text": "5 . [did not fccl related t0",
+                        "bbox": [
+                            109,
+                            529,
+                            283,
+                            547
+                        ],
+                        "conf": 0.24820251882676642
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            771,
+                            523,
+                            838,
+                            548
+                        ],
+                        "conf": 0.9975044648812594
+                    },
+                    {
+                        "text": "anyone",
+                        "bbox": [
+                            129,
+                            553,
+                            181,
+                            569
+                        ],
+                        "conf": 0.8879150109706934
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            367,
+                            553,
+                            429,
+                            571
+                        ],
+                        "conf": 0.9290922889309277
+                    },
+                    {
+                        "text": "Disagree",
+                        "bbox": [
+                            773,
+                            549,
+                            840,
+                            573
+                        ],
+                        "conf": 0.996428994183893
+                    },
+                    {
+                        "text": "Agree",
+                        "bbox": [
+                            375,
+                            575,
+                            421,
+                            593
+                        ],
+                        "conf": 0.9809512997210498
+                    },
+                    {
+                        "text": "caught myself losing all",
+                        "bbox": [
+                            137,
+                            662,
+                            301,
+                            683
+                        ],
+                        "conf": 0.7390648089609544
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            357,
+                            663,
+                            419,
+                            681
+                        ],
+                        "conf": 0.681130742241534
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            759,
+                            651,
+                            830,
+                            676
+                        ],
+                        "conf": 0.9999170535771902
+                    },
+                    {
+                        "text": "sensc 0f connecledness",
+                        "bbox": [
+                            127,
+                            683,
+                            287,
+                            699
+                        ],
+                        "conf": 0.7572072222146884
+                    },
+                    {
+                        "text": "Agree",
+                        "bbox": [
+                            356,
+                            684,
+                            403,
+                            704
+                        ],
+                        "conf": 0.998873602155233
+                    },
+                    {
+                        "text": "Disagree",
+                        "bbox": [
+                            761,
+                            675,
+                            832,
+                            699
+                        ],
+                        "conf": 0.8919574732347166
+                    },
+                    {
+                        "text": "with society-",
+                        "bbox": [
+                            127,
+                            701,
+                            217,
+                            719
+                        ],
+                        "conf": 0.8344898573013971
+                    },
+                    {
+                        "text": "Even among my friends",
+                        "bbox": [
+                            127,
+                            779,
+                            291,
+                            797
+                        ],
+                        "conf": 0.7229971039051184
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            356,
+                            778,
+                            419,
+                            797
+                        ],
+                        "conf": 0.6856518080979022
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            757,
+                            771,
+                            828,
+                            796
+                        ],
+                        "conf": 0.9999098883561246
+                    },
+                    {
+                        "text": "there was no sense of",
+                        "bbox": [
+                            127,
+                            797,
+                            275,
+                            815
+                        ],
+                        "conf": 0.4476414195487774
+                    },
+                    {
+                        "text": "Agree",
+                        "bbox": [
+                            356,
+                            800,
+                            403,
+                            820
+                        ],
+                        "conf": 0.9999416764548356
+                    },
+                    {
+                        "text": "Disagree",
+                        "bbox": [
+                            759,
+                            795,
+                            830,
+                            820
+                        ],
+                        "conf": 0.9995894547854012
+                    },
+                    {
+                        "text": "brather/sislerhood.",
+                        "bbox": [
+                            125,
+                            817,
+                            253,
+                            835
+                        ],
+                        "conf": 0.5533595198658631
+                    },
+                    {
+                        "text": "did not feel that",
+                        "bbox": [
+                            131,
+                            893,
+                            243,
+                            913
+                        ],
+                        "conf": 0.925024916873789
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            356,
+                            894,
+                            419,
+                            915
+                        ],
+                        "conf": 0.9998050038325395
+                    },
+                    {
+                        "text": "Strongly",
+                        "bbox": [
+                            760,
+                            894,
+                            825,
+                            914
+                        ],
+                        "conf": 0.9982420425054367
+                    },
+                    {
+                        "text": "participated wilh anyone OT",
+                        "bbox": [
+                            121,
+                            917,
+                            311,
+                            938
+                        ],
+                        "conf": 0.7522826436907416
+                    },
+                    {
+                        "text": "Agree",
+                        "bbox": [
+                            355,
+                            915,
+                            402,
+                            939
+                        ],
+                        "conf": 0.9996595426308125
+                    },
+                    {
+                        "text": "Disagree",
+                        "bbox": [
+                            759,
+                            915,
+                            828,
+                            939
+                        ],
+                        "conf": 0.9898765537480607
+                    },
+                    {
+                        "text": "any group",
+                        "bbox": [
+                            121,
+                            943,
+                            195,
+                            959
+                        ],
+                        "conf": 0.7941883936412089
+                    },
+                    {
+                        "text": "Wah",
+                        "bbox": [
+                            214,
+                            337,
+                            247,
+                            354
+                        ],
+                        "conf": 0.32556937526503826
+                    }
+                ],
+                "fields": []
+            },
+            "total": 3,
+            "avgConfidence": 0.7333,
+            "diagnostics": {
+                "document_processing": null,
+                "restoration": {
+                    "is_dark_mode": false,
+                    "enhanced_upscaled": true
+                },
+                "doc_type": {
+                    "type": "survey_form",
+                    "confidence": 0.65,
+                    "signals_matched": [
+                        "\\bAgree\\b",
+                        "\\bDisagree\\b"
+                    ],
+                    "hints": {
+                        "has_dark_bg": false,
+                        "handwriting_density": 0.0259,
+                        "has_table_lines": true,
+                        "h_lines": 50,
+                        "v_lines": 29
+                    },
+                    "all_scores": {
+                        "code_screenshot": 0.0,
+                        "survey_form": 0.65,
+                        "form": 0.0,
+                        "invoice": 0.0,
+                        "handwritten": 0.0,
+                        "table": 0.5,
+                        "general": 0.0
+                    },
+                    "fallback": false
+                },
+                "ocr_counts": {
+                    "easyocr": 42,
+                    "tesseract": 46
+                },
+                "form_type": "likert",
+                "columns_detected": [
+                    "",
+                    "Idid not fec] related t0 anyone",
+                    "Strongly Agree",
+                    "L",
+                    "\u2018",
+                    "\u00a5",
+                    ".",
+                    "Strongly Disagree"
+                ],
+                "questions_extracted": 3,
+                "vlm_skeleton": {
+                    "status": "ok",
+                    "fields_count": 3
+                },
+                "duration": 4878.49,
+                "logic_version": "Hydra-v13.0-SURVEY-ENHANCED",
+                "engine": "LOCAL_HYDRA_SURVEY",
+                "avg_confidence": 0.7333,
+                "null_rate": 0.0,
+                "question_count": 3
+            }
+        }
+    }
+}
