@@ -1,0 +1,483 @@
+{
+  "timestamp": "2026-04-29T00:51:41",
+  "passed": 95,
+  "failed": 0,
+  "rate": "100.0%",
+  "results": [
+    {
+      "name": "Returns processed image",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Returns diagnostics dict",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Quality assessment present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Quality has status",
+      "passed": true,
+      "detail": "Got: PASS"
+    },
+    {
+      "name": "Blur value is numeric",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Brightness value is numeric",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Orientation info present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Normalization applied",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Scale factor recorded",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Image is resized to target width",
+      "passed": true,
+      "detail": "Got width=1200, expected=1200"
+    },
+    {
+      "name": "OCR engine initialised",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "OCR returns list",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Words have text field",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Words have confidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Words have bbox (polygon)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Confidence values in [0,1]",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Extracted meaningful word count (>5)",
+      "passed": true,
+      "detail": "Only got 48 words"
+    },
+    {
+      "name": "BBox is polygon format",
+      "passed": true,
+      "detail": "Got: [[948.0, 276.0], [1026.0, 276.0], [1026.0, 302.0], [948.0, 302.0]]"
+    },
+    {
+      "name": "Returns list of lines",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Lines have text",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Lines have bbox (rect)",
+      "passed": true,
+      "detail": "Sample bbox: [948.0, 276.0, 1026.0, 302.0]"
+    },
+    {
+      "name": "Lines have confidence",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Lines sorted top-to-bottom",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Word count preserved",
+      "passed": true,
+      "detail": "Lines contain 48 words vs 48 input"
+    },
+    {
+      "name": "Grid returns success flag",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Grid returns diagnostics",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Grid has rows",
+      "passed": true,
+      "detail": "Got 8 rows"
+    },
+    {
+      "name": "Grid has option_columns",
+      "passed": true,
+      "detail": "Got 3 option cols"
+    },
+    {
+      "name": "Grid has cells",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Grid has table_bbox",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Cell has row_index",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Cell has col_index",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Cell has bbox [x1,y1,x2,y2]",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Cell bbox values are positive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Cell count = rows \u00d7 cols",
+      "passed": true,
+      "detail": "Got 24, expected 24"
+    },
+    {
+      "name": "Extraction returns list",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Fields extracted (>0)",
+      "passed": true,
+      "detail": "Got 8"
+    },
+    {
+      "name": "Field has 'id'",
+      "passed": true,
+      "detail": "Keys: ['id', 'name', 'type', 'strategy', 'question_index', 'bbox', 'priority', 'raw_value', 'digitized_value', 'confidence', 'status', 'selected_option_index', 'visual_diff', 'all_densities']"
+    },
+    {
+      "name": "Field has 'raw_value'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Field has 'confidence'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Field has 'status'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Field has 'strategy'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Field status is valid enum",
+      "passed": true,
+      "detail": "Got: AMBIGUOUS"
+    },
+    {
+      "name": "Dynamic fields have strategy='dynamic_grid'",
+      "passed": true,
+      "detail": "Got: dynamic_grid"
+    },
+    {
+      "name": "Detects filled region as marked",
+      "passed": true,
+      "detail": "density=0.9385"
+    },
+    {
+      "name": "Detects empty region as unmarked",
+      "passed": true,
+      "detail": "density=0.0"
+    },
+    {
+      "name": "Numeric cleaning: 'O1S' \u2192 '015'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Date cleaning: '12-05-2025' \u2192 '12/05/2025'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Whitespace normalization",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Valid text passes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Empty required field \u2192 REJECT",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Multi-decimal non-numeric \u2192 warning",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Out-of-range numeric \u2192 warning",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Fuzzy enum matches 'Somwhat True' \u2192 'Somewhat True'",
+      "passed": true,
+      "detail": "Got: 'Somewhat True'"
+    },
+    {
+      "name": "High quality \u2192 high score",
+      "passed": true,
+      "detail": "Got: 0.7925"
+    },
+    {
+      "name": "Quality FAIL \u2192 penalized",
+      "passed": true,
+      "detail": "PASS=0.7925, FAIL=0.634"
+    },
+    {
+      "name": "dynamic_grid method is recognized",
+      "passed": true,
+      "detail": "Got: 0.15"
+    },
+    {
+      "name": "Visual signal included",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "REJECT validation \u2192 low score",
+      "passed": true,
+      "detail": "Got: 0.185"
+    },
+    {
+      "name": "All-good fields \u2192 AUTO_ACCEPT",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Overall confidence computed",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Low confidence field \u2192 NEEDS_REVIEW",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Critical REJECT \u2192 REJECT",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "No fields \u2192 ERROR",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Request persisted and retrievable",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Request ID matches",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Fields persisted",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Field raw_text stored",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Field cleaned_text stored",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Idempotency detects duplicate hash",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Idempotency returns None for new hash",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Stage traces persisted",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Stage trace has duration",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Correction updates cleaned_text",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Previous value preserved",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Corrected_by recorded",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Corrected_at timestamp set",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "List requests returns results",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Status filter works",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Debug overlay generated",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Default template loads",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Template has fields",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "SDQ template has 25 questions",
+      "passed": true,
+      "detail": "Got 25"
+    },
+    {
+      "name": "Template field has id",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Template field has strategy",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Template field has priority",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Unknown template \u2192 falls back to sdq_v1",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Cache service initialised",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "is_connected property works",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Confidence weights sum to 1.0",
+      "passed": true,
+      "detail": "Sum: 0.9999999999999999"
+    },
+    {
+      "name": "PIXEL_DENSITY_THRESHOLD in (0,1)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "AUTO_ACCEPT_THRESHOLD in (0,1)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "MIN_FILL_THRESHOLD < PIXEL_DENSITY_THRESHOLD",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "GRID_LINE_SCALE_HORIZONTAL > 0",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "GRID_MIN_ROW_HEIGHT > 0",
+      "passed": true,
+      "detail": ""
+    }
+  ]
+}

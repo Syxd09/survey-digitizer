@@ -5,41 +5,28 @@ python-dotenv>=1.0.0
 pydantic>=2.0.0
 pydantic-settings>=2.0.0
 sqlalchemy>=2.0.0
-google-generativeai>=0.3.0
-openai>=1.0.0
 psycopg2-binary>=2.9.0
-
-
 
 # ── Image processing ──────────────────────────────────────────────────────────
 Pillow>=10.0.0
 opencv-python>=4.8.0
 numpy>=1.24.0
-scikit-image>=0.21.0          # Sauvola binarization
+scikit-image>=0.21.0          # Sauvola binarization (Phase 1)
 
 # ── OCR engines ───────────────────────────────────────────────────────────────
 google-cloud-vision>=3.4.0      # Primary OCR engine (Phase 2)
-easyocr>=1.7.0                 # Multilingual fallback / handwriting detection
-# PaddleOCR: install ONE of the two lines below (comment the other)
-paddlepaddle>=2.5.0            # CPU version
-# paddlepaddle-gpu>=2.5.0       # GPU version (CUDA 11.7+)
-paddleocr>=2.7.0               # Paddle OCR wrapper
-
-# ── Handwriting model ─────────────────────────────────────────────────────────
-transformers>=4.35.0
-torch>=2.0.0
-# Install MPS support automatically with torch on Apple Silicon
-
-# ── Table extraction ──────────────────────────────────────────────────────────
-img2table>=1.2.5               # Borderless + bordered table extraction
+easyocr>=1.7.0                 # Local fallback OCR (Phase 2)
 
 # ── NLP / correction ──────────────────────────────────────────────────────────
-rapidfuzz>=3.0.0               # Fuzzy OCR artifact correction
-langdetect>=1.0.9              # Auto language detection
+rapidfuzz>=3.0.0               # Fuzzy OCR artifact correction (Phase 5/6)
 
-# ── AI fallback ───────────────────────────────────────────────────────────────
-anthropic>=0.25.0              # Claude vision fallback for low-confidence crops
+# ── LLM Semantic Refinement (Phase 5) ────────────────────────────────────────
+google-generativeai>=0.3.0     # Gemini fallback
+openai>=1.0.0                  # OpenAI-compatible providers (Groq, xAI, etc.)
 
 # ── Storage / export ──────────────────────────────────────────────────────────
 pandas>=2.0.0
 openpyxl>=3.1.0
+
+# ── Caching (optional — gracefully degrades if not installed) ─────────────────
+redis>=5.0.0

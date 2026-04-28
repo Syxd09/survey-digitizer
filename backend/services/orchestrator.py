@@ -228,9 +228,16 @@ class ExtractionOrchestrator:
         self.db.save_request(request_id, diag, image_hash=img_hash)
         
         # Phase 13/Workbench Sync: Ensure JSON storage is updated
-        # This is CRITICAL for the Workbench station which polls JSON storage
+        # Compute aggregate diagnostics for storage service gating logic
+        field_confs = [f.get("confidence", 0.0) for f in validated_fields]
+        null_count = sum(1 for f in validated_fields if not f.get("raw_value") or f.get("status") == "NOT_FOUND")
+        storage_diagnostics = {
+            "avg_confidence": sum(field_confs) / max(len(field_confs), 1),
+            "null_rate": null_count / max(len(validated_fields), 1),
+            **diag.get("metrics", {}),
+        }
         try:
-            self.storage.update_scan_results("default", request_id, diag, diag.get("metrics", {}))
+            self.storage.update_scan_results("default", request_id, diag, storage_diagnostics)
         except Exception as store_exc:
             logger.warning(f"[{request_id}] JSON Storage sync failed: {store_exc}")
 
@@ -364,15 +371,11 @@ class ExtractionOrchestrator:
 
         # 5. Sync with StorageService (JSON) for Export consistency
         try:
-            # We assume 'default' dataset for manual corrections from API
-            # In a multi-tenant setup, we'd pass dataset_id here.
+            from services.storage import _read_json, _write_json
             dataset_id = "default"
             path = self.storage._scan_path(dataset_id, request_id)
-            if self.storage._read_json(path):
-                # Update the JSON directly to reflect corrections
-                # This ensures ExcelExportService (which reads JSON) sees the changes
-                from services.storage import _read_json, _write_json
-                data = _read_json(path)
+            data = _read_json(path)
+            if data:
                 data["status"] = "corrected"
                 
                 # Update field value in extractedData

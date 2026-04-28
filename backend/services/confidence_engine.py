@@ -19,7 +19,8 @@ class ConfidenceEngine:
             "anchor": 0.1,
             "zone": -0.2,
             "line_search": 0.0,
-            "radio_group": 0.1
+            "radio_group": 0.1,
+            "dynamic_grid": 0.15  # Highest boost — backed by morphological detection
         }
 
     def compute_field_confidence(

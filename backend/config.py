@@ -8,7 +8,6 @@ import os
 from pydantic_settings import BaseSettings
 
 from typing import Tuple, Dict, Optional
-import sys
 
 class Settings(BaseSettings):
     # Image Preprocessing
@@ -81,10 +80,10 @@ class Settings(BaseSettings):
                 # We log a warning but don't exit, as user might want local fallback (if implemented)
                 import logging
                 logging.warning("GOOGLE_API_KEY is missing. OCR will fail unless fallback is configured.")
-        except Exception as e:
+        except ValueError as e:
             import logging
             logging.critical(f"CRITICAL CONFIG ERROR: {e}")
-            sys.exit(1)
+            raise
 
 settings = Settings()
 settings.validate_settings()
