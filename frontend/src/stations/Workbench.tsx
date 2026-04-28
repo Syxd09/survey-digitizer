@@ -23,6 +23,10 @@ export const Workbench: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const activeDoc = scannedPages.find(p => p.id === selectedDocId);
+  const result = activeDoc?.result;
+  // Normalize data: WebSocket sends raw diag, storage sends { extractedData: diag }
+  const data = (result as any)?.extractedData || result;
+  const questions = data?.questions;
 
   const handleFeedback = async (questionIndex: number, type: 'question' | 'answer', newValue: string) => {
     if (!activeDoc || !activeDoc.result?.extractedData) return;
@@ -243,8 +247,8 @@ export const Workbench: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {activeDoc.result?.extractedData?.questions ? (
-                          activeDoc.result.extractedData.questions.map((q: any, idx: number) => {
+                        {questions ? (
+                          questions.map((q: any, idx: number) => {
                             const isSDQ = q.id && q.id.startsWith('q');
                             const val = q.digitized_value || (
                               q.raw_value === 'Certainly True' ? '3' : 
@@ -300,24 +304,24 @@ export const Workbench: React.FC = () => {
                         )}
                       </tbody>
                     </table>
-                  ) : viewMode === 'reality' && activeDoc.result?.extractedData ? (
+                  ) : viewMode === 'reality' && questions ? (
                     <div className="reality-inline-view">
                       <RealityView
                         imageUrl={activeDoc.image}
-                        questions={activeDoc.result.extractedData.questions}
-                        orphans={activeDoc.result.extractedData.survey_data?.orphans}
-                        fields={activeDoc.result.extractedData.survey_data?.fields}
-                        imageWidth={activeDoc.result.diagnostics?.restoration?.processed_width || activeDoc.result.diagnostics?.vision?.width || 1920}
-                        imageHeight={activeDoc.result.diagnostics?.restoration?.processed_height || activeDoc.result.diagnostics?.vision?.height || 1440}
+                        questions={questions}
+                        orphans={data?.survey_data?.orphans}
+                        fields={data?.survey_data?.fields}
+                        imageWidth={result?.diagnostics?.restoration?.processed_width || result?.diagnostics?.vision?.width || 1920}
+                        imageHeight={result?.diagnostics?.restoration?.processed_height || result?.diagnostics?.vision?.height || 1440}
                         hoveredIndex={hoveredIndex}
                         onHover={setHoveredIndex}
                       />
                     </div>
-                  ) : viewMode === 'digital' && activeDoc.result?.extractedData ? (
+                  ) : viewMode === 'digital' && questions ? (
                     <DigitalSurveyForm
                       scanId={activeDoc.id}
-                      surveyData={activeDoc.result.extractedData.survey_data}
-                      questions={activeDoc.result.extractedData.questions}
+                      surveyData={data?.survey_data}
+                      questions={questions}
                       onApprove={handleApproveSurvey}
                       onFeedback={handleFeedback}
                       isApproving={isExporting}
