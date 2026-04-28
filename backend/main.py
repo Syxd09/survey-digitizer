@@ -28,6 +28,7 @@ from contextlib import asynccontextmanager
 from typing import Any, Dict, List, Optional, Set
 
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field
@@ -347,8 +348,8 @@ async def process_survey(
 
         # Persist
         try:
-            storage.create_form_entry(request.datasetId, request.userId, scan_id, "")
-            storage.update_scan_results(request.datasetId, scan_id, result, diag)
+            await run_in_threadpool(storage.create_form_entry, request.datasetId, request.userId, scan_id, "")
+            await run_in_threadpool(storage.update_scan_results, request.datasetId, scan_id, result, diag)
         except Exception as store_exc:
             logger.warning(f"[SURVEY] Storage write failed (non-fatal): {store_exc}")
 
@@ -367,7 +368,7 @@ async def process_survey(
 
 
 @app.post("/approve-survey", tags=["OCR"])
-async def approve_survey(
+def approve_survey(
     request: ApproveRequest,
     storage = Depends(get_storage),
 ):
@@ -416,7 +417,7 @@ async def ingest_form(
     request_id = str(uuid.uuid4())
     
     # 1. Initialise DB entry immediately
-    db.save_request(request_id, {"status": "processing", "requestId": request_id})
+    await run_in_threadpool(db.save_request, request_id, {"status": "processing", "requestId": request_id})
 
     async def _bg_task():
         try:
@@ -447,7 +448,7 @@ async def ingest_form(
 # ── Scan status & listing endpoints ───────────────────────────────────────────
 
 @app.get("/requests/{request_id}", tags=["Scans"])
-async def get_request_status(
+def get_request_status(
     request_id: str,
     db = Depends(lambda: app_state.db),
 ):
@@ -458,7 +459,7 @@ async def get_request_status(
     return data
 
 @app.get("/scan/{dataset_id}/{scan_id}", tags=["Scans"])
-async def get_scan(
+def get_scan(
     dataset_id: str,
     scan_id:    str,
     storage    = Depends(get_storage),
@@ -472,7 +473,7 @@ async def get_scan(
     return data or {"scanId": scan_id, "status": status}
 
 @app.get("/forms", tags=["Phase 9/11"])
-async def list_forms(
+def list_forms(
     status: Optional[str] = None,
     limit: int = 50,
     offset: int = 0,
@@ -489,7 +490,7 @@ async def list_forms(
     }
 
 @app.get("/list/{dataset_id}", tags=["Scans"])
-async def list_scans_alias(
+def list_scans_alias(
     dataset_id: str,
     db = Depends(lambda: app_state.db),
 ):
@@ -501,7 +502,7 @@ async def list_scans_alias(
     return requests
 
 @app.get("/forms/{request_id}", tags=["Phase 9/11"])
-async def get_form_details(
+def get_form_details(
     request_id: str,
     db = Depends(lambda: app_state.db)
 ):
@@ -517,7 +518,7 @@ class CorrectionRequest(BaseModel):
     userId: str = "human_editor"
 
 @app.patch("/forms/{request_id}/correct", tags=["Phase 11"])
-async def correct_field(
+def correct_field(
     request_id: str,
     correction: CorrectionRequest,
     db = Depends(lambda: app_state.db)
@@ -535,7 +536,7 @@ async def correct_field(
 # ── Debug & Audit endpoints ──────────────────────────────────────────
 
 @app.get("/debug/bundle/{request_id}", tags=["Review"])
-async def download_debug_bundle(
+def download_debug_bundle(
     request_id: str,
     db = Depends(lambda: app_state.db),
     obs = Depends(lambda: app_state.obs)
@@ -547,7 +548,7 @@ async def download_debug_bundle(
     return FileResponse(path, filename=f"debug_{request_id}.zip")
 
 @app.get("/debug/overlay/{request_id}", tags=["Review"])
-async def get_debug_overlay(request_id: str):
+def get_debug_overlay(request_id: str):
     """Phase 12: Serves the debug overlay image with bounding boxes."""
     from services.observability import DEBUG_DIR
     path = os.path.join(DEBUG_DIR, f"{request_id}_debug_overlay.jpg")
@@ -556,7 +557,7 @@ async def get_debug_overlay(request_id: str):
     return FileResponse(path)
 
 @app.get("/image/original/{request_id}", tags=["Review"])
-async def get_original_image(request_id: str, db = Depends(lambda: app_state.db)):
+def get_original_image(request_id: str, db = Depends(lambda: app_state.db)):
     """Serves the original uploaded image."""
     data = db.get_request(request_id)
     if not data or "trace" not in data or "file_path" not in data["trace"]:
@@ -567,7 +568,7 @@ async def get_original_image(request_id: str, db = Depends(lambda: app_state.db)
     return FileResponse(path)
 
 @app.get("/image/snippet", tags=["Review"])
-async def get_snippet(request_id: str, field_id: str, db = Depends(lambda: app_state.db)):
+def get_snippet(request_id: str, field_id: str, db = Depends(lambda: app_state.db)):
     """Phase 11: Serves a cropped snippet for a specific field."""
     # In a real app, we'd crop on the fly or serve pre-cropped images.
     # For now, let's assume we crop on the fly from the original.
@@ -601,7 +602,7 @@ async def get_snippet(request_id: str, field_id: str, db = Depends(lambda: app_s
 # ── Feedback / active learning endpoint ──────────────────────────────────────
 
 @app.post("/feedback", tags=["Learning"])
-async def register_feedback(
+def register_feedback(
     request: FeedbackRequest,
 ):
     """
@@ -635,7 +636,7 @@ async def register_feedback(
 # ── Metrics endpoint ──────────────────────────────────────────────────────────
 
 @app.get("/metrics/{dataset_id}", tags=["Metrics"])
-async def get_dataset_metrics(
+def get_dataset_metrics(
     dataset_id: str,
     metrics    = Depends(get_metrics),
 ):

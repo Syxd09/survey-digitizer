@@ -246,23 +246,53 @@ class StorageService:
     # Query helpers
     # ─────────────────────────────────────────────────────────────────────────
 
-    def get_all_scans(self, dataset_id: str) -> List[Dict[str, Any]]:
+    def get_all_scans(self, dataset_id: str, limit: int = None, offset: int = 0) -> List[Dict[str, Any]]:
         scans_dir = os.path.join(self._dataset_dir(dataset_id), "scans")
         if not os.path.isdir(scans_dir):
             return []
+            
         results = []
-        for fname in os.listdir(scans_dir):
-            if fname.endswith(".json"):
-                doc = _read_json(os.path.join(scans_dir, fname))
-                if doc:
-                    results.append(doc)
+        # Sort files to ensure deterministic pagination
+        files = sorted([f for f in os.listdir(scans_dir) if f.endswith(".json")])
+        
+        # Apply offset and limit to filenames to avoid loading all JSONs
+        if limit is not None:
+            files = files[offset:offset+limit]
+        else:
+            files = files[offset:]
+            
+        for fname in files:
+            doc = _read_json(os.path.join(scans_dir, fname))
+            if doc:
+                results.append(doc)
         return results
 
     def get_scans_by_status(
         self,
         dataset_id: str,
         statuses: List[str],
+        limit: int = None,
+        offset: int = 0
     ) -> List[Dict[str, Any]]:
         status_set = set(statuses)
-        return [s for s in self.get_all_scans(dataset_id)
-                if s.get("status") in status_set]
+        # Note: if filtering by status, we must load more files until we hit limit.
+        # For true scalability, SQL DB is better. But here we just filter post-read.
+        scans_dir = os.path.join(self._dataset_dir(dataset_id), "scans")
+        if not os.path.isdir(scans_dir):
+            return []
+            
+        results = []
+        files = sorted([f for f in os.listdir(scans_dir) if f.endswith(".json")])
+        
+        skipped = 0
+        for fname in files:
+            doc = _read_json(os.path.join(scans_dir, fname))
+            if doc and doc.get("status") in status_set:
+                if skipped < offset:
+                    skipped += 1
+                    continue
+                results.append(doc)
+                if limit is not None and len(results) >= limit:
+                    break
+                    
+        return results

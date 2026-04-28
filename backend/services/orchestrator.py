@@ -64,18 +64,23 @@ class ExtractionOrchestrator:
         if not request_id:
             request_id = str(uuid.uuid4())
 
+
         loop = asyncio.get_running_loop()
         
         try:
             # 1. Magic Byte Validation (Phase 15)
-            pil_img = self._decode_and_validate_image(image_b64)
+            pil_img, raw_bytes = self._decode_and_validate_image(image_b64)
             
-            # 2. Run Pipeline in ThreadPool (CPU/Network bound)
+            # 2. Compute idempotency hash from original bytes (avoids re-encode)
+            img_hash = hashlib.md5(raw_bytes).hexdigest()
+            
+            # 3. Run Pipeline in ThreadPool (CPU/Network bound)
             result = await loop.run_in_executor(
                 self.executor,
                 self._run_pipeline,
                 pil_img,
-                request_id
+                request_id,
+                img_hash
             )
             
             return result
@@ -84,13 +89,14 @@ class ExtractionOrchestrator:
             logger.error(f"[ORCH] Pipeline failed for {request_id}: {exc}", exc_info=True)
             return self._error_result(str(exc), request_id)
 
-    def _run_pipeline(self, pil_img: PILImage.Image, request_id: str) -> Dict[str, Any]:
+    def _run_pipeline(self, pil_img: PILImage.Image, request_id: str, img_hash: str = "") -> Dict[str, Any]:
         """Synchronous execution of the pipeline phases."""
         
         # 0. Idempotency Check (Phase 9 Spec)
-        img_bytes = io.BytesIO()
-        pil_img.save(img_bytes, format='JPEG')
-        img_hash = hashlib.md5(img_bytes.getvalue()).hexdigest()
+        if not img_hash:
+            img_buf = io.BytesIO()
+            pil_img.save(img_buf, format='JPEG')
+            img_hash = hashlib.md5(img_buf.getvalue()).hexdigest()
         
         existing_id = self.db.check_idempotency(img_hash)
         if existing_id:
@@ -195,14 +201,19 @@ class ExtractionOrchestrator:
         diag["metrics"]["p4_extraction_ms"] = int((time.time() - t_p4) * 1000)
         self.db.save_stage_trace(request_id, "extraction", "SUCCESS", diag["metrics"]["p4_extraction_ms"])
 
-        # PHASE 5, 6 & 7: Parallel Validation & Confidence (Phase 14)
-        logger.info(f"[{request_id}] Phase 5, 6 & 7: Parallel Validation & Scoring")
+        # PHASE 5, 6 & 7: Validation & Confidence Scoring
+        logger.info(f"[{request_id}] Phase 5, 6 & 7: Validation & Scoring")
         t_fields_start = time.time()
         
-        def process_field_task(field):
-            return self._process_single_field(field, diag, processed_img_bgr)
-
-        validated_fields = list(self.executor.map(process_field_task, extracted_fields))
+        # Extract quality_status once (thread-safe read) before field processing
+        quality_status = diag.get("quality", {}).get("status", "PASS")
+        
+        # Process fields sequentially — avoids thread pool deadlock since
+        # _run_pipeline already occupies an executor thread.
+        validated_fields = [
+            self._process_single_field(field, quality_status, processed_img_bgr)
+            for field in extracted_fields
+        ]
         
         diag["fields"] = validated_fields
         diag["phases"]["5_6_7_logic"] = "SUCCESS"
@@ -261,23 +272,29 @@ class ExtractionOrchestrator:
         diag["metrics"]["total_ms"] = int((time.time() - t_start) * 1000)
         return diag
 
-    def _decode_and_validate_image(self, image_b64: str) -> PILImage.Image:
-        """Phase 15 Security: Magic byte validation and decoding."""
+    def _decode_and_validate_image(self, image_b64: str):
+        """Phase 15 Security: Magic byte validation and decoding.
+        Returns (PIL Image, raw_bytes) tuple."""
         if "," in image_b64:
             image_b64 = image_b64.split(",", 1)[1]
         raw = base64.b64decode(image_b64)
         
         # Verify Magic Bytes (Phase 15.1)
         # JPEG: FF D8 FF
-        # PNG: 89 50 4E 47
-        if not (raw.startswith(b'\xff\xd8\xff') or raw.startswith(b'\x89PNG')):
+        # PNG:  89 50 4E 47
+        # WEBP: 52 49 46 46 ... 57 45 42 50
+        is_jpeg = raw.startswith(b'\xff\xd8\xff')
+        is_png = raw.startswith(b'\x89PNG')
+        is_webp = raw[:4] == b'RIFF' and raw[8:12] == b'WEBP'
+        
+        if not (is_jpeg or is_png or is_webp):
             logger.error("Security violation: Rejected non-image file upload via magic byte check.")
-            raise ValueError("Invalid file format. Only JPEG and PNG are allowed.")
+            raise ValueError("Invalid file format. Only JPEG, PNG, and WEBP are allowed.")
             
-        return PILImage.open(io.BytesIO(raw)).convert("RGB")
+        return PILImage.open(io.BytesIO(raw)).convert("RGB"), raw
 
-    def _process_single_field(self, field: Dict[str, Any], diag: Dict[str, Any], img_bgr: np.ndarray) -> Dict[str, Any]:
-        """Helper for Phase 14 parallel field processing."""
+    def _process_single_field(self, field: Dict[str, Any], quality_status: str, img_bgr: np.ndarray) -> Dict[str, Any]:
+        """Process a single field through validation and confidence scoring."""
         # Combined Phase 5 & 6 Validation (Hard/Soft)
         val_res = self.validator.validate_field(
             field_id=field["id"],
@@ -288,7 +305,7 @@ class ExtractionOrchestrator:
         # PHASE 7: Confidence Scoring
         conf_res = self.confidence_engine.compute_field_confidence(
             ocr_conf=field.get("confidence", 0.5),
-            quality_status=diag.get("quality", {}).get("status", "PASS"),
+            quality_status=quality_status,
             validation_status=val_res["status"],
             extraction_method=field.get("strategy", "anchor"),
             pattern_match=(len(val_res["warnings"]) == 0),

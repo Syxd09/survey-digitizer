@@ -157,8 +157,8 @@ class ExtractionEngine:
                     zone_words.append(word)
             
             if zone_words:
-                # Sort by X-left then Y-top
-                zone_words.sort(key=lambda x: (x["bbox"][0][0], x["bbox"][0][1]))
+                # Sort by Y-top then X-left for multi-line natural reading order
+                zone_words.sort(key=lambda x: (x["bbox"][0][1], x["bbox"][0][0]))
                 entry["raw_value"] = " ".join([w["text"] for w in zone_words])
                 entry["confidence"] = min([w["confidence"] for w in zone_words])
                 entry["status"] = "OK"

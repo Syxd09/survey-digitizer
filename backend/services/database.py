@@ -242,6 +242,10 @@ class DatabaseService:
                 )
             else:
                 logger.warning(f"[DB] Field {field_id} not found for request {request_id}")
+        except Exception as e:
+            session.rollback()
+            logger.error(f"[DB] Failed to update field {field_id}: {e}")
+            raise
         finally:
             session.close()
 

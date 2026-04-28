@@ -62,12 +62,15 @@ class ContentValidator:
 
     def _clean_numeric(self, value: str) -> str:
         """Maps OCR artifacts to digits and removes non-numeric chars."""
-        # Map common artifacts (e.g., O -> 0)
+        # Check if it has any actual digits. If not, it's probably not a number at all,
+        # and aggressive mapping (e.g. 'Age' -> '4g9') will create false numbers.
+        has_digits = any(c.isdigit() for c in value)
+        
         cleaned = ""
         for char in value:
             if char.isdigit() or char == ".":
                 cleaned += char
-            elif char in OCR_ARTIFACT_MAP:
+            elif has_digits and char in OCR_ARTIFACT_MAP:
                 cleaned += OCR_ARTIFACT_MAP[char]
         
         # Remove anything that isn't a digit or dot

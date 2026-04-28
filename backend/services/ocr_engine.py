@@ -10,11 +10,14 @@ import time
 import logging
 import base64
 import hashlib
+from collections import OrderedDict
 from typing import List, Dict, Any, Optional
 from google.cloud import vision
 from google.api_core import exceptions, retry
 import easyocr
 from config import settings
+
+_OCR_CACHE_MAX_SIZE = 50  # Max cached OCR results to prevent memory leaks
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +27,7 @@ class OCREngine:
 
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or settings.GOOGLE_API_KEY
-        self._cache = {} # Simple in-memory cache
+        self._cache = OrderedDict() # Replaced dict with OrderedDict for LRU caching
         if not self.api_key:
             logger.warning("[Phase 2] No GOOGLE_API_KEY found in config or environment.")
         
@@ -55,7 +58,10 @@ class OCREngine:
         
         if img_hash in self._cache:
             logger.info("[Phase 14] Serving OCR from cache.")
-            return self._cache[img_hash]
+            # Move to end to mark as recently used
+            result = self._cache.pop(img_hash)
+            self._cache[img_hash] = result
+            return result
 
         try:
             if not self.client:
@@ -69,6 +75,8 @@ class OCREngine:
             
             result = self._parse_response(response)
             self._cache[img_hash] = result
+            if len(self._cache) > _OCR_CACHE_MAX_SIZE:
+                self._cache.popitem(last=False)
             return result
             
         except Exception as e:
@@ -81,6 +89,8 @@ class OCREngine:
             local_result = self.local_reader.readtext(img_bytes)
             result = self._parse_local_response(local_result)
             self._cache[img_hash] = result
+            if len(self._cache) > _OCR_CACHE_MAX_SIZE:
+                self._cache.popitem(last=False)
             return result
 
 
