@@ -162,15 +162,16 @@ class StorageService:
         null_rate = diagnostics.get("null_rate", 0.0)
 
         # Validation gating
-        status         = "good"
+        status = results.get("status") or "good"
         export_allowed = True
 
-        if avg_conf < 0.4 or null_rate > 0.5:
-            status         = "bad"
-            export_allowed = False
-        elif any(q.get("status") == "LOW_CONFIDENCE" for q in questions):
-            status         = "conflict"
-            export_allowed = False
+        if status != "approved" and status != "corrected":
+            if avg_conf < 0.4 or null_rate > 0.5:
+                status         = "bad"
+                export_allowed = False
+            elif any(q.get("status") == "LOW_CONFIDENCE" for q in questions):
+                status         = "conflict"
+                export_allowed = False
 
         lifecycle = data.get("lifecycle", [])
         lifecycle.append({
@@ -187,7 +188,7 @@ class StorageService:
             "extractedData": results,
             "diagnostics":   diagnostics,
             "processedAt":   _now_iso(),
-            "logicVersion":  results.get("logic_version", "Hydra-v11.0"),
+            "logicVersion":  results.get("logic_version", "Pipeline-v2.0"),
             "lifecycle":     lifecycle,
         })
         _write_json(path, data)

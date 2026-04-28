@@ -1,0 +1,226 @@
+{
+  "datasetId": "default-authority",
+  "userId": "admin",
+  "scanId": "06ab6752-740b-4d06-8f12-0a95cbd13ed6",
+  "status": "good",
+  "confidence": 0.9657,
+  "imageUrl": "",
+  "createdAt": "2026-04-22T15:25:12.689836+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-22T15:25:12.689848+00:00"
+    },
+    {
+      "stage": "PROCESSING",
+      "timestamp": "2026-04-22T15:25:12.690405+00:00",
+      "metadata": {}
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-22T15:25:21.647151+00:00",
+      "metadata": {
+        "status": "good",
+        "export_allowed": true
+      }
+    }
+  ],
+  "lastUpdatedAt": "2026-04-22T15:25:12.690397+00:00",
+  "exportAllowed": true,
+  "nullRate": 0.0,
+  "extractedData": {
+    "questions": [
+      {
+        "question": "Real Assessment",
+        "selected": "Real Assessment",
+        "confidence": 0.9514,
+        "status": "OK",
+        "source": "ocr_detected",
+        "agreement": false,
+        "imageHash": "324459d2dae10788d1264762e981f4dd"
+      },
+      {
+        "question": "Area",
+        "selected": "Status",
+        "confidence": 0.929,
+        "status": "OK",
+        "source": "ocr_structured",
+        "agreement": false,
+        "imageHash": "67f58103c45ff65650c51df64d3cd39a"
+      },
+      {
+        "question": "0",
+        "selected": "Strong",
+        "confidence": 0.98,
+        "status": "OK",
+        "source": "ocr_structured",
+        "agreement": false,
+        "imageHash": "b0d4011a1a6cd225b040a4a7f2e823cd"
+      },
+      {
+        "question": "OCR",
+        "selected": "Good but incomplete",
+        "confidence": 0.9799,
+        "status": "OK",
+        "source": "ocr_structured",
+        "agreement": false,
+        "imageHash": "153549195e3f065321776523381847a7"
+      },
+      {
+        "question": "VLM",
+        "selected": "Present but underused",
+        "confidence": 0.9549,
+        "status": "OK",
+        "source": "ocr_structured",
+        "agreement": false,
+        "imageHash": "591f17965f5403a7e8e3ae69b7bf11c4"
+      },
+      {
+        "question": "Layout",
+        "selected": "Weak",
+        "confidence": 0.9746,
+        "status": "OK",
+        "source": "ocr_structured",
+        "agreement": false,
+        "imageHash": "9e5cea4f98457aef779bbdf5b6e00f7c"
+      },
+      {
+        "question": "Tables",
+        "selected": "Missing",
+        "confidence": 0.98,
+        "status": "OK",
+        "source": "ocr_structured",
+        "agreement": false,
+        "imageHash": "1b4aca8aac67a7a6e1aad1d14a4a1f9d"
+      },
+      {
+        "question": "Handwriting",
+        "selected": "Missing",
+        "confidence": 0.98,
+        "status": "OK",
+        "source": "ocr_structured",
+        "agreement": false,
+        "imageHash": "b1024e7035b1c503a3d3deee8889b23e"
+      },
+      {
+        "question": "Validation",
+        "selected": "Basic",
+        "confidence": 0.9612,
+        "status": "OK",
+        "source": "ocr_structured",
+        "agreement": false,
+        "imageHash": "3ff0f68dc1c6a51ba4a1f12cdba03627"
+      }
+    ],
+    "diagnostics": {
+      "vision": {
+        "is_dark_mode": true,
+        "enhanced_upscaled": true
+      },
+      "doc_type": {
+        "type": "general",
+        "confidence": 0.3,
+        "signals_matched": [],
+        "hints": {
+          "has_dark_bg": true,
+          "handwriting_density": 0.0148,
+          "has_table_lines": false,
+          "h_lines": 23,
+          "v_lines": 0
+        },
+        "all_scores": {
+          "code_screenshot": 0.0,
+          "survey_form": 0.0,
+          "form": 0.0,
+          "invoice": 0.0,
+          "handwritten": 0.0,
+          "table": 0.0,
+          "general": 0.0
+        },
+        "fallback": false
+      },
+      "ocr_counts": {
+        "paddle": 0,
+        "easyocr": 17,
+        "tesseract": 30
+      },
+      "ensemble_regions": 17,
+      "vlm_skeleton": {
+        "status": "ok",
+        "fields_count": 1,
+        "has_table": false,
+        "sections": [
+          "Real Assessment"
+        ]
+      },
+      "mapped_entries": 9,
+      "source_breakdown": {
+        "ocr_detected": 1,
+        "ocr_structured": 8
+      },
+      "duration": 8.93,
+      "logic_version": "Hydra-v13.0-VLM-DRIVEN",
+      "engine": "LOCAL_HYDRA_V11",
+      "avg_confidence": 0.9657,
+      "null_rate": 0.0,
+      "question_count": 9,
+      "handwriting_mode": false
+    }
+  },
+  "diagnostics": {
+    "vision": {
+      "is_dark_mode": true,
+      "enhanced_upscaled": true
+    },
+    "doc_type": {
+      "type": "general",
+      "confidence": 0.3,
+      "signals_matched": [],
+      "hints": {
+        "has_dark_bg": true,
+        "handwriting_density": 0.0148,
+        "has_table_lines": false,
+        "h_lines": 23,
+        "v_lines": 0
+      },
+      "all_scores": {
+        "code_screenshot": 0.0,
+        "survey_form": 0.0,
+        "form": 0.0,
+        "invoice": 0.0,
+        "handwritten": 0.0,
+        "table": 0.0,
+        "general": 0.0
+      },
+      "fallback": false
+    },
+    "ocr_counts": {
+      "paddle": 0,
+      "easyocr": 17,
+      "tesseract": 30
+    },
+    "ensemble_regions": 17,
+    "vlm_skeleton": {
+      "status": "ok",
+      "fields_count": 1,
+      "has_table": false,
+      "sections": [
+        "Real Assessment"
+      ]
+    },
+    "mapped_entries": 9,
+    "source_breakdown": {
+      "ocr_detected": 1,
+      "ocr_structured": 8
+    },
+    "duration": 8.93,
+    "logic_version": "Hydra-v13.0-VLM-DRIVEN",
+    "engine": "LOCAL_HYDRA_V11",
+    "avg_confidence": 0.9657,
+    "null_rate": 0.0,
+    "question_count": 9,
+    "handwriting_mode": false
+  },
+  "processedAt": "2026-04-22T15:25:21.647160+00:00",
+  "logicVersion": "Hydra-v11.0"
+}

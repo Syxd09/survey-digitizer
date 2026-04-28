@@ -1,0 +1,296 @@
+{
+  "datasetId": "default-authority",
+  "userId": "admin",
+  "scanId": "40af5ad1-6453-40b9-ac84-bfd8206a6dda",
+  "status": "good",
+  "confidence": 1.0,
+  "imageUrl": "",
+  "createdAt": "2026-04-22T08:40:51.872074+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-22T08:40:51.872087+00:00"
+    },
+    {
+      "stage": "PROCESSING",
+      "timestamp": "2026-04-22T08:40:51.872712+00:00",
+      "metadata": {}
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-22T08:41:32.767830+00:00",
+      "metadata": {
+        "status": "good",
+        "export_allowed": true
+      }
+    }
+  ],
+  "lastUpdatedAt": "2026-04-22T08:40:51.872705+00:00",
+  "exportAllowed": true,
+  "nullRate": 0.0,
+  "extractedData": {
+    "questions": [
+      {
+        "question": "1. I was restless, I could not stay still for long.",
+        "selected": "bal",
+        "confidence": 1.0,
+        "status": "\u2705 OK",
+        "imageHash": "29f182c335e6ef8f94ac7f573c99b3c0"
+      },
+      {
+        "question": "2. I got a lot of headaches, stomachaches or sickness.",
+        "selected": "V.V.",
+        "confidence": 1.0,
+        "status": "\u2705 OK",
+        "imageHash": "0e267fd277d81794cfa1389b114881b1"
+      },
+      {
+        "question": "3. I usually shared with others (food, games, pens etc.).",
+        "selected": "a",
+        "confidence": 1.0,
+        "status": "\u2705 OK",
+        "imageHash": "0cb6aee29de551035703db16295cb1b8"
+      },
+      {
+        "question": "4. I got very angry and often lost my temper.",
+        "selected": "V.V.",
+        "confidence": 1.0,
+        "status": "\u2705 OK",
+        "imageHash": "d65602e39a2fd51dd4196420c936d972"
+      },
+      {
+        "question": "5. Do you own. I generally played alone or",
+        "selected": "bal",
+        "confidence": 1.0,
+        "status": "\u2705 OK",
+        "imageHash": "15169248887aebbaab9f98de9bef187d"
+      },
+      {
+        "question": "6. I usually did as I was told",
+        "selected": "V.V.",
+        "confidence": 1.0,
+        "status": "\u2705 OK",
+        "imageHash": "d332f16d0f0b84f8843048a2a32dd551"
+      },
+      {
+        "question": "7. S.",
+        "selected": "bal",
+        "confidence": 1.0,
+        "status": "\u2705 OK",
+        "imageHash": "c909bd785a2cb0c344d59522264aac05"
+      }
+    ],
+    "survey_data": {
+      "form_metadata": {
+        "raw_header": "I'm"
+      },
+      "columns": [
+        "0 0",
+        "2 .",
+        "herights be nice to other people . I cured about their",
+        "bal",
+        "V.V.",
+        "a"
+      ],
+      "questions": [
+        {
+          "number": 1,
+          "text": "I was restless, I could not stay still for long.",
+          "selected_column": "bal",
+          "selected_index": 2,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 2,
+          "text": "I got a lot of headaches, stomachaches or sickness.",
+          "selected_column": "V.V.",
+          "selected_index": 3,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 3,
+          "text": "I usually shared with others (food, games, pens etc.).",
+          "selected_column": "a",
+          "selected_index": 4,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 4,
+          "text": "I got very angry and often lost my temper.",
+          "selected_column": "V.V.",
+          "selected_index": 3,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 5,
+          "text": "Do you own. I generally played alone or",
+          "selected_column": "bal",
+          "selected_index": 2,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 6,
+          "text": "I usually did as I was told",
+          "selected_column": "V.V.",
+          "selected_index": 3,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        },
+        {
+          "number": 7,
+          "text": "S.",
+          "selected_column": "bal",
+          "selected_index": 2,
+          "confidence": 1.0,
+          "mark_type": "checkmark"
+        }
+      ],
+      "form_type": "checkmark",
+      "header_text": "",
+      "instructions": ""
+    },
+    "diagnostics": {
+      "vision": {
+        "is_dark_mode": false,
+        "enhanced_upscaled": true
+      },
+      "doc_type": {
+        "type": "survey_form",
+        "confidence": 1.0,
+        "signals_matched": [
+          "\\bQuestionnaire\\b",
+          "\\bQuestions?\\b",
+          "\\bNot\\s*True\\b",
+          "\\bSomewhat\\s*True\\b",
+          "\\bCertainly\\s*True\\b",
+          "\\bTrue\\b",
+          "\\bStudy\\s*Code\\b",
+          "\\bForm\\s*No\\b",
+          "\\bexperience\\b",
+          "\\bbasis\\s*of\\b",
+          "\\bplease\\s*read\\b",
+          "\\bNOTE\\b",
+          "\\bmark\\s*the\\b"
+        ],
+        "hints": {
+          "has_dark_bg": false,
+          "handwriting_density": 0.0378,
+          "has_table_lines": true,
+          "h_lines": 33,
+          "v_lines": 18
+        },
+        "all_scores": {
+          "code_screenshot": 0.0,
+          "survey_form": 1.114,
+          "form": 0.0,
+          "invoice": 0.0,
+          "handwritten": 0.0,
+          "table": 0.5,
+          "general": 0.0
+        },
+        "fallback": false
+      },
+      "ocr_counts": {
+        "paddle": 0,
+        "easyocr": 66,
+        "tesseract": 207
+      },
+      "form_type": "checkmark",
+      "columns_detected": [
+        "0 0",
+        "2 .",
+        "herights be nice to other people . I cured about their",
+        "bal",
+        "V.V.",
+        "a"
+      ],
+      "questions_extracted": 7,
+      "vlm_skeleton": {
+        "status": "ok",
+        "fields_count": 1
+      },
+      "duration": 40.88,
+      "logic_version": "Hydra-v13.0-SURVEY",
+      "engine": "LOCAL_HYDRA_V11",
+      "avg_confidence": 1.0,
+      "null_rate": 0.0,
+      "question_count": 7,
+      "handwriting_mode": false
+    }
+  },
+  "diagnostics": {
+    "vision": {
+      "is_dark_mode": false,
+      "enhanced_upscaled": true
+    },
+    "doc_type": {
+      "type": "survey_form",
+      "confidence": 1.0,
+      "signals_matched": [
+        "\\bQuestionnaire\\b",
+        "\\bQuestions?\\b",
+        "\\bNot\\s*True\\b",
+        "\\bSomewhat\\s*True\\b",
+        "\\bCertainly\\s*True\\b",
+        "\\bTrue\\b",
+        "\\bStudy\\s*Code\\b",
+        "\\bForm\\s*No\\b",
+        "\\bexperience\\b",
+        "\\bbasis\\s*of\\b",
+        "\\bplease\\s*read\\b",
+        "\\bNOTE\\b",
+        "\\bmark\\s*the\\b"
+      ],
+      "hints": {
+        "has_dark_bg": false,
+        "handwriting_density": 0.0378,
+        "has_table_lines": true,
+        "h_lines": 33,
+        "v_lines": 18
+      },
+      "all_scores": {
+        "code_screenshot": 0.0,
+        "survey_form": 1.114,
+        "form": 0.0,
+        "invoice": 0.0,
+        "handwritten": 0.0,
+        "table": 0.5,
+        "general": 0.0
+      },
+      "fallback": false
+    },
+    "ocr_counts": {
+      "paddle": 0,
+      "easyocr": 66,
+      "tesseract": 207
+    },
+    "form_type": "checkmark",
+    "columns_detected": [
+      "0 0",
+      "2 .",
+      "herights be nice to other people . I cured about their",
+      "bal",
+      "V.V.",
+      "a"
+    ],
+    "questions_extracted": 7,
+    "vlm_skeleton": {
+      "status": "ok",
+      "fields_count": 1
+    },
+    "duration": 40.88,
+    "logic_version": "Hydra-v13.0-SURVEY",
+    "engine": "LOCAL_HYDRA_V11",
+    "avg_confidence": 1.0,
+    "null_rate": 0.0,
+    "question_count": 7,
+    "handwriting_mode": false
+  },
+  "processedAt": "2026-04-22T08:41:32.767842+00:00",
+  "logicVersion": "Hydra-v11.0"
+}

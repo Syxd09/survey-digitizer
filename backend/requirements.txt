@@ -3,6 +3,13 @@ fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
 python-dotenv>=1.0.0
 pydantic>=2.0.0
+pydantic-settings>=2.0.0
+sqlalchemy>=2.0.0
+google-generativeai>=0.3.0
+openai>=1.0.0
+psycopg2-binary>=2.9.0
+
+
 
 # ── Image processing ──────────────────────────────────────────────────────────
 Pillow>=10.0.0
@@ -11,6 +18,7 @@ numpy>=1.24.0
 scikit-image>=0.21.0          # Sauvola binarization
 
 # ── OCR engines ───────────────────────────────────────────────────────────────
+google-cloud-vision>=3.4.0      # Primary OCR engine (Phase 2)
 easyocr>=1.7.0                 # Multilingual fallback / handwriting detection
 # PaddleOCR: install ONE of the two lines below (comment the other)
 paddlepaddle>=2.5.0            # CPU version

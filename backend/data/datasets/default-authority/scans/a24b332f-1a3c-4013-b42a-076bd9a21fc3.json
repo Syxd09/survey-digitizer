@@ -1,0 +1,86 @@
+{
+  "datasetId": "default-authority",
+  "userId": "admin",
+  "scanId": "a24b332f-1a3c-4013-b42a-076bd9a21fc3",
+  "status": "bad",
+  "confidence": 0.0,
+  "imageUrl": "",
+  "createdAt": "2026-04-21T19:15:05.935170+00:00",
+  "lifecycle": [
+    {
+      "stage": "UPLOADED",
+      "timestamp": "2026-04-21T19:15:05.935188+00:00"
+    },
+    {
+      "stage": "PROCESSING",
+      "timestamp": "2026-04-21T19:15:05.936057+00:00",
+      "metadata": {}
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-21T19:15:11.869172+00:00",
+      "metadata": {
+        "status": "good",
+        "export_allowed": true
+      }
+    },
+    {
+      "stage": "VALIDATED",
+      "timestamp": "2026-04-21T19:22:13.914851+00:00",
+      "metadata": {
+        "status": "bad",
+        "export_allowed": false
+      }
+    }
+  ],
+  "lastUpdatedAt": "2026-04-21T19:15:05.936046+00:00",
+  "exportAllowed": false,
+  "nullRate": 0.0,
+  "extractedData": {
+    "questions": [
+      {
+        "question": "1. WaS resiless; could not Stay still for long",
+        "selected": "bal",
+        "confidence": 1,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "2. gol Iot of headaches, stomach-aches O sickness",
+        "selected": "aa",
+        "confidence": 1,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "3. usually shared others (food, games; pens etc ) with",
+        "selected": "a",
+        "confidence": 1,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "4. got very angry and often lost my lemper",
+        "selected": "aa",
+        "confidence": 1,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "5. usually on my own generally played alone or kcpt t0 mysclf",
+        "selected": "bal",
+        "confidence": 1,
+        "status": "\u2705 OK"
+      },
+      {
+        "question": "6. usually did as / was told",
+        "selected": "aa",
+        "confidence": 1,
+        "status": "\u2705 OK"
+      }
+    ],
+    "status": "approved"
+  },
+  "diagnostics": {
+    "approved": true,
+    "status": "approved"
+  },
+  "processedAt": "2026-04-21T19:22:13.914911+00:00",
+  "logicVersion": "Hydra-v11.0"
+}

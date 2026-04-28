@@ -1,0 +1,105 @@
+.reality-view-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reality-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.reality-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.reality-overlay g {
+  pointer-events: all;
+}
+
+.reality-bbox {
+  fill: rgba(0, 122, 255, 0.1);
+  stroke: rgba(0, 122, 255, 0.4);
+  stroke-width: 2;
+  transition: all 0.2s ease;
+  cursor: crosshair;
+}
+
+.reality-bbox.question-bbox {
+  stroke: rgba(52, 199, 89, 0.6);
+  fill: rgba(52, 199, 89, 0.05);
+}
+
+.reality-bbox.value-bbox {
+  stroke: rgba(255, 149, 0, 0.6);
+  fill: rgba(255, 149, 0, 0.1);
+}
+
+.reality-bbox.active {
+  fill: rgba(0, 122, 255, 0.2);
+  stroke: #007aff;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 5px rgba(0,122,255,0.5));
+}
+
+.reality-bbox.question-bbox.active {
+  stroke: #34c759;
+  fill: rgba(52, 199, 89, 0.2);
+  filter: drop-shadow(0 0 8px rgba(52, 199, 89, 0.5));
+}
+
+.reality-bbox.value-bbox.active {
+  stroke: #ff9500;
+  fill: rgba(255, 149, 0, 0.3);
+  filter: drop-shadow(0 0 8px rgba(255, 149, 0, 0.5));
+}
+
+.reality-bbox.orphan-bbox {
+  stroke: rgba(255, 255, 255, 0.15);
+  fill: transparent;
+  stroke-dasharray: 2;
+  stroke-width: 1;
+}
+
+.reality-bbox.field-label-bbox {
+  stroke: rgba(175, 82, 222, 0.4);
+  fill: rgba(175, 82, 222, 0.03);
+}
+
+.reality-bbox.field-value-bbox {
+  stroke: rgba(175, 82, 222, 0.6);
+  fill: rgba(175, 82, 222, 0.1);
+  stroke-width: 1.5;
+}
+
+.reality-label {
+  background: rgba(52, 199, 89, 0.9);
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: normal;
+  word-wrap: break-word;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: block;
+  border: 1px solid rgba(255,255,255,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  max-width: 300px;
+}

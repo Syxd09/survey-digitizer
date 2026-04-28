@@ -1,0 +1,1259 @@
+{
+  "test_image": "D:\\survey-digitizer\\backend\\test-images\\1.jpeg",
+  "original_dims": {
+    "w": 900,
+    "h": 1600
+  },
+  "processed_dims": {
+    "w": 1200,
+    "h": 2133
+  },
+  "preprocessing": {
+    "scale_factor": 1.333333,
+    "rotated": false,
+    "deskew_applied": true,
+    "deskew_angle": -2.0,
+    "quality_status": "PASS",
+    "enhancement": {
+      "clahe_applied": false,
+      "sauvola_applied": false,
+      "contrast_score": 60.86
+    }
+  },
+  "template": {
+    "id": "sdq_v1",
+    "name": "Strengths and Difficulties Questionnaire (SDQ)",
+    "total_fields": 25,
+    "strategies": {
+      "radio_group": 25
+    }
+  },
+  "thresholds": {
+    "PIXEL_DENSITY_THRESHOLD": 0.15,
+    "MIN_FILL_THRESHOLD": 0.05,
+    "VISUAL_CONFIDENCE_THRESHOLD": 0.1,
+    "MARGIN_EXCLUSION_RATIO": 0.1
+  },
+  "detection_results": [
+    {
+      "row_id": "Q1",
+      "question_label": "I try to be nice to other people. I care about their feeling",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            452,
+            900,
+            499
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1349
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            452,
+            1020,
+            499
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1376
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            452,
+            1140,
+            499
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1528
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 2,
+      "confidence_gap": 0.0152,
+      "final_value": "Certainly True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q2",
+      "question_label": "I am restless, I cannot stay still for long.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            506,
+            900,
+            553
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1482
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            506,
+            1020,
+            553
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0099
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            506,
+            1140,
+            553
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.4103
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 1,
+      "confidence_gap": 0.2621,
+      "final_value": "Certainly True",
+      "final_status": "OK",
+      "confidence": 1.0
+    },
+    {
+      "row_id": "Q3",
+      "question_label": "I often complain of headaches, stomach-aches or sickness.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            560,
+            900,
+            607
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1696
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            560,
+            1020,
+            607
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1031
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            560,
+            1140,
+            607
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.7249
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 1,
+      "confidence_gap": 0.5553,
+      "final_value": "Certainly True",
+      "final_status": "OK",
+      "confidence": 1.0
+    },
+    {
+      "row_id": "Q4",
+      "question_label": "I usually share with others (food, games, pens etc.)",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            615,
+            900,
+            662
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0879
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            615,
+            1020,
+            662
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.043
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            615,
+            1140,
+            662
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1942
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 1,
+      "confidence_gap": 0.1063,
+      "final_value": "Certainly True",
+      "final_status": "OK",
+      "confidence": 1.0
+    },
+    {
+      "row_id": "Q5",
+      "question_label": "I get very angry and often lose my temper.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            669,
+            900,
+            716
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1546
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            669,
+            1020,
+            716
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1341
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            669,
+            1140,
+            716
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0889
+        }
+      ],
+      "winner_index": 1,
+      "runner_up_index": 2,
+      "confidence_gap": 0.0205,
+      "final_value": "Not True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q6",
+      "question_label": "I am rather solitary, I tend to play alone.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            724,
+            900,
+            771
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.102
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            724,
+            1020,
+            771
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.129
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            724,
+            1140,
+            771
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1533
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 2,
+      "confidence_gap": 0.0243,
+      "final_value": "Certainly True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q7",
+      "question_label": "I usually do as I am told.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            778,
+            900,
+            825
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0732
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            778,
+            1020,
+            825
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0422
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            778,
+            1140,
+            825
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1026
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 1,
+      "confidence_gap": 0.0294,
+      "final_value": "Certainly True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q8",
+      "question_label": "I worry a lot.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            832,
+            900,
+            879
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.102
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            832,
+            1020,
+            879
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0665
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            832,
+            1140,
+            879
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0954
+        }
+      ],
+      "winner_index": 1,
+      "runner_up_index": 3,
+      "confidence_gap": 0.0066,
+      "final_value": "Not True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q9",
+      "question_label": "I am helpful if someone is hurt, upset or feeling ill.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            887,
+            900,
+            934
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0312
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            887,
+            1020,
+            934
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0296
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            887,
+            1140,
+            934
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0259
+        }
+      ],
+      "winner_index": 1,
+      "runner_up_index": 2,
+      "confidence_gap": 0.0016,
+      "final_value": "UNANSWERED",
+      "final_status": "NOT_FOUND",
+      "confidence": 0.0
+    },
+    {
+      "row_id": "Q10",
+      "question_label": "I am constantly fidgeting or squirming.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            941,
+            900,
+            988
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0753
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            941,
+            1020,
+            988
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0513
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            941,
+            1140,
+            988
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0817
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 1,
+      "confidence_gap": 0.0064,
+      "final_value": "Certainly True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q11",
+      "question_label": "I have one good friend or more.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            996,
+            900,
+            1043
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0224
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            996,
+            1020,
+            1043
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.3181
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            996,
+            1140,
+            1043
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0288
+        }
+      ],
+      "winner_index": 2,
+      "runner_up_index": 3,
+      "confidence_gap": 0.2893,
+      "final_value": "Somewhat True",
+      "final_status": "OK",
+      "confidence": 1.0
+    },
+    {
+      "row_id": "Q12",
+      "question_label": "I fight a lot. I can make other people do what I want.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1050,
+            900,
+            1097
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0312
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1050,
+            1020,
+            1097
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0278
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1050,
+            1140,
+            1097
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0248
+        }
+      ],
+      "winner_index": 1,
+      "runner_up_index": 2,
+      "confidence_gap": 0.0034,
+      "final_value": "UNANSWERED",
+      "final_status": "NOT_FOUND",
+      "confidence": 0.0
+    },
+    {
+      "row_id": "Q13",
+      "question_label": "I am often unhappy, down-hearted or tearful.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1104,
+            900,
+            1151
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0871
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1104,
+            1020,
+            1151
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0702
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1104,
+            1140,
+            1151
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0823
+        }
+      ],
+      "winner_index": 1,
+      "runner_up_index": 3,
+      "confidence_gap": 0.0048,
+      "final_value": "Not True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q14",
+      "question_label": "Other people my age generally like me.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1159,
+            900,
+            1206
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0238
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1159,
+            1020,
+            1206
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.6231
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1159,
+            1140,
+            1206
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0718
+        }
+      ],
+      "winner_index": 2,
+      "runner_up_index": 3,
+      "confidence_gap": 0.5513,
+      "final_value": "Somewhat True",
+      "final_status": "OK",
+      "confidence": 1.0
+    },
+    {
+      "row_id": "Q15",
+      "question_label": "I am easily distracted, I find it difficult to concentrate.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1213,
+            900,
+            1260
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0919
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1213,
+            1020,
+            1260
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.078
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1213,
+            1140,
+            1260
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.097
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 1,
+      "confidence_gap": 0.0051,
+      "final_value": "Certainly True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q16",
+      "question_label": "I am nervous in new situations. I easily lose confidence.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1268,
+            900,
+            1314
+          ],
+          "crop_size": "120x46",
+          "fill_ratio": 0.0208
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1268,
+            1020,
+            1314
+          ],
+          "crop_size": "120x46",
+          "fill_ratio": 0.0164
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1268,
+            1140,
+            1314
+          ],
+          "crop_size": "120x46",
+          "fill_ratio": 0.0312
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 1,
+      "confidence_gap": 0.0104,
+      "final_value": "UNANSWERED",
+      "final_status": "NOT_FOUND",
+      "confidence": 0.0
+    },
+    {
+      "row_id": "Q17",
+      "question_label": "I am kind to younger children.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1322,
+            900,
+            1369
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0339
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1322,
+            1020,
+            1369
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1987
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1322,
+            1140,
+            1369
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0208
+        }
+      ],
+      "winner_index": 2,
+      "runner_up_index": 1,
+      "confidence_gap": 0.1648,
+      "final_value": "Somewhat True",
+      "final_status": "OK",
+      "confidence": 1.0
+    },
+    {
+      "row_id": "Q18",
+      "question_label": "I am often accused of lying or cheating.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1376,
+            900,
+            1423
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0903
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1376,
+            1020,
+            1423
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.09
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1376,
+            1140,
+            1423
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0865
+        }
+      ],
+      "winner_index": 1,
+      "runner_up_index": 2,
+      "confidence_gap": 0.0003,
+      "final_value": "Not True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q19",
+      "question_label": "Other children or young people pick on me or bully me.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1431,
+            900,
+            1478
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.071
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1431,
+            1020,
+            1478
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.074
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1431,
+            1140,
+            1478
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.0772
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 2,
+      "confidence_gap": 0.0032,
+      "final_value": "Certainly True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q20",
+      "question_label": "I often volunteer to help others (parents, teachers, other c",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1485,
+            900,
+            1532
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.2863
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1485,
+            1020,
+            1532
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.4995
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1485,
+            1140,
+            1532
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.6611
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 2,
+      "confidence_gap": 0.1616,
+      "final_value": "Certainly True",
+      "final_status": "OK",
+      "confidence": 1.0
+    },
+    {
+      "row_id": "Q21",
+      "question_label": "I think before I do things.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1540,
+            900,
+            1586
+          ],
+          "crop_size": "120x46",
+          "fill_ratio": 0.122
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1540,
+            1020,
+            1586
+          ],
+          "crop_size": "120x46",
+          "fill_ratio": 0.3547
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1540,
+            1140,
+            1586
+          ],
+          "crop_size": "120x46",
+          "fill_ratio": 0.6823
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 2,
+      "confidence_gap": 0.3276,
+      "final_value": "Certainly True",
+      "final_status": "OK",
+      "confidence": 1.0
+    },
+    {
+      "row_id": "Q22",
+      "question_label": "I take things that are not mine from home, school or elsewhe",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1594,
+            900,
+            1641
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.8291
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1594,
+            1020,
+            1641
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.7601
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1594,
+            1140,
+            1641
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.5697
+        }
+      ],
+      "winner_index": 1,
+      "runner_up_index": 2,
+      "confidence_gap": 0.069,
+      "final_value": "Not True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q23",
+      "question_label": "I get on better with adults than with other children.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1648,
+            900,
+            1695
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.3587
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1648,
+            1020,
+            1695
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.2967
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1648,
+            1140,
+            1695
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.1733
+        }
+      ],
+      "winner_index": 1,
+      "runner_up_index": 2,
+      "confidence_gap": 0.062,
+      "final_value": "Not True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q24",
+      "question_label": "I have many fears, I am easily scared.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1703,
+            900,
+            1750
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.5211
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1703,
+            1020,
+            1750
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.2601
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1703,
+            1140,
+            1750
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.4487
+        }
+      ],
+      "winner_index": 1,
+      "runner_up_index": 3,
+      "confidence_gap": 0.0724,
+      "final_value": "Not True",
+      "final_status": "AMBIGUOUS",
+      "confidence": 0.3
+    },
+    {
+      "row_id": "Q25",
+      "question_label": "I finish the work I'm doing. My attention is good.",
+      "option_boxes": [
+        {
+          "index": 1,
+          "label": "Not True",
+          "bbox": [
+            780,
+            1757,
+            900,
+            1804
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.199
+        },
+        {
+          "index": 2,
+          "label": "Somewhat True",
+          "bbox": [
+            900,
+            1757,
+            1020,
+            1804
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.5588
+        },
+        {
+          "index": 3,
+          "label": "Certainly True",
+          "bbox": [
+            1020,
+            1757,
+            1140,
+            1804
+          ],
+          "crop_size": "120x47",
+          "fill_ratio": 0.7628
+        }
+      ],
+      "winner_index": 3,
+      "runner_up_index": 2,
+      "confidence_gap": 0.204,
+      "final_value": "Certainly True",
+      "final_status": "OK",
+      "confidence": 1.0
+    }
+  ],
+  "aggregate": {
+    "status_distribution": {
+      "OK": 9,
+      "AMBIGUOUS": 13,
+      "NOT_FOUND": 3
+    },
+    "value_distribution": {
+      "Not True": 7,
+      "Somewhat True": 3,
+      "Certainly True": 12,
+      "UNANSWERED": 3
+    },
+    "density_stats": {
+      "min": 0.0099,
+      "max": 0.8291,
+      "mean": 0.1958,
+      "median": 0.097,
+      "std": 0.2147
+    }
+  }
+}
