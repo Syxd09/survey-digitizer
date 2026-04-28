@@ -31,6 +31,8 @@ from services.db_service import get_db_service
 from services.observability import get_observability_service
 from services.template_service import get_template_service
 from services.cache_service import get_cache_service
+from services.storage import StorageService
+from services.grid_detector import get_grid_detector
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +54,8 @@ class ExtractionOrchestrator:
         self.obs = get_observability_service()
         self.template_service = get_template_service()
         self.cache = get_cache_service()
+        self.storage = StorageService()
+        self.grid_detector = get_grid_detector()
 
     async def digitize(self, image_b64: str, request_id: str = None) -> Dict[str, Any]:
         """
@@ -149,15 +153,45 @@ class ExtractionOrchestrator:
         diag["metrics"]["p3_reconstruction_ms"] = int((time.time() - t_p3) * 1000)
         self.db.save_stage_trace(request_id, "reconstruction", "SUCCESS", diag["metrics"]["p3_reconstruction_ms"])
 
-        # PHASE 4: Extraction
+        # PHASE 4: Extraction (Dynamic Grid + Template Fallback)
         logger.info(f"[{request_id}] Phase 4: Field Extraction")
         t_p4 = time.time()
         
-        # Phase 13: Dynamic Template Lookup
+        # Phase 13: Dynamic Template Lookup (used for metadata fallback)
         template = self.template_service.get_template()
         
-        extracted_fields = self.extraction_engine.extract_fields(lines, template, processed_img_bgr, all_words=words)
-        diag["phases"]["4_extraction"] = f"SUCCESS ({len(extracted_fields)} fields)"
+        # Phase 4.3: Dynamic Grid Detection (NEW)
+        logger.info(f"[{request_id}] Phase 4.3: Dynamic Grid Detection")
+        grid_result = self.grid_detector.detect_grid(processed_img_bgr)
+        diag["grid_detection"] = grid_result.get("diagnostics", {})
+        diag["grid_detection"]["success"] = grid_result.get("success", False)
+        
+        if grid_result.get("success"):
+            logger.info(
+                f"[{request_id}] Grid detected: "
+                f"{len(grid_result['rows'])} rows × "
+                f"{len(grid_result['option_columns'])} option columns. "
+                f"Using dynamic extraction."
+            )
+            extracted_fields = self.extraction_engine.extract_fields_dynamic(
+                img_bgr=processed_img_bgr,
+                grid_result=grid_result,
+                template=template,
+                lines=lines,
+                all_words=words,
+            )
+            diag["extraction_method"] = "dynamic_grid"
+        else:
+            logger.warning(
+                f"[{request_id}] Grid detection failed. "
+                f"Falling back to template-based extraction."
+            )
+            extracted_fields = self.extraction_engine.extract_fields(
+                lines, template, processed_img_bgr, all_words=words
+            )
+            diag["extraction_method"] = "template_fallback"
+        
+        diag["phases"]["4_extraction"] = f"SUCCESS ({len(extracted_fields)} fields, method={diag['extraction_method']})"
         diag["metrics"]["p4_extraction_ms"] = int((time.time() - t_p4) * 1000)
         self.db.save_stage_trace(request_id, "extraction", "SUCCESS", diag["metrics"]["p4_extraction_ms"])
 
@@ -180,6 +214,7 @@ class ExtractionOrchestrator:
         decision = self.decision_engine.decide(validated_fields)
         diag["decision"] = decision
         diag["fields"] = validated_fields # Ensure fields are in diag for persistence
+        diag["questions"] = validated_fields # Frontend/Survey compatibility alias
         diag["phases"]["8_decision"] = decision["status"]
         self.db.save_stage_trace(request_id, "decision", decision["status"], 0)
 
@@ -191,6 +226,14 @@ class ExtractionOrchestrator:
             "processed_at": diag["processed_at"] if "processed_at" in diag else datetime.now().isoformat()
         }
         self.db.save_request(request_id, diag, image_hash=img_hash)
+        
+        # Phase 13/Workbench Sync: Ensure JSON storage is updated
+        # This is CRITICAL for the Workbench station which polls JSON storage
+        try:
+            self.storage.update_scan_results("default", request_id, diag, diag.get("metrics", {}))
+        except Exception as store_exc:
+            logger.warning(f"[{request_id}] JSON Storage sync failed: {store_exc}")
+
         diag["phases"]["9_storage"] = "SUCCESS"
 
         # PHASE 12: Observability (Trace)
@@ -241,7 +284,8 @@ class ExtractionOrchestrator:
             quality_status=diag.get("quality", {}).get("status", "PASS"),
             validation_status=val_res["status"],
             extraction_method=field.get("strategy", "anchor"),
-            pattern_match=(len(val_res["warnings"]) == 0)
+            pattern_match=(len(val_res["warnings"]) == 0),
+            visual_diff=field.get("visual_diff")
         )
         
         # PHASE 11: Snippet Extraction
@@ -317,6 +361,31 @@ class ExtractionOrchestrator:
             final_status = "MANUALLY_APPROVED"
 
         self.db.update_request_status(request_id, final_status)
+
+        # 5. Sync with StorageService (JSON) for Export consistency
+        try:
+            # We assume 'default' dataset for manual corrections from API
+            # In a multi-tenant setup, we'd pass dataset_id here.
+            dataset_id = "default"
+            path = self.storage._scan_path(dataset_id, request_id)
+            if self.storage._read_json(path):
+                # Update the JSON directly to reflect corrections
+                # This ensures ExcelExportService (which reads JSON) sees the changes
+                from services.storage import _read_json, _write_json
+                data = _read_json(path)
+                data["status"] = "corrected"
+                
+                # Update field value in extractedData
+                questions = data.get("extractedData", {}).get("questions", [])
+                for q in questions:
+                    if q.get("id") == field_id or q.get("field_id") == field_id:
+                        q["selected"] = new_value
+                        q["status"] = "CORRECTED"
+                
+                _write_json(path, data)
+                logger.info(f"[{request_id}] Synced correction to storage JSON")
+        except Exception as sync_exc:
+            logger.warning(f"[{request_id}] Failed to sync correction to JSON storage: {sync_exc}")
 
         return {
             "success": True,

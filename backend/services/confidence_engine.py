@@ -5,7 +5,7 @@ Computes a final confidence score for each field based on multiple signals.
 """
 
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from config import settings
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,8 @@ class ConfidenceEngine:
         quality_status: str, 
         validation_status: str,
         extraction_method: str = "anchor",
-        pattern_match: bool = True
+        pattern_match: bool = True,
+        visual_diff: Optional[float] = None
     ) -> Dict[str, Any]:
         """
         Calculates weighted confidence score with method-based offsets.
@@ -47,15 +48,23 @@ class ConfidenceEngine:
         # 4. Method Signal (Additive Factor)
         s_method = self.method_offsets.get(extraction_method, 0.0)
 
+        # 5. Visual Signal (Optional)
+        # If visual_diff is provided, it's used as a strong signal for selection accuracy.
+        # We normalize visual_diff (0.0 to 1.0) relative to threshold.
+        s_visual = 0.0
+        if visual_diff is not None:
+            # If diff > 2*threshold, it's very clear.
+            s_visual = min(1.0, visual_diff / (settings.VISUAL_CONFIDENCE_THRESHOLD * 2))
+
         # Weighted Sum
         score = (
             (s_ocr * self.weights["ocr"]) +
             (s_val * self.weights["validation"]) +
             (s_pat * self.weights["pattern"]) +
-            (s_method * self.weights.get("method", 0.0))
+            (s_method * self.weights.get("method", 0.0)) +
+            (s_visual * self.weights.get("visual", 0.0))
         )
         
-        # Method Signal is already in the sum now
         final_score = score
         
         # Quality Penalty (Phase 1 impact)
@@ -70,7 +79,8 @@ class ConfidenceEngine:
                 "ocr": s_ocr,
                 "validation": s_val,
                 "pattern": s_pat,
-                "method_offset": s_method
+                "method_offset": s_method,
+                "visual_diff": s_visual if visual_diff is not None else None
             }
         }
 

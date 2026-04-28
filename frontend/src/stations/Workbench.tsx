@@ -8,12 +8,18 @@ import { ImageViewer } from '../components/ImageViewer';
 import './Workbench.css';
 
 export const Workbench: React.FC = () => {
-  const { scannedPages } = useHydraStore();
-  const [selectedDocId, setSelectedDocId] = useState<string | null>(
-    scannedPages.length > 0 ? scannedPages[0].id : null
-  );
+  const { scannedPages, selectedDocId, setSelectedDocId } = useHydraStore();
+  
+  // Auto-select first if none selected
+  React.useEffect(() => {
+    if (!selectedDocId && scannedPages.length > 0) {
+      setSelectedDocId(scannedPages[0].id);
+    }
+  }, [scannedPages, selectedDocId, setSelectedDocId]);
+
   const [isExporting, setIsExporting] = useState(false);
-  const [viewMode, setViewMode] = useState<'digital' | 'grid' | 'reality' | 'viewer'>('reality');
+  const [isApproved, setIsApproved] = useState(false);
+  const [viewMode, setViewMode] = useState<'digital' | 'grid' | 'table' | 'reality' | 'viewer' | 'report'>('report');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const activeDoc = scannedPages.find(p => p.id === selectedDocId);
@@ -72,9 +78,9 @@ export const Workbench: React.FC = () => {
         })
       });
       if (response.ok) {
-        alert(corrections.length > 0 
-          ? `Survey approved! Model learned from ${corrections.length} corrections.` 
-          : 'Survey data approved and saved successfully!');
+        setIsApproved(true);
+        // Reset approval state after some time or if selection changes
+        setTimeout(() => setIsApproved(false), 10000);
       } else {
         alert('Failed to save survey approval.');
       }
@@ -156,148 +162,184 @@ export const Workbench: React.FC = () => {
               </button>
             </div>
 
-            {activeDoc.result && (
-              <div className="workbench-content">
-            <div className="view-controls">
-                <button 
-                  className={viewMode === 'reality' ? 'active' : ''} 
-                  onClick={() => setViewMode('reality')}
-                  disabled={!activeDoc.result?.extractedData?.survey_data}
-                >
-                  Reality View
-                </button>
-                <button 
-                  className={viewMode === 'digital' ? 'active' : ''} 
-                  onClick={() => setViewMode('digital')}
-                  disabled={!activeDoc.result?.extractedData?.survey_data}
-                >
-                  Digital View
-                </button>
-                <button 
-                  className={viewMode === 'grid' ? 'active' : ''} 
-                  onClick={() => setViewMode('grid')}
-                >
-                  Edit Grid
-                </button>
-                <button 
-                  className={viewMode === 'viewer' ? 'active' : ''} 
-                  onClick={() => setViewMode('viewer')}
-                  title="Advanced image viewer with zoom and quality metrics"
-                >
-                  Image Viewer
-                </button>
-              <div className="doc-info-badge">
-                {activeDoc.result.diagnostics?.doc_type?.type?.toUpperCase() || 'DOCUMENT'}
+            {isApproved && (
+              <div className="approval-success-overlay">
+                <div className="success-card">
+                  <CheckCircle2 size={48} color="var(--success)" />
+                  <h2>SURVEY APPROVED</h2>
+                  <p>The extraction has been verified and saved to the authority database.</p>
+                  <div className="success-actions">
+                    <button className="btn-download-now" onClick={handleExport}>
+                      <Download size={18} />
+                      <span>DOWNLOAD UPDATED EXCEL</span>
+                    </button>
+                    <button className="btn-dismiss" onClick={() => setIsApproved(false)}>DISMISS</button>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
-            {viewMode === 'reality' && activeDoc.result?.extractedData?.survey_data ? (
-              <div className="reality-split-view">
-                <div className="reality-panel">
-                  <RealityView
-                    imageUrl={activeDoc.imageUrl}
-                    questions={activeDoc.result.extractedData.questions}
-                    orphans={activeDoc.result.extractedData.survey_data?.orphans}
-                    fields={activeDoc.result.extractedData.survey_data?.fields}
-                    imageWidth={activeDoc.result.diagnostics?.restoration?.processed_width || activeDoc.result.diagnostics?.vision?.width || 1920}
-                    imageHeight={activeDoc.result.diagnostics?.restoration?.processed_height || activeDoc.result.diagnostics?.vision?.height || 1440}
-                    hoveredIndex={hoveredIndex}
-                    onHover={setHoveredIndex}
-                  />
-                </div>
-                <div className="form-panel">
-                  <DigitalSurveyForm
-                    scanId={activeDoc.id}
-                    surveyData={activeDoc.result.extractedData.survey_data}
-                    questions={activeDoc.result.extractedData.questions}
-                    onApprove={handleApproveSurvey}
-                    onFeedback={handleFeedback}
-                    isApproving={isExporting}
-                    onHoverIndex={setHoveredIndex}
-                  />
+              <div className="workbench-main-workspace">
+              {/* Left Side: Reality/Image Preview */}
+              <div className="workbench-preview-side">
+                <div className="preview-container">
+                  <img src={activeDoc.image} alt="Original document" className={!activeDoc.result ? 'dimmed' : ''} />
+                  {!activeDoc.result && <div className="scanning-line" />}
                 </div>
               </div>
-            ) : viewMode === 'digital' && activeDoc.result?.extractedData?.survey_data ? (
-              <DigitalSurveyForm
-                scanId={activeDoc.id}
-                surveyData={activeDoc.result.extractedData.survey_data}
-                questions={activeDoc.result.extractedData.questions}
-                onApprove={handleApproveSurvey}
-                onFeedback={handleFeedback}
-                isApproving={isExporting}
-                onHoverIndex={setHoveredIndex}
-              />
-            ) : viewMode === 'viewer' && activeDoc.imageUrl ? (
-              <div style={{ width: '100%', height: '100%' }}>
-                <ImageViewer
-                  imageUrl={activeDoc.imageUrl}
-                  actualWidth={activeDoc.result?.diagnostics?.restoration?.processed_width || 1920}
-                  actualHeight={activeDoc.result?.diagnostics?.restoration?.processed_height || 1440}
-                  showMetrics={true}
-                />
-              </div>
-            ) : (
-              <div className="grid-container">
-                <div className="grid-header">
-                  <div>FIELD LABEL (EDITABLE)</div>
-                  <div>EXTRACTED VALUE (EDITABLE)</div>
-                  <div>CONFIDENCE</div>
-                </div>
 
-                <div className="grid-body">
-                  {(activeDoc.status === 'processing' || activeDoc.status === 'uploaded') ? (
-                    <div className="grid-loading">
-                      <RefreshCcw size={40} className="spin" />
-                      <p>Hydra is extracting data... ({activeDoc.status})</p>
+              {/* Right Side: Results (Always visible, loader integrated) */}
+              <div className="workbench-results-side">
+                <div className="results-header">
+                  <div className="results-title">
+                    <div className="status-indicator">
+                      {!activeDoc.result ? (
+                        <div className="neural-ping">
+                          <RefreshCcw size={16} className="spin" />
+                          <span>NEURAL EXTRACTION IN PROGRESS...</span>
+                        </div>
+                      ) : (
+                        <div className="result-check">
+                          <CheckCircle2 size={16} />
+                          <span>EXTRACTION COMPLETE</span>
+                        </div>
+                      )}
                     </div>
-                  ) : activeDoc.result?.extractedData?.questions ? (
-                    activeDoc.result.extractedData.questions.map((q, idx) => (
-                      <div key={idx} className="grid-row">
-                        <div className="field-label">
-                          <span className="row-num">{idx + 1}</span>
-                          <input
-                            type="text"
-                            defaultValue={q.question}
-                            onBlur={(e) => handleFeedback(idx, 'question', e.target.value)}
-                            className="editable-label"
-                            title="Edit field label to train the system"
-                          />
-                        </div>
-                        <div className="input-wrapper">
-                          <input
-                            type="text"
-                            defaultValue={q.selected || ''}
-                            onBlur={(e) => handleFeedback(idx, 'answer', e.target.value)}
-                            className={q.confidence > 0.85 ? 'high-conf' : ''}
-                            title="Edit extracted value"
-                          />
-                          {q.confidence > 0.95 && <div className="neural-glow-line" />}
-                        </div>
-                        <div className={`confidence-pill ${q.confidence > 0.9 ? 'certified' : ''}`}>
-                          {(q.confidence * 100).toFixed(1)}%
-                        </div>
+                    <h2>Digitized Survey Results</h2>
+                  </div>
+                  <div className="view-selector">
+                    <button className={viewMode === 'report' ? 'active' : ''} onClick={() => setViewMode('report')}>Result View</button>
+                    <button className={viewMode === 'reality' ? 'active' : ''} onClick={() => setViewMode('reality')}>Reality View</button>
+                    <button className={viewMode === 'digital' ? 'active' : ''} onClick={() => setViewMode('digital')}>Digital View</button>
+                  </div>
+                </div>
+
+                <div className="results-content">
+                  {!activeDoc.result && (
+                    <div className="scanning-hud">
+                      <div className="hud-metric">
+                        <span className="hud-label">NEURAL THREADS</span>
+                        <span className="hud-value">16 ACTIVE</span>
                       </div>
-                    ))
+                      <div className="hud-metric">
+                        <span className="hud-label">SYMBOL CONFIDENCE</span>
+                        <span className="hud-value">CALCULATING...</span>
+                      </div>
+                      <div className="hud-progress-bar">
+                        <div className="progress-fill" />
+                      </div>
+                    </div>
+                  )}
+
+                  {viewMode === 'report' ? (
+                    <table className="digitized-result-table">
+                      <thead>
+                        <tr>
+                          <th>Question</th>
+                          <th>Survey Label</th>
+                          <th>Physical Mark</th>
+                          <th>Digitized Value</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {activeDoc.result?.extractedData?.questions ? (
+                          activeDoc.result.extractedData.questions.map((q: any, idx: number) => {
+                            const isSDQ = q.id && q.id.startsWith('q');
+                            const val = q.digitized_value || (
+                              q.raw_value === 'Certainly True' ? '3' : 
+                              q.raw_value === 'Somewhat True' ? '2' : 
+                              q.raw_value === 'Not True' ? '1' : 
+                              q.raw_value
+                            );
+                            
+                            let physicalMark = q.raw_value === 'UNANSWERED' ? 'None' : q.raw_value;
+                            if (isSDQ) {
+                              if (q.raw_value === 'Certainly True') physicalMark = 'Certainly True (3rd Col)';
+                              else if (q.raw_value === 'Somewhat True') physicalMark = 'Somewhat True (2nd Col)';
+                              else if (q.raw_value === 'Not True') physicalMark = 'Not True (1st Col)';
+                            }
+
+                            return (
+                              <tr key={q.id || idx} className={q.confidence < 0.8 ? 'low-conf-row' : ''}>
+                                <td className="q-id">{q.id ? q.id.toUpperCase() : `Q${idx + 1}`}</td>
+                                <td className="q-label">{q.name || q.question}</td>
+                                <td className="p-mark">{physicalMark}</td>
+                                <td className="d-val">{val}</td>
+                                <td className="status-cell">
+                                  {q.status === 'OK' || q.confidence > 0.8 ? (
+                                    <span className="badge-success">✅ Correct</span>
+                                  ) : (
+                                    <span className="badge-warning">⚠️ Review</span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        ) : (
+                          [1, 2, 3, 4, 5, 6].map((i) => (
+                            <tr key={`placeholder-${i}`} className="placeholder-row">
+                              <td className="q-id">Q{i}</td>
+                              <td className="q-label">
+                                <div className="skeleton-line mini" />
+                              </td>
+                              <td className="p-mark">
+                                <div className="skeleton-line mini dimmed" />
+                              </td>
+                              <td className="d-val">
+                                <div className="skeleton-dot" />
+                              </td>
+                              <td className="status-cell">
+                                <span className="scanning-status">
+                                  <RefreshCcw size={12} className="spin" />
+                                  EXTRACTING...
+                                </span>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  ) : viewMode === 'reality' && activeDoc.result?.extractedData ? (
+                    <div className="reality-inline-view">
+                      <RealityView
+                        imageUrl={activeDoc.image}
+                        questions={activeDoc.result.extractedData.questions}
+                        orphans={activeDoc.result.extractedData.survey_data?.orphans}
+                        fields={activeDoc.result.extractedData.survey_data?.fields}
+                        imageWidth={activeDoc.result.diagnostics?.restoration?.processed_width || activeDoc.result.diagnostics?.vision?.width || 1920}
+                        imageHeight={activeDoc.result.diagnostics?.restoration?.processed_height || activeDoc.result.diagnostics?.vision?.height || 1440}
+                        hoveredIndex={hoveredIndex}
+                        onHover={setHoveredIndex}
+                      />
+                    </div>
+                  ) : viewMode === 'digital' && activeDoc.result?.extractedData ? (
+                    <DigitalSurveyForm
+                      scanId={activeDoc.id}
+                      surveyData={activeDoc.result.extractedData.survey_data}
+                      questions={activeDoc.result.extractedData.questions}
+                      onApprove={handleApproveSurvey}
+                      onFeedback={handleFeedback}
+                      isApproving={isExporting}
+                      onHoverIndex={setHoveredIndex}
+                    />
                   ) : (
-                    <div className="grid-loading">
-                      <AlertCircle size={40} color="var(--error)" />
-                      <p>Extraction failed or no data found.</p>
+                    <div className="empty-state">
+                       <p>Select a view mode above.</p>
                     </div>
                   )}
                 </div>
               </div>
-            )}
+            </div>
           </div>
-        )}
-      </div>
-    ) : (
-      <div className="workbench-intro">
-        <Database size={64} color="var(--on-surface-muted)" />
-        <h2>Authority Workbench</h2>
-        <p>Select a document from the sidebar to review and verify extraction results.</p>
-      </div>
-    )}
-      </div>
+        ) : (
+        <div className="workbench-intro">
+          <Database size={64} color="var(--on-surface-muted)" />
+          <h2>Authority Workbench</h2>
+          <p>Select a document from the sidebar to review and verify extraction results.</p>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
 };

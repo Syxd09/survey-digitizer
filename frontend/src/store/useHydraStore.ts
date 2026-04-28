@@ -25,6 +25,8 @@ interface ScannedPage {
   status: 'uploaded' | 'good' | 'bad' | 'conflict' | 'failed' | 'processing';
   result?: ScanStatusResponse;
   timestamp: string;
+  userId?: string;
+  datasetId?: string;
 }
 
 interface HydraState {
@@ -37,7 +39,7 @@ interface HydraState {
   
   // Actions
   setStation: (station: Station, syncURL?: boolean) => void;
-  addPage: (image: string, scanId: string) => void;
+  addPage: (image: string, scanId: string, userId?: string, datasetId?: string) => void;
   updatePageStatus: (scanId: string, status: ScannedPage['status'], result?: ScanStatusResponse) => void;
   removePage: (scanId: string) => void;
   setEngineHealth: (health: HydraState['engineHealth']) => void;
@@ -48,6 +50,8 @@ interface HydraState {
   fetchVault: () => Promise<void>;
   fetchMetrics: () => Promise<void>;
   pollPendingScans: () => Promise<void>;
+  selectedDocId: string | null;
+  setSelectedDocId: (id: string | null) => void;
 }
 
 export const useHydraStore = create<HydraState>((set, get) => ({
@@ -58,6 +62,9 @@ export const useHydraStore = create<HydraState>((set, get) => ({
   metrics: null,
   activeDatasetId: 'default-authority',
   engineHealth: 'HEALTHY',
+  selectedDocId: null,
+
+  setSelectedDocId: (id) => set({ selectedDocId: id }),
 
   setStation: (station, syncURL = true) => {
     set({ activeStation: station });
@@ -69,7 +76,7 @@ export const useHydraStore = create<HydraState>((set, get) => ({
     }
   },
   
-  addPage: (image, scanId) => {
+  addPage: (image, scanId, userId = 'admin', datasetId = 'default-authority') => {
     set((state) => ({
       scannedPages: [
         {
@@ -77,6 +84,8 @@ export const useHydraStore = create<HydraState>((set, get) => ({
           image,
           status: 'uploaded',
           timestamp: new Date().toISOString(),
+          userId,
+          datasetId,
         },
         ...state.scannedPages,
       ],
@@ -86,7 +95,13 @@ export const useHydraStore = create<HydraState>((set, get) => ({
   updatePageStatus: (scanId, status, result) =>
     set((state) => ({
       scannedPages: state.scannedPages.map((p) =>
-        p.id === scanId ? { ...p, status, result: result || p.result } : p
+        p.id === scanId ? { 
+          ...p, 
+          status, 
+          result: result || p.result,
+          userId: result?.userId || p.userId,
+          datasetId: result?.datasetId || p.datasetId
+        } : p
       ),
     })),
 

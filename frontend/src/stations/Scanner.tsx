@@ -11,7 +11,9 @@ import {
   Lock,
   Loader2,
   Check,
-  FolderOpen
+  FolderOpen,
+  ChevronRight,
+  Search
 } from 'lucide-react';
 import { useCamera } from '../hooks/useCamera';
 import { useHydraStore } from '../store/useHydraStore';
@@ -20,7 +22,7 @@ import './Scanner.css';
 
 export const Scanner: React.FC = () => {
   const { videoRef, metrics, start, stop, capture, stream, error } = useCamera();
-  const { addPage, scannedPages } = useHydraStore();
+  const { addPage, scannedPages, setStation, setSelectedDocId } = useHydraStore();
   
   const [isSystemActive, setIsSystemActive] = useState(false);
   const [isAutoScan, setIsAutoScan] = useState(false);
@@ -28,6 +30,8 @@ export const Scanner: React.FC = () => {
   const [stabilityCounter, setStabilityCounter] = useState(0);
   const [cooldown, setCooldown] = useState(0);
   const [lastScanStatus, setLastScanStatus] = useState<'IDLE' | 'SUCCESS' | 'ERROR'>('IDLE');
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewId, setPreviewId] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
@@ -87,7 +91,7 @@ export const Scanner: React.FC = () => {
     try {
       setIsIngesting(true);
       const { scanId } = await hydraApi.ingest(image);
-      addPage(image, scanId);
+      addPage(image, scanId, 'admin', 'default-authority');
       setLastScanStatus('SUCCESS');
       setCooldown(3); 
     } catch (err) {
@@ -105,11 +109,24 @@ export const Scanner: React.FC = () => {
     if (image) await processImage(image);
   };
 
+  // 4. Auto-show preview when scan is processed
+  useEffect(() => {
+    if (scannedPages.length > 0) {
+      const latest = scannedPages[0];
+      if (latest.status !== 'processing' && latest.status !== 'uploaded' && latest.id !== previewId) {
+        setPreviewId(latest.id);
+        setShowPreview(true);
+      }
+    }
+  }, [scannedPages, previewId]);
+
+  const latestPage = scannedPages.find(p => p.id === previewId);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
-    Array.from(files).forEach((file) => {
+    Array.from(files).forEach((file: File) => {
       if (!file.type.startsWith('image/')) return;
       const reader = new FileReader();
       reader.onload = async (event) => {
@@ -305,18 +322,92 @@ export const Scanner: React.FC = () => {
             >
               <FolderOpen size={18} />
             </button>
+
+            {scannedPages.length > 0 && (
+              <button 
+                className="upload-op-btn primary-nav"
+                onClick={() => setStation('WORKBENCH')}
+                title="Review All & Export"
+                style={{ 
+                  backgroundColor: 'var(--primary)', 
+                  color: 'black',
+                  marginLeft: '8px',
+                  boxShadow: '0 0 15px var(--primary-glow)',
+                  width: 'auto',
+                  padding: '0 16px',
+                  gap: '8px'
+                }}
+              >
+                <span>REVIEW ALL & EXPORT</span>
+                <ChevronRight size={18} />
+              </button>
+            )}
           </div>
           
           <div className="history-thumbs-box">
             {scannedPages.slice(0, 3).map(page => (
-              <div key={page.id} className={`history-thumb ${page.status}`}>
+              <div 
+                key={page.id} 
+                className={`history-thumb ${page.status}`}
+                onClick={() => {
+                  setSelectedDocId(page.id);
+                  setStation('WORKBENCH');
+                }}
+                style={{ cursor: 'pointer', position: 'relative' }}
+              >
                 <img src={page.image} alt="scanned" />
-                {page.status === 'processing' && <Loader2 size={12} className="thumb-spin spin" />}
+                {page.status === 'processing' ? (
+                  <Loader2 size={12} className="thumb-spin spin" />
+                ) : (
+                  <div className="thumb-review-hint"><Search size={10} /></div>
+                )}
               </div>
             ))}
           </div>
         </div>
       </div>
+
+      {/* RESULT PREVIEW PANEL */}
+      {showPreview && latestPage && latestPage.result?.extractedData?.questions && (
+        <div className="scanner-result-preview">
+          <div className="preview-header">
+            <h3>LIVE EXTRACTION PREVIEW</h3>
+            <button className="close-preview" onClick={() => setShowPreview(false)}>
+              <Zap size={14} /> <span>DISMISS</span>
+            </button>
+          </div>
+          <div className="preview-list">
+            {latestPage.result.extractedData.questions.map((q, i) => {
+              const val = q.selected || '-';
+              const label = val === '1' ? 'Not True' : val === '2' ? 'Somewhat True' : val === '3' ? 'Certainly True' : 'Unknown';
+              return (
+                <div key={i} className="preview-item">
+                  <div className="q-info">
+                    <span className="q-num">Q{i+1}</span>
+                    <span className="q-text">{q.question || `Question ${i+1}`}</span>
+                  </div>
+                  <div className="v-info">
+                    <span className="v-label">{label}</span>
+                    <span className="v-val">{val}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="preview-footer">
+            <button 
+              className="goto-workbench" 
+              onClick={() => {
+                setSelectedDocId(latestPage.id);
+                setStation('WORKBENCH');
+              }}
+            >
+              <span>OPEN IN WORKBENCH</span>
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

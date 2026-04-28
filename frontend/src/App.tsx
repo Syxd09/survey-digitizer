@@ -9,7 +9,7 @@ import { useHydraStore } from './store/useHydraStore';
 import { useWebSocket } from './hooks/useWebSocket';
 
 const App: React.FC = () => {
-  const { activeStation, setStation, updatePageStatus, setVaultScans, setMetrics } = useHydraStore();
+  const { activeStation, setStation, updatePageStatus, setVaultScans, setMetrics, scannedPages } = useHydraStore();
 
   // WebSocket message handler — replaces all polling
   const handleWSMessage = useCallback((message: any) => {
@@ -74,26 +74,25 @@ const App: React.FC = () => {
     return () => clearInterval(refreshInterval);
   }, [isConnected, requestVault, requestMetrics]);
 
-  // 3. Poll pending scans via WebSocket (lightweight request vs HTTP)
+  // 3. Poll pending scans with HTTP Fallback
   useEffect(() => {
-    if (!isConnected) return;
-
-    const { scannedPages } = useHydraStore.getState();
     const pending = scannedPages.filter(p => p.status === 'uploaded' || p.status === 'processing');
-    
     if (pending.length === 0) return;
 
-    // Request status for any pending scans
     const pollInterval = setInterval(() => {
-      const currentState = useHydraStore.getState();
-      const stillPending = currentState.scannedPages.filter(
-        p => p.status === 'uploaded' || p.status === 'processing'
-      );
-      stillPending.forEach(page => requestScanStatus(page.id));
-    }, 3000);
+      if (isConnected) {
+        const currentState = useHydraStore.getState();
+        const stillPending = currentState.scannedPages.filter(
+          p => p.status === 'uploaded' || p.status === 'processing'
+        );
+        stillPending.forEach(page => requestScanStatus(page.id));
+      } else {
+        useHydraStore.getState().pollPendingScans();
+      }
+    }, 1000);
 
     return () => clearInterval(pollInterval);
-  }, [isConnected, requestScanStatus, useHydraStore.getState().scannedPages.length]);
+  }, [isConnected, requestScanStatus, scannedPages]);
 
   const renderStation = () => {
     switch (activeStation) {

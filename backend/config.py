@@ -33,12 +33,23 @@ class Settings(BaseSettings):
     
     # Confidence thresholds
     AUTO_ACCEPT_THRESHOLD: float = 0.85
+    VISUAL_CONFIDENCE_THRESHOLD: float = 0.10  # Min diff between top 2 densities
+    MIN_FILL_THRESHOLD: float = 0.05           # Min density to consider a mark valid
+    
     CONFIDENCE_WEIGHTS: Dict[str, float] = {
-        "ocr": 0.4,
+        "ocr": 0.35,
         "validation": 0.3,
-        "pattern": 0.2,
-        "method": 0.1
+        "pattern": 0.15,
+        "method": 0.1,
+        "visual": 0.1  # New weight for visual detection
     }
+    
+    # Grid Detection (Phase 4.3)
+    GRID_LINE_SCALE_HORIZONTAL: int = 15   # Kernel width = image_width / this
+    GRID_LINE_SCALE_VERTICAL: int = 15     # Kernel height = image_height / this
+    GRID_MIN_ROW_HEIGHT: int = 20          # Min row height (px) to filter noise
+    GRID_MIN_COL_WIDTH: int = 30           # Min column width (px) to filter noise
+    GRID_LINE_THRESHOLD: int = 8           # Peak clustering distance (px)
     
     # Orientation & Deskew
     ORIENTATION_RATIO: float = 1.3 # Width > Height by 1.3x for landscape detection

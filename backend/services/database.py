@@ -88,12 +88,15 @@ class DatabaseService:
             connect_args = {"check_same_thread": False}
 
         try:
-            self.engine = create_engine(
-                self.db_url,
-                connect_args=connect_args,
-                pool_size=10 if "sqlite" not in self.db_url else None, # pool_size not supported for NullPool/SQLite default
-                max_overflow=20 if "sqlite" not in self.db_url else None
-            )
+            # Phase 15 Hardening: Pool settings for Supabase PgBouncer
+            engine_args = {
+                "connect_args": connect_args
+            }
+            if "sqlite" not in self.db_url:
+                engine_args["pool_size"] = 10
+                engine_args["max_overflow"] = 20
+            
+            self.engine = create_engine(self.db_url, **engine_args)
             # Test connection
             with self.engine.connect() as conn:
                 pass

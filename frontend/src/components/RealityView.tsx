@@ -1,3 +1,4 @@
+import React, { useRef, useState, useEffect } from 'react';
 import { ExtractionQuestion, OrphanText, SurveyField } from '../services/api';
 import './RealityView.css';
 

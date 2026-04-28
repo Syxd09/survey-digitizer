@@ -140,14 +140,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Phase 15: Configurable CORS origins (default: * for development)
-_cors_origins = os.getenv("CORS_ORIGINS", "*").split(",")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=_cors_origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Phase 15: File size limit middleware (10MB default)
 _MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str(10 * 1024 * 1024)))
@@ -167,7 +159,7 @@ async def limit_upload_size(request: Request, call_next):
 async def api_key_middleware(request: Request, call_next):
     # Phase 15 Security: X-API-Key check
     _skip = {"/", "/health", "/docs", "/redoc", "/openapi.json"}
-    if request.url.path in _skip:
+    if request.method == "OPTIONS" or request.url.path in _skip:
         return await call_next(request)
     
     api_key = request.headers.get("X-API-Key") or request.query_params.get("api_key")
@@ -177,6 +169,17 @@ async def api_key_middleware(request: Request, call_next):
             content={"status": "error", "code": "unauthorized", "message": "Invalid or missing X-API-Key"}
         )
     return await call_next(request)
+
+
+# Phase 15: Configurable CORS origins (Outer-most middleware)
+_cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "*").split(",")]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # ── Dependency ────────────────────────────────────────────────────────────────
@@ -267,6 +270,7 @@ async def process_image(
         result = await orchestrator.digitize(request.image, request_id)
         return {
             "success": True,
+            "scanId": request_id,
             "requestId": request_id,
             "status": result.get("decision", {}).get("status"),
             "decision": result.get("decision"),
@@ -422,8 +426,10 @@ async def ingest_form(
             # 3. Broadcast completion
             await ws_manager.broadcast({
                 "type": "scan_complete",
+                "scanId": request_id,
                 "requestId": request_id,
-                "status": result.get("decision", {}).get("status")
+                "status": result.get("decision", {}).get("status"),
+                "data": result
             })
         except Exception as exc:
             logger.error(f"[INGEST] Background task failed for {request_id}: {exc}")
@@ -435,7 +441,7 @@ async def ingest_form(
             })
 
     background_tasks.add_task(_bg_task)
-    return {"success": True, "requestId": request_id, "status": "processing"}
+    return {"success": True, "scanId": request_id, "requestId": request_id, "status": "processing"}
 
 
 # ── Scan status & listing endpoints ───────────────────────────────────────────
@@ -481,6 +487,18 @@ async def list_forms(
         "offset": offset,
         "data": requests
     }
+
+@app.get("/list/{dataset_id}", tags=["Scans"])
+async def list_scans_alias(
+    dataset_id: str,
+    db = Depends(lambda: app_state.db),
+):
+    """Alias for /forms specifically formatted for the Vault frontend."""
+    # Maps 'default-authority' (frontend) to 'default' (backend internal)
+    ds_id = "default" if dataset_id == "default-authority" else dataset_id
+    requests = db.list_requests(limit=100)
+    # The frontend expects a flat array of status objects
+    return requests
 
 @app.get("/forms/{request_id}", tags=["Phase 9/11"])
 async def get_form_details(

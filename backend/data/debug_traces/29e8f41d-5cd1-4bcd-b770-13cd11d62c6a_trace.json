@@ -1,0 +1,89 @@
+{
+  "request_id": "29e8f41d-5cd1-4bcd-b770-13cd11d62c6a",
+  "image_hash": "6bc1e6400465b75ecbeafbbdf52bea4f",
+  "processed_at": "2026-04-26T23:29:31.605721",
+  "phases": {
+    "1_preprocessing": "PASS",
+    "2_ocr": "SUCCESS (35 words)",
+    "3_reconstruction": "SUCCESS (13 lines)",
+    "4_extraction": "SUCCESS (1 fields)",
+    "5_6_7_logic": "SUCCESS",
+    "8_decision": "NEEDS_REVIEW",
+    "9_storage": "SUCCESS"
+  },
+  "metrics": {
+    "p1_preprocessing_ms": 343,
+    "p2_ocr_ms": 22598,
+    "p3_reconstruction_ms": 1,
+    "p4_extraction_ms": 0,
+    "p5_6_7_ms": 0
+  },
+  "version": "2.0",
+  "stage": "Phase 1: Preprocessing",
+  "quality": {
+    "blur_value": 317.29,
+    "is_blurry": false,
+    "brightness_value": 176.87,
+    "is_too_dark": false,
+    "is_too_bright": false,
+    "status": "PASS"
+  },
+  "orientation": {
+    "coarse_rotated": false,
+    "rotation_degrees": 0,
+    "wh_ratio": 0.56,
+    "fine_deskew_applied": true,
+    "skew_angle": -1.0
+  },
+  "normalization": {
+    "scale_factor": 1.333333,
+    "target_width": 1200,
+    "target_height": 2133
+  },
+  "original_dims": {
+    "w": 900,
+    "h": 1600
+  },
+  "enhancement": {
+    "clahe_applied": true,
+    "sauvola_applied": false,
+    "contrast_score": 34.62
+  },
+  "fields": [
+    {
+      "id": "survey_id",
+      "type": "text",
+      "raw_value": null,
+      "confidence": 0.45,
+      "status": "OK",
+      "strategy": "line_search",
+      "bbox": null,
+      "cleaned_value": "",
+      "errors": [],
+      "warnings": [],
+      "signals": {
+        "ocr": 0.0,
+        "validation": 1.0,
+        "pattern": 1.0,
+        "method_offset": 0.0,
+        "visual_diff": null
+      },
+      "snippet": null
+    }
+  ],
+  "decision": {
+    "status": "NEEDS_REVIEW",
+    "overall_confidence": 0.45,
+    "reason": "Low confidence in: survey_id",
+    "hard_errors": [],
+    "soft_errors": [],
+    "low_confidence_fields": [
+      "survey_id"
+    ],
+    "critical_failures": []
+  },
+  "trace": {
+    "file_path": "",
+    "processed_at": "2026-04-26T23:29:31.605721"
+  }
+}

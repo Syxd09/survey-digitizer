@@ -1,0 +1,1860 @@
+{
+  "1.jpeg": {
+    "image": "1.jpeg",
+    "expected": {
+      "rows_min": 5,
+      "cols_expected": 3,
+      "note": "SDQ page 1, 7 rows, checkmarks"
+    },
+    "original_size": "900x1600",
+    "processed_size": "1200x2133",
+    "grid_success": true,
+    "table_bbox": [
+      171,
+      740,
+      1154,
+      1451
+    ],
+    "diagnostics": {
+      "image_size": [
+        1200,
+        2133
+      ],
+      "h_lines_pixels": 26944,
+      "v_lines_pixels": 14819,
+      "table_bbox": [
+        171,
+        740,
+        1154,
+        1451
+      ],
+      "raw_row_boundaries": 10,
+      "rows_detected": 8,
+      "raw_col_boundaries": 6,
+      "columns_detected": 5,
+      "question_col_idx": 1,
+      "option_columns": 3,
+      "header_rows": 0,
+      "data_rows": 8
+    },
+    "data_rows": 8,
+    "option_columns": 3,
+    "row_count_pass": true,
+    "col_count_pass": true,
+    "row_results": [
+      {
+        "row": 1,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0624,
+            "bbox": [
+              732,
+              749,
+              838,
+              841
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0686,
+            "bbox": [
+              838,
+              749,
+              1037,
+              841
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.107,
+            "bbox": [
+              1037,
+              749,
+              1141,
+              841
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "AMBIGUOUS",
+        "gap": 0.0384
+      },
+      {
+        "row": 2,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.2297,
+            "bbox": [
+              732,
+              841,
+              838,
+              953
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0139,
+            "bbox": [
+              838,
+              841,
+              1037,
+              953
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.4463,
+            "bbox": [
+              1037,
+              841,
+              1141,
+              953
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.2166
+      },
+      {
+        "row": 3,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0239,
+            "bbox": [
+              732,
+              953,
+              838,
+              1042
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.378,
+            "bbox": [
+              838,
+              953,
+              1037,
+              1042
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0528,
+            "bbox": [
+              1037,
+              953,
+              1141,
+              1042
+            ]
+          }
+        ],
+        "winner_col": 2,
+        "status": "OK",
+        "gap": 0.3252
+      },
+      {
+        "row": 4,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.5449,
+            "bbox": [
+              732,
+              1042,
+              838,
+              1131
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0121,
+            "bbox": [
+              838,
+              1042,
+              1037,
+              1131
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.6624,
+            "bbox": [
+              1037,
+              1042,
+              1141,
+              1131
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.1175
+      },
+      {
+        "row": 5,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0817,
+            "bbox": [
+              732,
+              1131,
+              838,
+              1219
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.3833,
+            "bbox": [
+              838,
+              1131,
+              1037,
+              1219
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0301,
+            "bbox": [
+              1037,
+              1131,
+              1141,
+              1219
+            ]
+          }
+        ],
+        "winner_col": 2,
+        "status": "OK",
+        "gap": 0.3016
+      },
+      {
+        "row": 6,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.3834,
+            "bbox": [
+              732,
+              1219,
+              838,
+              1312
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0154,
+            "bbox": [
+              838,
+              1219,
+              1037,
+              1312
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0044,
+            "bbox": [
+              1037,
+              1219,
+              1141,
+              1312
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "OK",
+        "gap": 0.368
+      },
+      {
+        "row": 7,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0306,
+            "bbox": [
+              732,
+              1312,
+              838,
+              1386
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0062,
+            "bbox": [
+              838,
+              1312,
+              1037,
+              1386
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0415,
+            "bbox": [
+              1037,
+              1312,
+              1141,
+              1386
+            ]
+          }
+        ],
+        "winner_col": null,
+        "status": "UNANSWERED",
+        "gap": 0.0109
+      },
+      {
+        "row": 8,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0314,
+            "bbox": [
+              732,
+              1386,
+              838,
+              1434
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0887,
+            "bbox": [
+              838,
+              1386,
+              1037,
+              1434
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0708,
+            "bbox": [
+              1037,
+              1386,
+              1141,
+              1434
+            ]
+          }
+        ],
+        "winner_col": 2,
+        "status": "AMBIGUOUS",
+        "gap": 0.0179
+      }
+    ],
+    "summary": {
+      "ok": 5,
+      "ambiguous": 2,
+      "unanswered": 1
+    }
+  },
+  "2.jpeg": {
+    "image": "2.jpeg",
+    "expected": {
+      "rows_min": 2,
+      "cols_expected": 6,
+      "note": "6-col Likert, 3 rows, circled"
+    },
+    "original_size": "900x1600",
+    "processed_size": "1200x2133",
+    "grid_success": true,
+    "table_bbox": [
+      143,
+      901,
+      1200,
+      1473
+    ],
+    "diagnostics": {
+      "image_size": [
+        1200,
+        2133
+      ],
+      "h_lines_pixels": 13937,
+      "v_lines_pixels": 18504,
+      "table_bbox": [
+        143,
+        901,
+        1200,
+        1473
+      ],
+      "raw_row_boundaries": 4,
+      "rows_detected": 3,
+      "raw_col_boundaries": 9,
+      "columns_detected": 7,
+      "question_col_idx": 0,
+      "option_columns": 6,
+      "header_rows": 0,
+      "data_rows": 3
+    },
+    "data_rows": 3,
+    "option_columns": 6,
+    "row_count_pass": true,
+    "col_count_pass": true,
+    "row_results": [
+      {
+        "row": 1,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.041,
+            "bbox": [
+              465,
+              908,
+              619,
+              1132
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.1711,
+            "bbox": [
+              619,
+              908,
+              714,
+              1132
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0616,
+            "bbox": [
+              714,
+              908,
+              809,
+              1132
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.0068,
+            "bbox": [
+              809,
+              908,
+              905,
+              1132
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.0067,
+            "bbox": [
+              905,
+              908,
+              1000,
+              1132
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.0401,
+            "bbox": [
+              1000,
+              908,
+              1174,
+              1132
+            ]
+          }
+        ],
+        "winner_col": 2,
+        "status": "OK",
+        "gap": 0.1095
+      },
+      {
+        "row": 2,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0762,
+            "bbox": [
+              465,
+              1132,
+              619,
+              1281
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0983,
+            "bbox": [
+              619,
+              1132,
+              714,
+              1281
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0102,
+            "bbox": [
+              714,
+              1132,
+              809,
+              1281
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.0108,
+            "bbox": [
+              809,
+              1132,
+              905,
+              1281
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.0107,
+            "bbox": [
+              905,
+              1132,
+              1000,
+              1281
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.0887,
+            "bbox": [
+              1000,
+              1132,
+              1174,
+              1281
+            ]
+          }
+        ],
+        "winner_col": 2,
+        "status": "AMBIGUOUS",
+        "gap": 0.0096
+      },
+      {
+        "row": 3,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0505,
+            "bbox": [
+              465,
+              1281,
+              619,
+              1464
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0095,
+            "bbox": [
+              619,
+              1281,
+              714,
+              1464
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0085,
+            "bbox": [
+              714,
+              1281,
+              809,
+              1464
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.0092,
+            "bbox": [
+              809,
+              1281,
+              905,
+              1464
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.0764,
+            "bbox": [
+              905,
+              1281,
+              1000,
+              1464
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.066,
+            "bbox": [
+              1000,
+              1281,
+              1174,
+              1464
+            ]
+          }
+        ],
+        "winner_col": 5,
+        "status": "AMBIGUOUS",
+        "gap": 0.0104
+      }
+    ],
+    "summary": {
+      "ok": 1,
+      "ambiguous": 2,
+      "unanswered": 0
+    }
+  },
+  "3.jpeg": {
+    "image": "3.jpeg",
+    "expected": {
+      "rows_min": 4,
+      "cols_expected": 3,
+      "note": "SDQ continuation Q20-25, 6 rows"
+    },
+    "original_size": "900x1600",
+    "processed_size": "1200x2133",
+    "grid_success": true,
+    "table_bbox": [
+      113,
+      392,
+      1120,
+      1113
+    ],
+    "diagnostics": {
+      "image_size": [
+        1200,
+        2133
+      ],
+      "h_lines_pixels": 29635,
+      "v_lines_pixels": 17651,
+      "table_bbox": [
+        113,
+        392,
+        1120,
+        1113
+      ],
+      "raw_row_boundaries": 9,
+      "rows_detected": 8,
+      "raw_col_boundaries": 7,
+      "columns_detected": 5,
+      "question_col_idx": 1,
+      "option_columns": 3,
+      "header_rows": 1,
+      "data_rows": 7
+    },
+    "data_rows": 7,
+    "option_columns": 3,
+    "row_count_pass": true,
+    "col_count_pass": true,
+    "row_results": [
+      {
+        "row": 1,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0409,
+            "bbox": [
+              692,
+              412,
+              801,
+              519
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0499,
+            "bbox": [
+              801,
+              412,
+              1006,
+              519
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.3918,
+            "bbox": [
+              1006,
+              412,
+              1114,
+              519
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.3419
+      },
+      {
+        "row": 2,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.5036,
+            "bbox": [
+              692,
+              519,
+              801,
+              652
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.3737,
+            "bbox": [
+              801,
+              519,
+              1006,
+              652
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.427,
+            "bbox": [
+              1006,
+              519,
+              1114,
+              652
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "AMBIGUOUS",
+        "gap": 0.0766
+      },
+      {
+        "row": 3,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.434,
+            "bbox": [
+              692,
+              652,
+              801,
+              768
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.1726,
+            "bbox": [
+              801,
+              652,
+              1006,
+              768
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0945,
+            "bbox": [
+              1006,
+              652,
+              1114,
+              768
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "OK",
+        "gap": 0.2614
+      },
+      {
+        "row": 4,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.2221,
+            "bbox": [
+              692,
+              768,
+              801,
+              885
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.3509,
+            "bbox": [
+              801,
+              768,
+              1006,
+              885
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.3215,
+            "bbox": [
+              1006,
+              768,
+              1114,
+              885
+            ]
+          }
+        ],
+        "winner_col": 2,
+        "status": "AMBIGUOUS",
+        "gap": 0.0294
+      },
+      {
+        "row": 5,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.499,
+            "bbox": [
+              692,
+              885,
+              801,
+              1002
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.2024,
+            "bbox": [
+              801,
+              885,
+              1006,
+              1002
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0278,
+            "bbox": [
+              1006,
+              885,
+              1114,
+              1002
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "OK",
+        "gap": 0.2966
+      },
+      {
+        "row": 6,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.1463,
+            "bbox": [
+              692,
+              1002,
+              801,
+              1051
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0563,
+            "bbox": [
+              801,
+              1002,
+              1006,
+              1051
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0693,
+            "bbox": [
+              1006,
+              1002,
+              1114,
+              1051
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "AMBIGUOUS",
+        "gap": 0.077
+      },
+      {
+        "row": 7,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.1643,
+            "bbox": [
+              692,
+              1051,
+              801,
+              1099
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0847,
+            "bbox": [
+              801,
+              1051,
+              1006,
+              1099
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.069,
+            "bbox": [
+              1006,
+              1051,
+              1114,
+              1099
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "AMBIGUOUS",
+        "gap": 0.0796
+      }
+    ],
+    "summary": {
+      "ok": 3,
+      "ambiguous": 4,
+      "unanswered": 0
+    }
+  },
+  "4.jpeg": {
+    "image": "4.jpeg",
+    "expected": {
+      "rows_min": 8,
+      "cols_expected": 3,
+      "note": "SDQ page 2 Q8-19, 12 rows"
+    },
+    "original_size": "900x1600",
+    "processed_size": "1200x2133",
+    "grid_success": true,
+    "table_bbox": [
+      143,
+      264,
+      1122,
+      1515
+    ],
+    "diagnostics": {
+      "image_size": [
+        1200,
+        2133
+      ],
+      "h_lines_pixels": 39283,
+      "v_lines_pixels": 29389,
+      "table_bbox": [
+        143,
+        264,
+        1122,
+        1515
+      ],
+      "raw_row_boundaries": 15,
+      "rows_detected": 13,
+      "raw_col_boundaries": 6,
+      "columns_detected": 5,
+      "question_col_idx": 1,
+      "option_columns": 3,
+      "header_rows": 0,
+      "data_rows": 13
+    },
+    "data_rows": 13,
+    "option_columns": 3,
+    "row_count_pass": true,
+    "col_count_pass": true,
+    "row_results": [
+      {
+        "row": 1,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0973,
+            "bbox": [
+              707,
+              283,
+              812,
+              375
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0982,
+            "bbox": [
+              812,
+              283,
+              1009,
+              375
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.1523,
+            "bbox": [
+              1009,
+              283,
+              1110,
+              375
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "AMBIGUOUS",
+        "gap": 0.0541
+      },
+      {
+        "row": 2,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.2689,
+            "bbox": [
+              707,
+              375,
+              812,
+              462
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0228,
+            "bbox": [
+              812,
+              375,
+              1009,
+              462
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.2276,
+            "bbox": [
+              1009,
+              375,
+              1110,
+              462
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "AMBIGUOUS",
+        "gap": 0.0413
+      },
+      {
+        "row": 3,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.136,
+            "bbox": [
+              707,
+              462,
+              812,
+              549
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0206,
+            "bbox": [
+              812,
+              462,
+              1009,
+              549
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.6656,
+            "bbox": [
+              1009,
+              462,
+              1110,
+              549
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.5296
+      },
+      {
+        "row": 4,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.1186,
+            "bbox": [
+              707,
+              549,
+              812,
+              637
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.1806,
+            "bbox": [
+              812,
+              549,
+              1009,
+              637
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.505,
+            "bbox": [
+              1009,
+              549,
+              1110,
+              637
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.3244
+      },
+      {
+        "row": 5,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.2539,
+            "bbox": [
+              707,
+              637,
+              812,
+              729
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.2874,
+            "bbox": [
+              812,
+              637,
+              1009,
+              729
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0329,
+            "bbox": [
+              1009,
+              637,
+              1110,
+              729
+            ]
+          }
+        ],
+        "winner_col": 2,
+        "status": "AMBIGUOUS",
+        "gap": 0.0335
+      },
+      {
+        "row": 6,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.2302,
+            "bbox": [
+              707,
+              729,
+              812,
+              841
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.1736,
+            "bbox": [
+              812,
+              729,
+              1009,
+              841
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.4527,
+            "bbox": [
+              1009,
+              729,
+              1110,
+              841
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.2225
+      },
+      {
+        "row": 7,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.1514,
+            "bbox": [
+              707,
+              841,
+              812,
+              928
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0175,
+            "bbox": [
+              812,
+              841,
+              1009,
+              928
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.6472,
+            "bbox": [
+              1009,
+              841,
+              1110,
+              928
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.4958
+      },
+      {
+        "row": 8,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.1992,
+            "bbox": [
+              707,
+              928,
+              812,
+              1017
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.586,
+            "bbox": [
+              812,
+              928,
+              1009,
+              1017
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0379,
+            "bbox": [
+              1009,
+              928,
+              1110,
+              1017
+            ]
+          }
+        ],
+        "winner_col": 2,
+        "status": "OK",
+        "gap": 0.3868
+      },
+      {
+        "row": 9,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0975,
+            "bbox": [
+              707,
+              1017,
+              812,
+              1130
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0159,
+            "bbox": [
+              812,
+              1017,
+              1009,
+              1130
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.4363,
+            "bbox": [
+              1009,
+              1017,
+              1110,
+              1130
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.3388
+      },
+      {
+        "row": 10,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0234,
+            "bbox": [
+              707,
+              1130,
+              812,
+              1243
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.656,
+            "bbox": [
+              812,
+              1130,
+              1009,
+              1243
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.3911,
+            "bbox": [
+              1009,
+              1130,
+              1110,
+              1243
+            ]
+          }
+        ],
+        "winner_col": 2,
+        "status": "OK",
+        "gap": 0.2649
+      },
+      {
+        "row": 11,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.5551,
+            "bbox": [
+              707,
+              1243,
+              812,
+              1333
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0185,
+            "bbox": [
+              812,
+              1243,
+              1009,
+              1333
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.5861,
+            "bbox": [
+              1009,
+              1243,
+              1110,
+              1333
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "AMBIGUOUS",
+        "gap": 0.031
+      },
+      {
+        "row": 12,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.5914,
+            "bbox": [
+              707,
+              1333,
+              812,
+              1428
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0169,
+            "bbox": [
+              812,
+              1333,
+              1009,
+              1428
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0786,
+            "bbox": [
+              1009,
+              1333,
+              1110,
+              1428
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "OK",
+        "gap": 0.5128
+      },
+      {
+        "row": 13,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0291,
+            "bbox": [
+              707,
+              1428,
+              812,
+              1503
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.2835,
+            "bbox": [
+              812,
+              1428,
+              1009,
+              1503
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.5039,
+            "bbox": [
+              1009,
+              1428,
+              1110,
+              1503
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.2204
+      }
+    ],
+    "summary": {
+      "ok": 9,
+      "ambiguous": 4,
+      "unanswered": 0
+    }
+  },
+  "5.jpeg": {
+    "image": "5.jpeg",
+    "expected": {
+      "rows_min": 3,
+      "cols_expected": 6,
+      "note": "6-col Likert page 2, 5 rows"
+    },
+    "original_size": "900x1600",
+    "processed_size": "1200x2133",
+    "grid_success": true,
+    "table_bbox": [
+      118,
+      331,
+      1148,
+      1360
+    ],
+    "diagnostics": {
+      "image_size": [
+        1200,
+        2133
+      ],
+      "h_lines_pixels": 21740,
+      "v_lines_pixels": 28400,
+      "table_bbox": [
+        118,
+        331,
+        1148,
+        1360
+      ],
+      "raw_row_boundaries": 7,
+      "rows_detected": 5,
+      "raw_col_boundaries": 9,
+      "columns_detected": 7,
+      "question_col_idx": 0,
+      "option_columns": 6,
+      "header_rows": 0,
+      "data_rows": 5
+    },
+    "data_rows": 5,
+    "option_columns": 6,
+    "row_count_pass": true,
+    "col_count_pass": true,
+    "row_results": [
+      {
+        "row": 1,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.051,
+            "bbox": [
+              442,
+              354,
+              592,
+              611
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0081,
+            "bbox": [
+              592,
+              354,
+              686,
+              611
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.0077,
+            "bbox": [
+              706,
+              354,
+              780,
+              611
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.0322,
+            "bbox": [
+              780,
+              354,
+              875,
+              611
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.0184,
+            "bbox": [
+              875,
+              354,
+              968,
+              611
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.6225,
+            "bbox": [
+              968,
+              354,
+              1140,
+              611
+            ]
+          }
+        ],
+        "winner_col": 6,
+        "status": "OK",
+        "gap": 0.5715
+      },
+      {
+        "row": 2,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0475,
+            "bbox": [
+              442,
+              611,
+              592,
+              876
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.1556,
+            "bbox": [
+              592,
+              611,
+              686,
+              876
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.301,
+            "bbox": [
+              706,
+              611,
+              780,
+              876
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.5175,
+            "bbox": [
+              780,
+              611,
+              875,
+              876
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.0325,
+            "bbox": [
+              875,
+              611,
+              968,
+              876
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.0523,
+            "bbox": [
+              968,
+              611,
+              1140,
+              876
+            ]
+          }
+        ],
+        "winner_col": 4,
+        "status": "OK",
+        "gap": 0.2165
+      },
+      {
+        "row": 3,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0843,
+            "bbox": [
+              442,
+              876,
+              592,
+              1032
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.3342,
+            "bbox": [
+              592,
+              876,
+              686,
+              1032
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.2762,
+            "bbox": [
+              706,
+              876,
+              780,
+              1032
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.2957,
+            "bbox": [
+              780,
+              876,
+              875,
+              1032
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.0847,
+            "bbox": [
+              875,
+              876,
+              968,
+              1032
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.0716,
+            "bbox": [
+              968,
+              876,
+              1140,
+              1032
+            ]
+          }
+        ],
+        "winner_col": 2,
+        "status": "AMBIGUOUS",
+        "gap": 0.0385
+      },
+      {
+        "row": 4,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.351,
+            "bbox": [
+              442,
+              1032,
+              592,
+              1188
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.3425,
+            "bbox": [
+              592,
+              1032,
+              686,
+              1188
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.1483,
+            "bbox": [
+              706,
+              1032,
+              780,
+              1188
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.0673,
+            "bbox": [
+              780,
+              1032,
+              875,
+              1188
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.0099,
+            "bbox": [
+              875,
+              1032,
+              968,
+              1188
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.0855,
+            "bbox": [
+              968,
+              1032,
+              1140,
+              1188
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "AMBIGUOUS",
+        "gap": 0.0085
+      },
+      {
+        "row": 5,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.3007,
+            "bbox": [
+              442,
+              1188,
+              592,
+              1346
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.0111,
+            "bbox": [
+              592,
+              1188,
+              686,
+              1346
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.076,
+            "bbox": [
+              706,
+              1188,
+              780,
+              1346
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.0189,
+            "bbox": [
+              780,
+              1188,
+              875,
+              1346
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.0092,
+            "bbox": [
+              875,
+              1188,
+              968,
+              1346
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.0856,
+            "bbox": [
+              968,
+              1188,
+              1140,
+              1346
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "OK",
+        "gap": 0.2151
+      }
+    ],
+    "summary": {
+      "ok": 3,
+      "ambiguous": 2,
+      "unanswered": 0
+    }
+  }
+}

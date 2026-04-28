@@ -67,9 +67,15 @@ export const DigitalSurveyForm: React.FC<DigitalSurveyFormProps> = ({
 
   // Support both legacy column_headers and new columns array
   const rawHeaders = surveyData?.columns || surveyData?.column_headers || [];
-  const headers = rawHeaders.filter(
-    h => !h.toLowerCase().includes('question') && !h.toLowerCase().includes('s.no') && h.trim() !== ''
-  );
+  const headers = rawHeaders
+    .filter(h => !h.toLowerCase().includes('question') && !h.toLowerCase().includes('s.no') && h.trim() !== '')
+    .map(h => {
+      const v = h.trim();
+      if (v === '1') return 'Not True';
+      if (v === '2') return 'Somewhat True';
+      if (v === '3') return 'Certainly True';
+      return h;
+    });
 
   const meta = surveyData?.form_metadata || {};
 

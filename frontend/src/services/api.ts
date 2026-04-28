@@ -1,4 +1,4 @@
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8005';
 const API_KEY = import.meta.env.VITE_HYDRA_API_KEY || 'hydra_secret_v2';
 
 const getHeaders = (extra = {}) => ({
@@ -37,6 +37,8 @@ export interface ProcessResponse {
 
 export interface ScanStatusResponse {
   scanId: string;
+  userId?: string;
+  datasetId?: string;
   status: 'uploaded' | 'good' | 'bad' | 'conflict' | 'failed' | 'processing' | 'NEEDS_REVIEW' | 'AUTO_ACCEPT' | 'REJECT';
   confidence: number;
   extractedData?: {

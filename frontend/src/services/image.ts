@@ -122,6 +122,7 @@ export const imageService = {
   async normalizeForOCR(canvas: HTMLCanvasElement): Promise<string> {
     const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
     const { width, height } = canvas;
+    if (width === 0 || height === 0) return canvas.toDataURL('image/jpeg', 0.9);
     const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
 
