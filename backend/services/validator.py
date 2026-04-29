@@ -10,32 +10,35 @@ import logging
 from typing import Any, Dict, List, Optional, Tuple
 from rapidfuzz import fuzz, process
 from datetime import datetime
+from services.llm_semantic_refiner import LLMSemanticRefiner
 
 logger = logging.getLogger(__name__)
 
 # Common OCR artifact mappings (Phase 5 spec)
 OCR_ARTIFACT_MAP = {
-    "O": "0", "D": "0", "U": "0", "Q": "0",
-    "l": "1", "I": "1", "|": "1", "i": "1", "!": "1",
-    "S": "5", "$": "5",
+    "O": "0", "o": "0", "D": "0", "U": "0", "Q": "0", "c": "0", "C": "0",
+    "l": "1", "I": "1", "|": "1", "i": "1", "!": "1", "]": "1", "[": "1",
+    "S": "5", "s": "5", "$": "5",
     "Z": "2", "z": "2",
     "B": "8", "&": "8",
     "G": "6", "b": "6",
     "T": "7", "t": "7",
-    "A": "4", "H": "4",
-    "g": "9", "q": "9"
+    "A": "4", "a": "4", "H": "4",
+    "g": "9", "q": "9", "P": "9",
+    "E": "3", "J": "3"
 }
 
 class ContentValidator:
     """Implements Phase 5 & 6: Cleaning and Validation."""
 
     def __init__(self):
+        # Common survey patterns
         self.patterns = {
             "date": re.compile(r"^\d{1,2}[/-]\d{1,2}[/-]\d{2,4}$"),
-            "email": re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$"),
-            "phone": re.compile(r"^\+?\d{10,15}$"),
-            "number": re.compile(r"^\d+\.?\d*$"),
+            "email": re.compile(r"^[\w\.-]+@[\w\.-]+\.\w+$"),
+            "number": re.compile(r"^-?\d*\.?\d+$")
         }
+        self.llm_refiner = LLMSemanticRefiner()
 
     # ═══════════════════════════════════════════════════════════════════════
     # Phase 5: Cleaning & Normalization
@@ -156,13 +159,20 @@ class ContentValidator:
             if cleaned_value in allowed:
                 pass
             else:
-                # Try fuzzy match
+                # Try fuzzy match with ratio which is better for mangled long strings than WRatio
                 best_match, score, _ = process.extractOne(cleaned_value, allowed, scorer=fuzz.ratio)
-                if score > 80:
+                if score >= 70:  # Allow 30% character error rate for heavily garbled text
                     logger.info(f"[Phase 6] Fuzzy matched '{cleaned_value}' to '{best_match}' (score: {score})")
                     cleaned_value = best_match
                 else:
-                    warnings.append(f"Value '{cleaned_value}' not in allowed list and no close match found.")
+                    # 5. Zero-Shot LLM Context Recovery Fallback
+                    logger.warning(f"[Phase 6] Fuzzy match failed for '{cleaned_value}'. Attempting LLM Fallback.")
+                    recovered_value = self.llm_refiner.refine_field_value(cleaned_value, allowed)
+                    if recovered_value:
+                        cleaned_value = recovered_value
+                        logger.info(f"[Phase 6] LLM successfully recovered value to '{cleaned_value}'")
+                    else:
+                        warnings.append(f"Value '{cleaned_value}' not in allowed list and no close match found.")
 
         status = "OK"
         if errors:

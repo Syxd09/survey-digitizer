@@ -42,11 +42,7 @@ class OCREngine:
 
         # Phase 2 Fallback: EasyOCR
         self.local_reader = None
-        try:
-            self.local_reader = easyocr.Reader(['en'], gpu=False)
-            logger.info("[Phase 2] Local EasyOCR engine ready.")
-        except Exception as e:
-            logger.error(f"[Phase 2] Failed to initialise local OCR: {e}")
+
 
 
     @retry.Retry(predicate=retry.if_exception_type(exceptions.ServiceUnavailable, exceptions.DeadlineExceeded))
@@ -81,9 +77,17 @@ class OCREngine:
             
         except Exception as e:
             logger.warning(f"[Phase 2] Google OCR failed: {e}. Attempting local fallback...")
-            if not self.local_reader:
-                logger.error("[Phase 2] No local OCR engine available.")
-                raise e
+            
+            # Lazy-load EasyOCR only when Cloud Vision fails
+            if self.local_reader is None:
+                try:
+                    import easyocr
+                    logger.info("[Phase 2] Lazy-loading EasyOCR models (this may take a moment)...")
+                    self.local_reader = easyocr.Reader(['en'], gpu=False)
+                    logger.info("[Phase 2] Local EasyOCR engine ready.")
+                except Exception as load_e:
+                    logger.error(f"[Phase 2] Failed to lazy-load local OCR: {load_e}")
+                    raise e
             
             # Execute local OCR
             local_result = self.local_reader.readtext(img_bytes)

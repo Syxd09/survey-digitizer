@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-29T01:01:06",
+  "timestamp": "2026-04-29T01:32:55",
   "passed": 95,
   "failed": 0,
   "rate": "100.0%",
@@ -22,7 +22,7 @@
     {
       "name": "Quality has status",
       "passed": true,
-      "detail": "Got: PASS"
+      "detail": "Got: REJECT"
     },
     {
       "name": "Blur value is numeric",
@@ -87,12 +87,12 @@
     {
       "name": "Extracted meaningful word count (>5)",
       "passed": true,
-      "detail": "Only got 48 words"
+      "detail": "Only got 118 words"
     },
     {
       "name": "BBox is polygon format",
       "passed": true,
-      "detail": "Got: [[948.0, 276.0], [1026.0, 276.0], [1026.0, 302.0], [948.0, 302.0]]"
+      "detail": "Got: [[266.0, 538.0], [292.0, 538.0], [292.0, 628.0], [266.0, 628.0]]"
     },
     {
       "name": "Returns list of lines",
@@ -107,7 +107,7 @@
     {
       "name": "Lines have bbox (rect)",
       "passed": true,
-      "detail": "Sample bbox: [948.0, 276.0, 1026.0, 302.0]"
+      "detail": "Sample bbox: [266.0, 538.0, 335.0, 628.0]"
     },
     {
       "name": "Lines have confidence",
@@ -122,7 +122,7 @@
     {
       "name": "Word count preserved",
       "passed": true,
-      "detail": "Lines contain 48 words vs 48 input"
+      "detail": "Lines contain 118 words vs 118 input"
     },
     {
       "name": "Grid returns success flag",
@@ -137,12 +137,12 @@
     {
       "name": "Grid has rows",
       "passed": true,
-      "detail": "Got 8 rows"
+      "detail": "Got 5 rows"
     },
     {
       "name": "Grid has option_columns",
       "passed": true,
-      "detail": "Got 3 option cols"
+      "detail": "Got 7 option cols"
     },
     {
       "name": "Grid has cells",
@@ -177,7 +177,7 @@
     {
       "name": "Cell count = rows \u00d7 cols",
       "passed": true,
-      "detail": "Got 24, expected 24"
+      "detail": "Got 35, expected 35"
     },
     {
       "name": "Extraction returns list",
@@ -187,7 +187,7 @@
     {
       "name": "Fields extracted (>0)",
       "passed": true,
-      "detail": "Got 8"
+      "detail": "Got 5"
     },
     {
       "name": "Field has 'id'",
@@ -217,7 +217,7 @@
     {
       "name": "Field status is valid enum",
       "passed": true,
-      "detail": "Got: AMBIGUOUS"
+      "detail": "Got: OK"
     },
     {
       "name": "Dynamic fields have strategy='dynamic_grid'",

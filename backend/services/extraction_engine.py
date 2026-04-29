@@ -61,7 +61,7 @@ class ExtractionEngine:
             elif strategy == "line_search":
                 extracted = self._extract_by_line_search(field, lines, extracted)
             elif strategy == "radio_group":
-                extracted = self._extract_by_radio_group(field, img_bgr, extracted, w, h)
+                extracted = self._extract_by_radio_group(field, img_bgr, extracted, w, h, lines)
 
             results.append(extracted)
 
@@ -145,16 +145,29 @@ class ExtractionEngine:
             entry["status"] = "OK"
             entry["density"] = res["density"]
         else:
-            # Phase 4 Spec: Filter all_words by real_bbox
+            # Phase 4 Spec: Filter all_words by real_bbox with Intersection over Union (overlap percentage)
             zone_words = []
+            zx1, zy1, zx2, zy2 = real_bbox
+            
             for word in all_words:
-                # Calculate center of word bbox
                 wb = word["bbox"]
-                cx = sum(p[0] for p in wb) / 4
-                cy = sum(p[1] for p in wb) / 4
+                wx1 = min(p[0] for p in wb)
+                wy1 = min(p[1] for p in wb)
+                wx2 = max(p[0] for p in wb)
+                wy2 = max(p[1] for p in wb)
                 
-                if real_bbox[0] <= cx <= real_bbox[2] and real_bbox[1] <= cy <= real_bbox[3]:
-                    zone_words.append(word)
+                # Calculate intersection
+                ix1 = max(zx1, wx1)
+                iy1 = max(zy1, wy1)
+                ix2 = min(zx2, wx2)
+                iy2 = min(zy2, wy2)
+                
+                if ix1 < ix2 and iy1 < iy2:
+                    intersection_area = (ix2 - ix1) * (iy2 - iy1)
+                    word_area = (wx2 - wx1) * (wy2 - wy1)
+                    # Include if at least 40% of the word intersects the zone
+                    if word_area > 0 and (intersection_area / word_area) >= 0.4:
+                        zone_words.append(word)
             
             if zone_words:
                 # Sort by Y-top then X-left for multi-line natural reading order
@@ -168,26 +181,60 @@ class ExtractionEngine:
             
         return entry
 
-    def _extract_by_radio_group(self, field: Dict, img_bgr: Any, entry: Dict, w: int, h: int) -> Dict:
+    def _extract_by_radio_group(self, field: Dict, img_bgr: Any, entry: Dict, w: int, h: int, lines: List[Dict]) -> Dict:
         """
         Phase 4.5: Winner Takes All logic for radio button groups.
-        Specifically optimized for fixed questionnaire forms.
+        Specifically optimized for fixed questionnaire forms with dynamic Y-axis anchoring.
         """
         options = field.get("options", [])
         if not options:
             return entry
+            
+        # Dynamic Y-Anchor Logic
+        y_offset_min = None
+        y_offset_max = None
+        
+        field_name = field.get("name")
+        if field_name and lines:
+            best_score = 0
+            best_line = None
+            for line in lines:
+                text = line["text"].strip()
+                if len(text) < 5:
+                    continue
+                # Use token_set_ratio to handle word reorderings and avoid substring false positives
+                score = fuzz.token_set_ratio(field_name.lower(), text.lower())
+                if score > 70 and score > best_score:
+                    best_score = score
+                    best_line = line
+            
+            if best_line:
+                # Use the matched line's Y-coordinates to set our checkbox Y-bounds
+                y_offset_min = best_line["bbox"][1]
+                y_offset_max = best_line["bbox"][3]
+                # Expand slightly to account for checkbox being slightly taller than text
+                height_padding = int((y_offset_max - y_offset_min) * 0.2)
+                y_offset_min = max(0, y_offset_min - height_padding)
+                y_offset_max = min(h, y_offset_max + height_padding)
             
         densities = []
         for opt in options:
             bbox_ratio = opt.get("bbox_ratio")
             if not bbox_ratio: continue
             
-            real_bbox = [
-                int(bbox_ratio[0] * w),
-                int(bbox_ratio[1] * h),
-                int(bbox_ratio[2] * w),
-                int(bbox_ratio[3] * h)
-            ]
+            x1 = int(bbox_ratio[0] * w)
+            x2 = int(bbox_ratio[2] * w)
+            
+            if y_offset_min is not None and y_offset_max is not None:
+                # Use dynamic Y-bounds based on line anchor
+                y1 = y_offset_min
+                y2 = y_offset_max
+            else:
+                # Fallback to static Y-bounds
+                y1 = int(bbox_ratio[1] * h)
+                y2 = int(bbox_ratio[3] * h)
+                
+            real_bbox = [x1, y1, x2, y2]
             res = self.mark_detector.is_marked(img_bgr, real_bbox)
             densities.append({
                 "value": opt.get("value"),

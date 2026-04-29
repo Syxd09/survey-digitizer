@@ -10,31 +10,31 @@
     "processed_size": "1200x2133",
     "grid_success": true,
     "table_bbox": [
-      171,
-      740,
-      1154,
-      1451
+      182,
+      721,
+      1153,
+      1443
     ],
     "diagnostics": {
       "image_size": [
         1200,
         2133
       ],
-      "h_lines_pixels": 26944,
-      "v_lines_pixels": 14819,
+      "h_lines_pixels": 27400,
+      "v_lines_pixels": 16103,
       "table_bbox": [
-        171,
-        740,
-        1154,
-        1451
+        182,
+        721,
+        1153,
+        1443
       ],
       "raw_row_boundaries": 10,
-      "rows_detected": 8,
+      "rows_detected": 9,
       "raw_col_boundaries": 6,
       "columns_detected": 5,
       "question_col_idx": 1,
       "option_columns": 3,
-      "header_rows": 0,
+      "header_rows": 1,
       "data_rows": 8
     },
     "data_rows": 8,
@@ -47,309 +47,309 @@
         "densities": [
           {
             "col": 1,
-            "density": 0.0624,
+            "density": 0.0647,
             "bbox": [
-              732,
-              749,
-              838,
-              841
+              733,
+              745,
+              839,
+              837
             ]
           },
           {
             "col": 2,
-            "density": 0.0686,
+            "density": 0.0609,
             "bbox": [
-              838,
-              749,
-              1037,
-              841
+              839,
+              745,
+              1038,
+              837
             ]
           },
           {
             "col": 3,
-            "density": 0.107,
+            "density": 0.0772,
             "bbox": [
-              1037,
-              749,
-              1141,
-              841
+              1038,
+              745,
+              1142,
+              837
             ]
           }
         ],
         "winner_col": 3,
         "status": "AMBIGUOUS",
-        "gap": 0.0384
+        "gap": 0.0125
       },
       {
         "row": 2,
         "densities": [
           {
             "col": 1,
-            "density": 0.2297,
+            "density": 0.1967,
             "bbox": [
-              732,
-              841,
-              838,
-              953
+              733,
+              837,
+              839,
+              951
             ]
           },
           {
             "col": 2,
-            "density": 0.0139,
+            "density": 0.0133,
             "bbox": [
-              838,
-              841,
-              1037,
-              953
+              839,
+              837,
+              1038,
+              951
             ]
           },
           {
             "col": 3,
-            "density": 0.4463,
+            "density": 0.0216,
             "bbox": [
-              1037,
-              841,
-              1141,
-              953
+              1038,
+              837,
+              1142,
+              951
             ]
           }
         ],
-        "winner_col": 3,
+        "winner_col": 1,
         "status": "OK",
-        "gap": 0.2166
+        "gap": 0.1751
       },
       {
         "row": 3,
         "densities": [
           {
             "col": 1,
-            "density": 0.0239,
+            "density": 0.0242,
             "bbox": [
-              732,
-              953,
-              838,
-              1042
+              733,
+              951,
+              839,
+              1040
             ]
           },
           {
             "col": 2,
-            "density": 0.378,
+            "density": 0.0048,
             "bbox": [
-              838,
-              953,
-              1037,
-              1042
+              839,
+              951,
+              1038,
+              1040
             ]
           },
           {
             "col": 3,
-            "density": 0.0528,
+            "density": 0.0362,
             "bbox": [
-              1037,
-              953,
-              1141,
-              1042
+              1038,
+              951,
+              1142,
+              1040
             ]
           }
         ],
-        "winner_col": 2,
-        "status": "OK",
-        "gap": 0.3252
+        "winner_col": null,
+        "status": "UNANSWERED",
+        "gap": 0.012
       },
       {
         "row": 4,
         "densities": [
           {
             "col": 1,
-            "density": 0.5449,
+            "density": 0.6001,
             "bbox": [
-              732,
-              1042,
-              838,
-              1131
+              733,
+              1040,
+              839,
+              1128
             ]
           },
           {
             "col": 2,
-            "density": 0.0121,
+            "density": 0.0122,
             "bbox": [
-              838,
-              1042,
-              1037,
-              1131
+              839,
+              1040,
+              1038,
+              1128
             ]
           },
           {
             "col": 3,
-            "density": 0.6624,
+            "density": 0.018,
             "bbox": [
-              1037,
-              1042,
-              1141,
-              1131
+              1038,
+              1040,
+              1142,
+              1128
             ]
           }
         ],
-        "winner_col": 3,
+        "winner_col": 1,
         "status": "OK",
-        "gap": 0.1175
+        "gap": 0.5821
       },
       {
         "row": 5,
         "densities": [
           {
             "col": 1,
-            "density": 0.0817,
+            "density": 0.87,
             "bbox": [
-              732,
-              1131,
-              838,
-              1219
+              733,
+              1128,
+              839,
+              1217
             ]
           },
           {
             "col": 2,
-            "density": 0.3833,
+            "density": 0.4159,
             "bbox": [
-              838,
-              1131,
-              1037,
-              1219
+              839,
+              1128,
+              1038,
+              1217
             ]
           },
           {
             "col": 3,
-            "density": 0.0301,
+            "density": 0.0326,
             "bbox": [
-              1037,
-              1131,
-              1141,
-              1219
+              1038,
+              1128,
+              1142,
+              1217
             ]
           }
         ],
-        "winner_col": 2,
+        "winner_col": 1,
         "status": "OK",
-        "gap": 0.3016
+        "gap": 0.4541
       },
       {
         "row": 6,
         "densities": [
           {
             "col": 1,
-            "density": 0.3834,
+            "density": 0.5371,
             "bbox": [
-              732,
-              1219,
-              838,
-              1312
+              733,
+              1217,
+              839,
+              1310
             ]
           },
           {
             "col": 2,
-            "density": 0.0154,
+            "density": 0.0161,
             "bbox": [
-              838,
-              1219,
-              1037,
-              1312
+              839,
+              1217,
+              1038,
+              1310
             ]
           },
           {
             "col": 3,
-            "density": 0.0044,
+            "density": 0.7114,
             "bbox": [
-              1037,
-              1219,
-              1141,
-              1312
+              1038,
+              1217,
+              1142,
+              1310
             ]
           }
         ],
-        "winner_col": 1,
+        "winner_col": 3,
         "status": "OK",
-        "gap": 0.368
+        "gap": 0.1743
       },
       {
         "row": 7,
         "densities": [
           {
             "col": 1,
-            "density": 0.0306,
+            "density": 0.0304,
             "bbox": [
-              732,
-              1312,
-              838,
-              1386
+              733,
+              1310,
+              839,
+              1384
             ]
           },
           {
             "col": 2,
-            "density": 0.0062,
+            "density": 0.4653,
             "bbox": [
-              838,
-              1312,
-              1037,
-              1386
+              839,
+              1310,
+              1038,
+              1384
             ]
           },
           {
             "col": 3,
-            "density": 0.0415,
+            "density": 0.8446,
             "bbox": [
-              1037,
-              1312,
-              1141,
-              1386
+              1038,
+              1310,
+              1142,
+              1384
             ]
           }
         ],
-        "winner_col": null,
-        "status": "UNANSWERED",
-        "gap": 0.0109
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.3793
       },
       {
         "row": 8,
         "densities": [
           {
             "col": 1,
-            "density": 0.0314,
+            "density": 0.175,
             "bbox": [
-              732,
-              1386,
-              838,
-              1434
+              733,
+              1384,
+              839,
+              1431
             ]
           },
           {
             "col": 2,
-            "density": 0.0887,
+            "density": 0.0405,
             "bbox": [
-              838,
-              1386,
-              1037,
-              1434
+              839,
+              1384,
+              1038,
+              1431
             ]
           },
           {
             "col": 3,
-            "density": 0.0708,
+            "density": 0.0501,
             "bbox": [
-              1037,
-              1386,
-              1141,
-              1434
+              1038,
+              1384,
+              1142,
+              1431
             ]
           }
         ],
-        "winner_col": 2,
-        "status": "AMBIGUOUS",
-        "gap": 0.0179
+        "winner_col": 1,
+        "status": "OK",
+        "gap": 0.1249
       }
     ],
     "summary": {
-      "ok": 5,
-      "ambiguous": 2,
+      "ok": 6,
+      "ambiguous": 1,
       "unanswered": 1
     }
   },
@@ -364,246 +364,354 @@
     "processed_size": "1200x2133",
     "grid_success": true,
     "table_bbox": [
-      143,
-      901,
+      138,
+      876,
       1200,
-      1473
+      1494
     ],
     "diagnostics": {
       "image_size": [
         1200,
         2133
       ],
-      "h_lines_pixels": 13937,
-      "v_lines_pixels": 18504,
+      "h_lines_pixels": 16029,
+      "v_lines_pixels": 12964,
       "table_bbox": [
-        143,
-        901,
+        138,
+        876,
         1200,
-        1473
+        1494
       ],
-      "raw_row_boundaries": 4,
-      "rows_detected": 3,
-      "raw_col_boundaries": 9,
-      "columns_detected": 7,
+      "raw_row_boundaries": 6,
+      "rows_detected": 5,
+      "raw_col_boundaries": 10,
+      "columns_detected": 8,
       "question_col_idx": 0,
-      "option_columns": 6,
-      "header_rows": 0,
-      "data_rows": 3
+      "option_columns": 7,
+      "header_rows": 1,
+      "data_rows": 4
     },
-    "data_rows": 3,
-    "option_columns": 6,
+    "data_rows": 4,
+    "option_columns": 7,
     "row_count_pass": true,
-    "col_count_pass": true,
+    "col_count_pass": false,
     "row_results": [
       {
         "row": 1,
         "densities": [
           {
             "col": 1,
-            "density": 0.041,
+            "density": 0.0538,
             "bbox": [
-              465,
-              908,
-              619,
-              1132
+              472,
+              906,
+              626,
+              1129
             ]
           },
           {
             "col": 2,
-            "density": 0.1711,
+            "density": 0.1619,
             "bbox": [
-              619,
-              908,
-              714,
-              1132
+              626,
+              906,
+              719,
+              1129
             ]
           },
           {
             "col": 3,
-            "density": 0.0616,
+            "density": 0.062,
             "bbox": [
-              714,
-              908,
-              809,
-              1132
+              719,
+              906,
+              812,
+              1129
             ]
           },
           {
             "col": 4,
-            "density": 0.0068,
+            "density": 0.023,
             "bbox": [
-              809,
+              812,
+              906,
               908,
-              905,
-              1132
+              1129
             ]
           },
           {
             "col": 5,
-            "density": 0.0067,
+            "density": 0.0116,
             "bbox": [
-              905,
               908,
-              1000,
-              1132
+              906,
+              998,
+              1129
             ]
           },
           {
             "col": 6,
-            "density": 0.0401,
+            "density": 0.0316,
             "bbox": [
-              1000,
-              908,
-              1174,
-              1132
+              998,
+              906,
+              1168,
+              1129
+            ]
+          },
+          {
+            "col": 7,
+            "density": 0.0685,
+            "bbox": [
+              1168,
+              906,
+              1200,
+              1129
             ]
           }
         ],
         "winner_col": 2,
-        "status": "OK",
-        "gap": 0.1095
+        "status": "AMBIGUOUS",
+        "gap": 0.0934
       },
       {
         "row": 2,
         "densities": [
           {
             "col": 1,
-            "density": 0.0762,
+            "density": 0.0837,
             "bbox": [
-              465,
-              1132,
-              619,
-              1281
+              472,
+              1129,
+              626,
+              1277
             ]
           },
           {
             "col": 2,
-            "density": 0.0983,
+            "density": 0.0957,
             "bbox": [
-              619,
-              1132,
-              714,
-              1281
+              626,
+              1129,
+              719,
+              1277
             ]
           },
           {
             "col": 3,
-            "density": 0.0102,
+            "density": 0.0094,
             "bbox": [
-              714,
-              1132,
-              809,
-              1281
+              719,
+              1129,
+              812,
+              1277
             ]
           },
           {
             "col": 4,
-            "density": 0.0108,
+            "density": 0.0131,
             "bbox": [
-              809,
-              1132,
-              905,
-              1281
+              812,
+              1129,
+              908,
+              1277
             ]
           },
           {
             "col": 5,
-            "density": 0.0107,
+            "density": 0.0362,
             "bbox": [
-              905,
-              1132,
-              1000,
-              1281
+              908,
+              1129,
+              998,
+              1277
             ]
           },
           {
             "col": 6,
-            "density": 0.0887,
+            "density": 0.0965,
             "bbox": [
-              1000,
-              1132,
-              1174,
-              1281
+              998,
+              1129,
+              1168,
+              1277
+            ]
+          },
+          {
+            "col": 7,
+            "density": 0.1865,
+            "bbox": [
+              1168,
+              1129,
+              1200,
+              1277
             ]
           }
         ],
-        "winner_col": 2,
+        "winner_col": 7,
         "status": "AMBIGUOUS",
-        "gap": 0.0096
+        "gap": 0.09
       },
       {
         "row": 3,
         "densities": [
           {
             "col": 1,
-            "density": 0.0505,
+            "density": 0.0684,
             "bbox": [
-              465,
-              1281,
-              619,
-              1464
+              472,
+              1277,
+              626,
+              1460
             ]
           },
           {
             "col": 2,
-            "density": 0.0095,
+            "density": 0.035,
             "bbox": [
-              619,
-              1281,
-              714,
-              1464
+              626,
+              1277,
+              719,
+              1460
             ]
           },
           {
             "col": 3,
-            "density": 0.0085,
+            "density": 0.0476,
             "bbox": [
-              714,
-              1281,
-              809,
-              1464
+              719,
+              1277,
+              812,
+              1460
             ]
           },
           {
             "col": 4,
-            "density": 0.0092,
+            "density": 0.0502,
             "bbox": [
-              809,
-              1281,
-              905,
-              1464
+              812,
+              1277,
+              908,
+              1460
             ]
           },
           {
             "col": 5,
-            "density": 0.0764,
+            "density": 0.1108,
             "bbox": [
-              905,
-              1281,
-              1000,
-              1464
+              908,
+              1277,
+              998,
+              1460
             ]
           },
           {
             "col": 6,
-            "density": 0.066,
+            "density": 0.0988,
             "bbox": [
-              1000,
-              1281,
-              1174,
-              1464
+              998,
+              1277,
+              1168,
+              1460
+            ]
+          },
+          {
+            "col": 7,
+            "density": 0.0827,
+            "bbox": [
+              1168,
+              1277,
+              1200,
+              1460
             ]
           }
         ],
         "winner_col": 5,
         "status": "AMBIGUOUS",
-        "gap": 0.0104
+        "gap": 0.012
+      },
+      {
+        "row": 4,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.1699,
+            "bbox": [
+              472,
+              1460,
+              626,
+              1494
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.039,
+            "bbox": [
+              626,
+              1460,
+              719,
+              1494
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.6557,
+            "bbox": [
+              719,
+              1460,
+              812,
+              1494
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.478,
+            "bbox": [
+              812,
+              1460,
+              908,
+              1494
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.8244,
+            "bbox": [
+              908,
+              1460,
+              998,
+              1494
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.161,
+            "bbox": [
+              998,
+              1460,
+              1168,
+              1494
+            ]
+          },
+          {
+            "col": 7,
+            "density": 0.0728,
+            "bbox": [
+              1168,
+              1460,
+              1200,
+              1494
+            ]
+          }
+        ],
+        "winner_col": 5,
+        "status": "OK",
+        "gap": 0.1687
       }
     ],
     "summary": {
       "ok": 1,
-      "ambiguous": 2,
+      "ambiguous": 3,
       "unanswered": 0
     }
   },
@@ -619,33 +727,33 @@
     "grid_success": true,
     "table_bbox": [
       113,
-      392,
-      1120,
-      1113
+      389,
+      1117,
+      1106
     ],
     "diagnostics": {
       "image_size": [
         1200,
         2133
       ],
-      "h_lines_pixels": 29635,
-      "v_lines_pixels": 17651,
+      "h_lines_pixels": 29888,
+      "v_lines_pixels": 17905,
       "table_bbox": [
         113,
-        392,
-        1120,
-        1113
+        389,
+        1117,
+        1106
       ],
-      "raw_row_boundaries": 9,
-      "rows_detected": 8,
-      "raw_col_boundaries": 7,
+      "raw_row_boundaries": 11,
+      "rows_detected": 10,
+      "raw_col_boundaries": 6,
       "columns_detected": 5,
       "question_col_idx": 1,
       "option_columns": 3,
       "header_rows": 1,
-      "data_rows": 7
+      "data_rows": 9
     },
-    "data_rows": 7,
+    "data_rows": 9,
     "option_columns": 3,
     "row_count_pass": true,
     "col_count_pass": true,
@@ -655,270 +763,346 @@
         "densities": [
           {
             "col": 1,
-            "density": 0.0409,
+            "density": 0.0575,
             "bbox": [
-              692,
-              412,
-              801,
-              519
+              686,
+              424,
+              796,
+              505
             ]
           },
           {
             "col": 2,
-            "density": 0.0499,
+            "density": 0.0519,
             "bbox": [
-              801,
-              412,
-              1006,
-              519
+              796,
+              424,
+              1003,
+              505
             ]
           },
           {
             "col": 3,
-            "density": 0.3918,
+            "density": 0.4812,
             "bbox": [
-              1006,
-              412,
-              1114,
-              519
+              1003,
+              424,
+              1112,
+              505
             ]
           }
         ],
         "winner_col": 3,
         "status": "OK",
-        "gap": 0.3419
+        "gap": 0.4237
       },
       {
         "row": 2,
         "densities": [
           {
             "col": 1,
-            "density": 0.5036,
+            "density": 0.1745,
             "bbox": [
-              692,
-              519,
-              801,
-              652
+              686,
+              505,
+              796,
+              534
             ]
           },
           {
             "col": 2,
-            "density": 0.3737,
+            "density": 0.064,
             "bbox": [
-              801,
-              519,
-              1006,
-              652
+              796,
+              505,
+              1003,
+              534
             ]
           },
           {
             "col": 3,
-            "density": 0.427,
+            "density": 0.5281,
             "bbox": [
-              1006,
-              519,
-              1114,
-              652
+              1003,
+              505,
+              1112,
+              534
             ]
           }
         ],
-        "winner_col": 1,
-        "status": "AMBIGUOUS",
-        "gap": 0.0766
+        "winner_col": 3,
+        "status": "OK",
+        "gap": 0.3536
       },
       {
         "row": 3,
         "densities": [
           {
             "col": 1,
-            "density": 0.434,
+            "density": 0.4205,
             "bbox": [
-              692,
-              652,
-              801,
-              768
+              686,
+              534,
+              796,
+              641
             ]
           },
           {
             "col": 2,
-            "density": 0.1726,
+            "density": 0.4073,
             "bbox": [
-              801,
-              652,
-              1006,
-              768
+              796,
+              534,
+              1003,
+              641
             ]
           },
           {
             "col": 3,
-            "density": 0.0945,
+            "density": 0.4246,
             "bbox": [
-              1006,
-              652,
-              1114,
-              768
+              1003,
+              534,
+              1112,
+              641
             ]
           }
         ],
-        "winner_col": 1,
-        "status": "OK",
-        "gap": 0.2614
+        "winner_col": 3,
+        "status": "AMBIGUOUS",
+        "gap": 0.0041
       },
       {
         "row": 4,
         "densities": [
           {
             "col": 1,
-            "density": 0.2221,
+            "density": 0.2635,
             "bbox": [
-              692,
-              768,
-              801,
-              885
+              686,
+              641,
+              796,
+              661
             ]
           },
           {
             "col": 2,
-            "density": 0.3509,
+            "density": 0.0823,
             "bbox": [
-              801,
-              768,
-              1006,
-              885
+              796,
+              641,
+              1003,
+              661
             ]
           },
           {
             "col": 3,
-            "density": 0.3215,
+            "density": 0.2289,
             "bbox": [
-              1006,
-              768,
-              1114,
-              885
+              1003,
+              641,
+              1112,
+              661
             ]
           }
         ],
-        "winner_col": 2,
+        "winner_col": 1,
         "status": "AMBIGUOUS",
-        "gap": 0.0294
+        "gap": 0.0346
       },
       {
         "row": 5,
         "densities": [
           {
             "col": 1,
-            "density": 0.499,
+            "density": 0.4217,
             "bbox": [
-              692,
-              885,
-              801,
-              1002
+              686,
+              661,
+              796,
+              769
             ]
           },
           {
             "col": 2,
-            "density": 0.2024,
+            "density": 0.208,
             "bbox": [
-              801,
-              885,
-              1006,
-              1002
+              796,
+              661,
+              1003,
+              769
             ]
           },
           {
             "col": 3,
-            "density": 0.0278,
+            "density": 0.034,
             "bbox": [
-              1006,
-              885,
-              1114,
-              1002
+              1003,
+              661,
+              1112,
+              769
             ]
           }
         ],
         "winner_col": 1,
         "status": "OK",
-        "gap": 0.2966
+        "gap": 0.2137
       },
       {
         "row": 6,
         "densities": [
           {
             "col": 1,
-            "density": 0.1463,
+            "density": 0.1824,
             "bbox": [
-              692,
-              1002,
-              801,
-              1051
+              686,
+              769,
+              796,
+              883
             ]
           },
           {
             "col": 2,
-            "density": 0.0563,
+            "density": 0.3541,
             "bbox": [
-              801,
-              1002,
-              1006,
-              1051
+              796,
+              769,
+              1003,
+              883
             ]
           },
           {
             "col": 3,
-            "density": 0.0693,
+            "density": 0.2295,
             "bbox": [
-              1006,
-              1002,
-              1114,
-              1051
+              1003,
+              769,
+              1112,
+              883
             ]
           }
         ],
-        "winner_col": 1,
-        "status": "AMBIGUOUS",
-        "gap": 0.077
+        "winner_col": 2,
+        "status": "OK",
+        "gap": 0.1246
       },
       {
         "row": 7,
         "densities": [
           {
             "col": 1,
-            "density": 0.1643,
+            "density": 0.5074,
             "bbox": [
-              692,
-              1051,
-              801,
+              686,
+              883,
+              796,
+              1002
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.2138,
+            "bbox": [
+              796,
+              883,
+              1003,
+              1002
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.027,
+            "bbox": [
+              1003,
+              883,
+              1112,
+              1002
+            ]
+          }
+        ],
+        "winner_col": 1,
+        "status": "OK",
+        "gap": 0.2936
+      },
+      {
+        "row": 8,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.1554,
+            "bbox": [
+              686,
+              1002,
+              796,
+              1050
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.1244,
+            "bbox": [
+              796,
+              1002,
+              1003,
+              1050
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.1559,
+            "bbox": [
+              1003,
+              1002,
+              1112,
+              1050
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "AMBIGUOUS",
+        "gap": 0.0005
+      },
+      {
+        "row": 9,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.2289,
+            "bbox": [
+              686,
+              1050,
+              796,
               1099
             ]
           },
           {
             "col": 2,
-            "density": 0.0847,
+            "density": 0.0283,
             "bbox": [
-              801,
-              1051,
-              1006,
+              796,
+              1050,
+              1003,
               1099
             ]
           },
           {
             "col": 3,
-            "density": 0.069,
+            "density": 0.3097,
             "bbox": [
-              1006,
-              1051,
-              1114,
+              1003,
+              1050,
+              1112,
               1099
             ]
           }
         ],
-        "winner_col": 1,
+        "winner_col": 3,
         "status": "AMBIGUOUS",
-        "gap": 0.0796
+        "gap": 0.0808
       }
     ],
     "summary": {
-      "ok": 3,
+      "ok": 5,
       "ambiguous": 4,
       "unanswered": 0
     }
@@ -934,536 +1118,666 @@
     "processed_size": "1200x2133",
     "grid_success": true,
     "table_bbox": [
-      143,
-      264,
-      1122,
-      1515
+      129,
+      258,
+      1137,
+      1520
     ],
     "diagnostics": {
       "image_size": [
         1200,
         2133
       ],
-      "h_lines_pixels": 39283,
-      "v_lines_pixels": 29389,
+      "h_lines_pixels": 41421,
+      "v_lines_pixels": 30599,
       "table_bbox": [
-        143,
-        264,
-        1122,
-        1515
+        129,
+        258,
+        1137,
+        1520
       ],
-      "raw_row_boundaries": 15,
+      "raw_row_boundaries": 16,
       "rows_detected": 13,
-      "raw_col_boundaries": 6,
-      "columns_detected": 5,
+      "raw_col_boundaries": 8,
+      "columns_detected": 6,
       "question_col_idx": 1,
-      "option_columns": 3,
+      "option_columns": 4,
       "header_rows": 0,
       "data_rows": 13
     },
     "data_rows": 13,
-    "option_columns": 3,
+    "option_columns": 4,
     "row_count_pass": true,
-    "col_count_pass": true,
+    "col_count_pass": false,
     "row_results": [
       {
         "row": 1,
         "densities": [
           {
             "col": 1,
-            "density": 0.0973,
+            "density": 0.1392,
             "bbox": [
-              707,
-              283,
-              812,
-              375
+              701,
+              280,
+              807,
+              373
             ]
           },
           {
             "col": 2,
-            "density": 0.0982,
+            "density": 0.1231,
             "bbox": [
-              812,
-              283,
-              1009,
-              375
+              807,
+              280,
+              1004,
+              373
             ]
           },
           {
             "col": 3,
-            "density": 0.1523,
+            "density": 0.1473,
             "bbox": [
-              1009,
-              283,
-              1110,
-              375
+              1004,
+              280,
+              1104,
+              373
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.0899,
+            "bbox": [
+              1104,
+              280,
+              1137,
+              373
             ]
           }
         ],
         "winner_col": 3,
         "status": "AMBIGUOUS",
-        "gap": 0.0541
+        "gap": 0.0081
       },
       {
         "row": 2,
         "densities": [
           {
             "col": 1,
-            "density": 0.2689,
+            "density": 0.0421,
             "bbox": [
-              707,
-              375,
-              812,
-              462
+              701,
+              373,
+              807,
+              457
             ]
           },
           {
             "col": 2,
-            "density": 0.0228,
+            "density": 0.0476,
             "bbox": [
-              812,
-              375,
-              1009,
-              462
+              807,
+              373,
+              1004,
+              457
             ]
           },
           {
             "col": 3,
-            "density": 0.2276,
+            "density": 0.1,
             "bbox": [
-              1009,
-              375,
-              1110,
-              462
+              1004,
+              373,
+              1104,
+              457
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.2233,
+            "bbox": [
+              1104,
+              373,
+              1137,
+              457
             ]
           }
         ],
-        "winner_col": 1,
-        "status": "AMBIGUOUS",
-        "gap": 0.0413
+        "winner_col": 4,
+        "status": "OK",
+        "gap": 0.1233
       },
       {
         "row": 3,
         "densities": [
           {
             "col": 1,
-            "density": 0.136,
+            "density": 0.1789,
             "bbox": [
-              707,
-              462,
-              812,
-              549
+              701,
+              457,
+              807,
+              543
             ]
           },
           {
             "col": 2,
-            "density": 0.0206,
+            "density": 0.023,
             "bbox": [
-              812,
-              462,
-              1009,
-              549
+              807,
+              457,
+              1004,
+              543
             ]
           },
           {
             "col": 3,
-            "density": 0.6656,
+            "density": 0.0943,
             "bbox": [
-              1009,
-              462,
-              1110,
-              549
+              1004,
+              457,
+              1104,
+              543
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.6841,
+            "bbox": [
+              1104,
+              457,
+              1137,
+              543
             ]
           }
         ],
-        "winner_col": 3,
+        "winner_col": 4,
         "status": "OK",
-        "gap": 0.5296
+        "gap": 0.5052
       },
       {
         "row": 4,
         "densities": [
           {
             "col": 1,
-            "density": 0.1186,
+            "density": 0.064,
             "bbox": [
-              707,
-              549,
-              812,
-              637
+              701,
+              543,
+              807,
+              634
             ]
           },
           {
             "col": 2,
-            "density": 0.1806,
+            "density": 0.1662,
             "bbox": [
-              812,
-              549,
-              1009,
-              637
+              807,
+              543,
+              1004,
+              634
             ]
           },
           {
             "col": 3,
-            "density": 0.505,
+            "density": 0.0884,
             "bbox": [
-              1009,
-              549,
-              1110,
-              637
+              1004,
+              543,
+              1104,
+              634
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.3384,
+            "bbox": [
+              1104,
+              543,
+              1137,
+              634
             ]
           }
         ],
-        "winner_col": 3,
+        "winner_col": 4,
         "status": "OK",
-        "gap": 0.3244
+        "gap": 0.1722
       },
       {
         "row": 5,
         "densities": [
           {
             "col": 1,
-            "density": 0.2539,
+            "density": 0.2993,
             "bbox": [
-              707,
-              637,
-              812,
-              729
+              701,
+              634,
+              807,
+              728
             ]
           },
           {
             "col": 2,
-            "density": 0.2874,
+            "density": 0.2238,
             "bbox": [
-              812,
-              637,
-              1009,
-              729
+              807,
+              634,
+              1004,
+              728
             ]
           },
           {
             "col": 3,
-            "density": 0.0329,
+            "density": 0.1061,
             "bbox": [
-              1009,
-              637,
-              1110,
-              729
+              1004,
+              634,
+              1104,
+              728
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.6408,
+            "bbox": [
+              1104,
+              634,
+              1137,
+              728
             ]
           }
         ],
-        "winner_col": 2,
-        "status": "AMBIGUOUS",
-        "gap": 0.0335
+        "winner_col": 4,
+        "status": "OK",
+        "gap": 0.3415
       },
       {
         "row": 6,
         "densities": [
           {
             "col": 1,
-            "density": 0.2302,
+            "density": 0.2405,
             "bbox": [
-              707,
-              729,
-              812,
-              841
+              701,
+              728,
+              807,
+              838
             ]
           },
           {
             "col": 2,
-            "density": 0.1736,
+            "density": 0.1668,
             "bbox": [
-              812,
-              729,
-              1009,
-              841
+              807,
+              728,
+              1004,
+              838
             ]
           },
           {
             "col": 3,
-            "density": 0.4527,
+            "density": 0.0337,
             "bbox": [
-              1009,
-              729,
-              1110,
-              841
+              1004,
+              728,
+              1104,
+              838
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.104,
+            "bbox": [
+              1104,
+              728,
+              1137,
+              838
             ]
           }
         ],
-        "winner_col": 3,
-        "status": "OK",
-        "gap": 0.2225
+        "winner_col": 1,
+        "status": "AMBIGUOUS",
+        "gap": 0.0737
       },
       {
         "row": 7,
         "densities": [
           {
             "col": 1,
-            "density": 0.1514,
+            "density": 0.1363,
             "bbox": [
-              707,
-              841,
-              812,
-              928
+              701,
+              838,
+              807,
+              927
             ]
           },
           {
             "col": 2,
-            "density": 0.0175,
+            "density": 0.0465,
             "bbox": [
-              812,
-              841,
-              1009,
-              928
+              807,
+              838,
+              1004,
+              927
             ]
           },
           {
             "col": 3,
-            "density": 0.6472,
+            "density": 0.0394,
             "bbox": [
-              1009,
-              841,
-              1110,
-              928
+              1004,
+              838,
+              1104,
+              927
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.5784,
+            "bbox": [
+              1104,
+              838,
+              1137,
+              927
             ]
           }
         ],
-        "winner_col": 3,
+        "winner_col": 4,
         "status": "OK",
-        "gap": 0.4958
+        "gap": 0.4421
       },
       {
         "row": 8,
         "densities": [
           {
             "col": 1,
-            "density": 0.1992,
+            "density": 0.186,
             "bbox": [
-              707,
-              928,
-              812,
-              1017
+              701,
+              927,
+              807,
+              1015
             ]
           },
           {
             "col": 2,
-            "density": 0.586,
+            "density": 0.0266,
             "bbox": [
-              812,
-              928,
-              1009,
-              1017
+              807,
+              927,
+              1004,
+              1015
             ]
           },
           {
             "col": 3,
-            "density": 0.0379,
+            "density": 0.0698,
             "bbox": [
-              1009,
-              928,
-              1110,
-              1017
+              1004,
+              927,
+              1104,
+              1015
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.0267,
+            "bbox": [
+              1104,
+              927,
+              1137,
+              1015
             ]
           }
         ],
-        "winner_col": 2,
+        "winner_col": 1,
         "status": "OK",
-        "gap": 0.3868
+        "gap": 0.1162
       },
       {
         "row": 9,
         "densities": [
           {
             "col": 1,
-            "density": 0.0975,
+            "density": 0.1824,
             "bbox": [
-              707,
-              1017,
-              812,
-              1130
+              701,
+              1015,
+              807,
+              1129
             ]
           },
           {
             "col": 2,
-            "density": 0.0159,
+            "density": 0.023,
             "bbox": [
-              812,
-              1017,
-              1009,
-              1130
+              807,
+              1015,
+              1004,
+              1129
             ]
           },
           {
             "col": 3,
-            "density": 0.4363,
+            "density": 0.031,
             "bbox": [
-              1009,
-              1017,
-              1110,
-              1130
+              1004,
+              1015,
+              1104,
+              1129
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.1248,
+            "bbox": [
+              1104,
+              1015,
+              1137,
+              1129
             ]
           }
         ],
-        "winner_col": 3,
-        "status": "OK",
-        "gap": 0.3388
+        "winner_col": 1,
+        "status": "AMBIGUOUS",
+        "gap": 0.0576
       },
       {
         "row": 10,
         "densities": [
           {
             "col": 1,
-            "density": 0.0234,
+            "density": 0.0331,
             "bbox": [
-              707,
-              1130,
-              812,
+              701,
+              1129,
+              807,
               1243
             ]
           },
           {
             "col": 2,
-            "density": 0.656,
+            "density": 0.0059,
             "bbox": [
-              812,
-              1130,
-              1009,
+              807,
+              1129,
+              1004,
               1243
             ]
           },
           {
             "col": 3,
-            "density": 0.3911,
+            "density": 0.0549,
             "bbox": [
-              1009,
-              1130,
-              1110,
+              1004,
+              1129,
+              1104,
+              1243
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.1292,
+            "bbox": [
+              1104,
+              1129,
+              1137,
               1243
             ]
           }
         ],
-        "winner_col": 2,
-        "status": "OK",
-        "gap": 0.2649
+        "winner_col": 4,
+        "status": "AMBIGUOUS",
+        "gap": 0.0743
       },
       {
         "row": 11,
         "densities": [
           {
             "col": 1,
-            "density": 0.5551,
+            "density": 0.0321,
             "bbox": [
-              707,
+              701,
               1243,
-              812,
+              807,
               1333
             ]
           },
           {
             "col": 2,
-            "density": 0.0185,
+            "density": 0.0329,
             "bbox": [
-              812,
+              807,
               1243,
-              1009,
+              1004,
               1333
             ]
           },
           {
             "col": 3,
-            "density": 0.5861,
+            "density": 0.0899,
             "bbox": [
-              1009,
+              1004,
               1243,
-              1110,
+              1104,
+              1333
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.1512,
+            "bbox": [
+              1104,
+              1243,
+              1137,
               1333
             ]
           }
         ],
-        "winner_col": 3,
+        "winner_col": 4,
         "status": "AMBIGUOUS",
-        "gap": 0.031
+        "gap": 0.0613
       },
       {
         "row": 12,
         "densities": [
           {
             "col": 1,
-            "density": 0.5914,
+            "density": 0.0353,
             "bbox": [
-              707,
+              701,
               1333,
-              812,
-              1428
+              807,
+              1426
             ]
           },
           {
             "col": 2,
-            "density": 0.0169,
+            "density": 0.0252,
             "bbox": [
-              812,
+              807,
               1333,
-              1009,
-              1428
+              1004,
+              1426
             ]
           },
           {
             "col": 3,
-            "density": 0.0786,
+            "density": 0.079,
             "bbox": [
-              1009,
+              1004,
               1333,
-              1110,
-              1428
+              1104,
+              1426
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.1704,
+            "bbox": [
+              1104,
+              1333,
+              1137,
+              1426
             ]
           }
         ],
-        "winner_col": 1,
-        "status": "OK",
-        "gap": 0.5128
+        "winner_col": 4,
+        "status": "AMBIGUOUS",
+        "gap": 0.0914
       },
       {
         "row": 13,
         "densities": [
           {
             "col": 1,
-            "density": 0.0291,
+            "density": 0.0626,
             "bbox": [
-              707,
-              1428,
-              812,
-              1503
+              701,
+              1426,
+              807,
+              1502
             ]
           },
           {
             "col": 2,
-            "density": 0.2835,
+            "density": 0.0413,
             "bbox": [
-              812,
-              1428,
-              1009,
-              1503
+              807,
+              1426,
+              1004,
+              1502
             ]
           },
           {
             "col": 3,
-            "density": 0.5039,
+            "density": 0.1202,
             "bbox": [
-              1009,
-              1428,
-              1110,
-              1503
+              1004,
+              1426,
+              1104,
+              1502
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.1947,
+            "bbox": [
+              1104,
+              1426,
+              1137,
+              1502
             ]
           }
         ],
-        "winner_col": 3,
-        "status": "OK",
-        "gap": 0.2204
+        "winner_col": 4,
+        "status": "AMBIGUOUS",
+        "gap": 0.0745
       }
     ],
     "summary": {
-      "ok": 9,
-      "ambiguous": 4,
+      "ok": 6,
+      "ambiguous": 7,
       "unanswered": 0
     }
   },
@@ -1478,34 +1792,34 @@
     "processed_size": "1200x2133",
     "grid_success": true,
     "table_bbox": [
-      118,
-      331,
-      1148,
-      1360
+      123,
+      327,
+      1146,
+      1352
     ],
     "diagnostics": {
       "image_size": [
         1200,
         2133
       ],
-      "h_lines_pixels": 21740,
-      "v_lines_pixels": 28400,
+      "h_lines_pixels": 21256,
+      "v_lines_pixels": 27048,
       "table_bbox": [
-        118,
-        331,
-        1148,
-        1360
+        123,
+        327,
+        1146,
+        1352
       ],
-      "raw_row_boundaries": 7,
-      "rows_detected": 5,
-      "raw_col_boundaries": 9,
+      "raw_row_boundaries": 8,
+      "rows_detected": 7,
+      "raw_col_boundaries": 8,
       "columns_detected": 7,
       "question_col_idx": 0,
       "option_columns": 6,
-      "header_rows": 0,
-      "data_rows": 5
+      "header_rows": 1,
+      "data_rows": 6
     },
-    "data_rows": 5,
+    "data_rows": 6,
     "option_columns": 6,
     "row_count_pass": true,
     "col_count_pass": true,
@@ -1515,128 +1829,196 @@
         "densities": [
           {
             "col": 1,
-            "density": 0.051,
+            "density": 0.0588,
             "bbox": [
-              442,
-              354,
-              592,
-              611
+              439,
+              364,
+              589,
+              600
             ]
           },
           {
             "col": 2,
-            "density": 0.0081,
+            "density": 0.0022,
             "bbox": [
-              592,
-              354,
-              686,
-              611
+              589,
+              364,
+              682,
+              600
             ]
           },
           {
             "col": 3,
-            "density": 0.0077,
+            "density": 0.0042,
             "bbox": [
-              706,
-              354,
-              780,
-              611
+              682,
+              364,
+              775,
+              600
             ]
           },
           {
             "col": 4,
-            "density": 0.0322,
+            "density": 0.037,
             "bbox": [
-              780,
-              354,
-              875,
-              611
+              775,
+              364,
+              871,
+              600
             ]
           },
           {
             "col": 5,
-            "density": 0.0184,
+            "density": 0.0076,
             "bbox": [
-              875,
-              354,
-              968,
-              611
+              871,
+              364,
+              966,
+              600
             ]
           },
           {
             "col": 6,
-            "density": 0.6225,
+            "density": 0.6559,
             "bbox": [
-              968,
-              354,
+              966,
+              364,
               1140,
-              611
+              600
             ]
           }
         ],
         "winner_col": 6,
         "status": "OK",
-        "gap": 0.5715
+        "gap": 0.5971
       },
       {
         "row": 2,
         "densities": [
           {
             "col": 1,
-            "density": 0.0475,
+            "density": 0.1995,
             "bbox": [
-              442,
-              611,
-              592,
+              439,
+              600,
+              589,
+              620
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.2258,
+            "bbox": [
+              589,
+              600,
+              682,
+              620
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.295,
+            "bbox": [
+              682,
+              600,
+              775,
+              620
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.4471,
+            "bbox": [
+              775,
+              600,
+              871,
+              620
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.0706,
+            "bbox": [
+              871,
+              600,
+              966,
+              620
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.2054,
+            "bbox": [
+              966,
+              600,
+              1140,
+              620
+            ]
+          }
+        ],
+        "winner_col": 4,
+        "status": "OK",
+        "gap": 0.1521
+      },
+      {
+        "row": 3,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.0536,
+            "bbox": [
+              439,
+              620,
+              589,
               876
             ]
           },
           {
             "col": 2,
-            "density": 0.1556,
+            "density": 0.1746,
             "bbox": [
-              592,
-              611,
-              686,
+              589,
+              620,
+              682,
               876
             ]
           },
           {
             "col": 3,
-            "density": 0.301,
+            "density": 0.29,
             "bbox": [
-              706,
-              611,
-              780,
+              682,
+              620,
+              775,
               876
             ]
           },
           {
             "col": 4,
-            "density": 0.5175,
+            "density": 0.5111,
             "bbox": [
-              780,
-              611,
-              875,
+              775,
+              620,
+              871,
               876
             ]
           },
           {
             "col": 5,
-            "density": 0.0325,
+            "density": 0.0371,
             "bbox": [
-              875,
-              611,
-              968,
+              871,
+              620,
+              966,
               876
             ]
           },
           {
             "col": 6,
-            "density": 0.0523,
+            "density": 0.0571,
             "bbox": [
-              968,
-              611,
+              966,
+              620,
               1140,
               876
             ]
@@ -1644,134 +2026,134 @@
         ],
         "winner_col": 4,
         "status": "OK",
-        "gap": 0.2165
-      },
-      {
-        "row": 3,
-        "densities": [
-          {
-            "col": 1,
-            "density": 0.0843,
-            "bbox": [
-              442,
-              876,
-              592,
-              1032
-            ]
-          },
-          {
-            "col": 2,
-            "density": 0.3342,
-            "bbox": [
-              592,
-              876,
-              686,
-              1032
-            ]
-          },
-          {
-            "col": 3,
-            "density": 0.2762,
-            "bbox": [
-              706,
-              876,
-              780,
-              1032
-            ]
-          },
-          {
-            "col": 4,
-            "density": 0.2957,
-            "bbox": [
-              780,
-              876,
-              875,
-              1032
-            ]
-          },
-          {
-            "col": 5,
-            "density": 0.0847,
-            "bbox": [
-              875,
-              876,
-              968,
-              1032
-            ]
-          },
-          {
-            "col": 6,
-            "density": 0.0716,
-            "bbox": [
-              968,
-              876,
-              1140,
-              1032
-            ]
-          }
-        ],
-        "winner_col": 2,
-        "status": "AMBIGUOUS",
-        "gap": 0.0385
+        "gap": 0.2211
       },
       {
         "row": 4,
         "densities": [
           {
             "col": 1,
-            "density": 0.351,
+            "density": 0.0958,
             "bbox": [
-              442,
+              439,
+              876,
+              589,
+              1032
+            ]
+          },
+          {
+            "col": 2,
+            "density": 0.3036,
+            "bbox": [
+              589,
+              876,
+              682,
+              1032
+            ]
+          },
+          {
+            "col": 3,
+            "density": 0.3556,
+            "bbox": [
+              682,
+              876,
+              775,
+              1032
+            ]
+          },
+          {
+            "col": 4,
+            "density": 0.2951,
+            "bbox": [
+              775,
+              876,
+              871,
+              1032
+            ]
+          },
+          {
+            "col": 5,
+            "density": 0.0842,
+            "bbox": [
+              871,
+              876,
+              966,
+              1032
+            ]
+          },
+          {
+            "col": 6,
+            "density": 0.0577,
+            "bbox": [
+              966,
+              876,
+              1140,
+              1032
+            ]
+          }
+        ],
+        "winner_col": 3,
+        "status": "AMBIGUOUS",
+        "gap": 0.052
+      },
+      {
+        "row": 5,
+        "densities": [
+          {
+            "col": 1,
+            "density": 0.3589,
+            "bbox": [
+              439,
               1032,
-              592,
+              589,
               1188
             ]
           },
           {
             "col": 2,
-            "density": 0.3425,
+            "density": 0.3505,
             "bbox": [
-              592,
+              589,
               1032,
-              686,
+              682,
               1188
             ]
           },
           {
             "col": 3,
-            "density": 0.1483,
+            "density": 0.1463,
             "bbox": [
-              706,
+              682,
               1032,
-              780,
+              775,
               1188
             ]
           },
           {
             "col": 4,
-            "density": 0.0673,
+            "density": 0.0777,
             "bbox": [
-              780,
+              775,
               1032,
-              875,
+              871,
               1188
             ]
           },
           {
             "col": 5,
-            "density": 0.0099,
+            "density": 0.009,
             "bbox": [
-              875,
+              871,
               1032,
-              968,
+              966,
               1188
             ]
           },
           {
             "col": 6,
-            "density": 0.0855,
+            "density": 0.071,
             "bbox": [
-              968,
+              966,
               1032,
               1140,
               1188
@@ -1780,79 +2162,79 @@
         ],
         "winner_col": 1,
         "status": "AMBIGUOUS",
-        "gap": 0.0085
+        "gap": 0.0084
       },
       {
-        "row": 5,
+        "row": 6,
         "densities": [
           {
             "col": 1,
-            "density": 0.3007,
+            "density": 0.3318,
             "bbox": [
-              442,
+              439,
               1188,
-              592,
-              1346
+              589,
+              1345
             ]
           },
           {
             "col": 2,
-            "density": 0.0111,
+            "density": 0.0104,
             "bbox": [
-              592,
+              589,
               1188,
-              686,
-              1346
+              682,
+              1345
             ]
           },
           {
             "col": 3,
-            "density": 0.076,
+            "density": 0.077,
             "bbox": [
-              706,
+              682,
               1188,
-              780,
-              1346
+              775,
+              1345
             ]
           },
           {
             "col": 4,
-            "density": 0.0189,
+            "density": 0.0074,
             "bbox": [
-              780,
+              775,
               1188,
-              875,
-              1346
+              871,
+              1345
             ]
           },
           {
             "col": 5,
-            "density": 0.0092,
+            "density": 0.0081,
             "bbox": [
-              875,
+              871,
               1188,
-              968,
-              1346
+              966,
+              1345
             ]
           },
           {
             "col": 6,
-            "density": 0.0856,
+            "density": 0.0708,
             "bbox": [
-              968,
+              966,
               1188,
               1140,
-              1346
+              1345
             ]
           }
         ],
         "winner_col": 1,
         "status": "OK",
-        "gap": 0.2151
+        "gap": 0.2548
       }
     ],
     "summary": {
-      "ok": 3,
+      "ok": 4,
       "ambiguous": 2,
       "unanswered": 0
     }

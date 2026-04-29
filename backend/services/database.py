@@ -157,7 +157,7 @@ class DatabaseService:
                         request_id=request_id,
                         field_id=f["id"],
                         raw_text=f.get("raw_value") or f.get("raw_text"),
-                        cleaned_text=f.get("cleaned_value") or f.get("cleaned_text"),
+                        cleaned_text=f.get("cleaned") or f.get("cleaned_value") or f.get("cleaned_text"),
                         field_conf=f.get("confidence") or f.get("field_conf", 0.0),
                         bbox=f.get("bbox"),
                         status=f.get("status", "VALID")

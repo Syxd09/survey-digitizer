@@ -95,44 +95,127 @@ class DocumentProcessor:
         }
 
     def _correct_orientation(self, img_bgr: np.ndarray) -> Tuple[np.ndarray, Dict[str, Any]]:
-        """Rotate if image is landscape (W > H by 1.3x factor) but expected portrait."""
+        """Handles 90/270 (Landscape -> Portrait) and 180 (Upside Down) rotations."""
         h, w = img_bgr.shape[:2]
-        if w > (h * self.orientation_ratio):
+        diag = {"coarse_rotated": False, "rotation_degrees": 0, "wh_ratio": round(w/h, 2)}
+        rotated = img_bgr
+
+        # 1. Handle 90/270 (Landscape)
+        if w > h:
             logger.info(f"[Phase 1] Landscape detected (W/H ratio: {w/h:.2f}). Rotating 90° CW.")
-            rotated = cv2.rotate(img_bgr, cv2.ROTATE_90_CLOCKWISE)
-            return rotated, {"coarse_rotated": True, "rotation_degrees": 90, "wh_ratio": round(w/h, 2)}
-        return img_bgr, {"coarse_rotated": False, "rotation_degrees": 0, "wh_ratio": round(w/h, 2)}
+            rotated = cv2.rotate(rotated, cv2.ROTATE_90_CLOCKWISE)
+            diag["coarse_rotated"] = True
+            diag["rotation_degrees"] += 90
+            h, w = rotated.shape[:2] # Update dims
+
+        # 2. Handle 180 (Upside Down) using text confidence heuristic
+        try:
+            import easyocr
+            # We crop the top 30% of the image (which usually contains the title/header)
+            crop_h = int(h * 0.3)
+            top_crop = rotated[0:crop_h, 0:w]
+            
+            # Use local easyocr for a fast check
+            reader = easyocr.Reader(['en'], gpu=False)
+            results = reader.readtext(top_crop)
+            
+            # If no text found or average confidence is very low, it might be upside down
+            if not results:
+                # Let's check the bottom 30% just in case it's upside down
+                bottom_crop = rotated[h-crop_h:h, 0:w]
+                bottom_results = reader.readtext(bottom_crop)
+                if bottom_results:
+                    logger.info("[Phase 1] Text found at bottom but not top. Likely 180° upside down.")
+                    rotated = cv2.rotate(rotated, cv2.ROTATE_180)
+                    diag["coarse_rotated"] = True
+                    diag["rotation_degrees"] += 180
+        except Exception as e:
+            logger.warning(f"[Phase 1] 180-degree detection failed, skipping: {e}")
+
+        return rotated, diag
 
     def _fine_deskew(self, img_bgr: np.ndarray) -> Tuple[np.ndarray, Dict[str, Any]]:
-        """Correct small rotations using Hough Transform."""
+        """Correct arbitrary rotation and perspective using 4-Point Transform."""
         gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-        edges = cv2.Canny(gray, 50, 150, apertureSize=3)
-        lines = cv2.HoughLines(edges, 1, np.pi / 180, 200)
+        blur = cv2.GaussianBlur(gray, (5, 5), 0)
+        _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
         
-        if lines is None:
+        # Find largest contour which usually represents the document paper
+        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if not contours:
             return img_bgr, {"fine_deskew_applied": False, "skew_angle": 0.0}
             
-        angles = []
-        for line in lines:
-            rho, theta = line[0]
-            angle = np.degrees(theta) - 90
-            if -10 < angle < 10: # Only look for small skews
-                angles.append(angle)
+        largest_contour = max(contours, key=cv2.contourArea)
         
-        if not angles:
+        # If the largest contour doesn't take up at least 20% of the image, fallback to minAreaRect text rotation
+        h, w = img_bgr.shape[:2]
+        if cv2.contourArea(largest_contour) < (h * w * 0.2):
+            # Fallback: Find the minimum bounding box of all text/lines
+            rect = cv2.minAreaRect(largest_contour)
+            raw_angle = rect[-1]
+            
+            # cv2.minAreaRect returns angle in different ranges depending on version:
+            #   Old (< 4.5): [-90, 0)  where -90 means upright/axis-aligned
+            #   New (>= 4.5): [0, 90)  where 0 means upright/axis-aligned
+            # We need to extract the actual skew: deviation from nearest 90° multiple.
+            # Normalize raw_angle to [0, 180) first, then compute skew as distance from nearest multiple of 90.
+            normalized = raw_angle % 180  # Map to [0, 180)
+            # Distance from nearest axis (0, 90, 180)
+            skew = min(normalized, abs(90 - normalized), abs(180 - normalized))
+            
+            # Determine correction direction
+            if skew > 0.5:
+                # Simple approach: use the raw angle modulo to determine correction
+                if normalized < 45:
+                    correction_angle = -normalized
+                elif normalized < 90:
+                    correction_angle = 90 - normalized
+                elif normalized < 135:
+                    correction_angle = 90 - normalized
+                else:
+                    correction_angle = 180 - normalized
+                    
+                center = (w // 2, h // 2)
+                M = cv2.getRotationMatrix2D(center, correction_angle, 1.0)
+                rotated = cv2.warpAffine(img_bgr, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+                return rotated, {"fine_deskew_applied": True, "skew_angle": round(float(skew), 2)}
             return img_bgr, {"fine_deskew_applied": False, "skew_angle": 0.0}
-            
-        median_angle = np.median(angles)
+
+        # Otherwise, perform 4-point transform
+        epsilon = 0.02 * cv2.arcLength(largest_contour, True)
+        approx = cv2.approxPolyDP(largest_contour, epsilon, True)
         
-        # Only apply if > 0.5 degrees
-        if abs(median_angle) > 0.5:
-            (h, w) = img_bgr.shape[:2]
-            center = (w // 2, h // 2)
-            M = cv2.getRotationMatrix2D(center, median_angle, 1.0)
-            rotated = cv2.warpAffine(img_bgr, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-            return rotated, {"fine_deskew_applied": True, "skew_angle": round(float(median_angle), 2)}
+        if len(approx) == 4:
+            pts = approx.reshape(4, 2)
+            # Order points: top-left, top-right, bottom-right, bottom-left
+            rect = np.zeros((4, 2), dtype="float32")
+            s = pts.sum(axis=1)
+            rect[0] = pts[np.argmin(s)]
+            rect[2] = pts[np.argmax(s)]
+            diff = np.diff(pts, axis=1)
+            rect[1] = pts[np.argmin(diff)]
+            rect[3] = pts[np.argmax(diff)]
             
-        return img_bgr, {"fine_deskew_applied": False, "skew_angle": round(float(median_angle), 2)}
+            (tl, tr, br, bl) = rect
+            widthA = np.linalg.norm(br - bl)
+            widthB = np.linalg.norm(tr - tl)
+            maxWidth = max(int(widthA), int(widthB))
+            
+            heightA = np.linalg.norm(tr - br)
+            heightB = np.linalg.norm(tl - bl)
+            maxHeight = max(int(heightA), int(heightB))
+            
+            dst = np.array([
+                [0, 0],
+                [maxWidth - 1, 0],
+                [maxWidth - 1, maxHeight - 1],
+                [0, maxHeight - 1]], dtype="float32")
+                
+            M = cv2.getPerspectiveTransform(rect, dst)
+            warped = cv2.warpPerspective(img_bgr, M, (maxWidth, maxHeight))
+            return warped, {"fine_deskew_applied": True, "perspective_warped": True, "skew_angle": 0.0}
+            
+        return img_bgr, {"fine_deskew_applied": False, "skew_angle": 0.0}
 
     def _normalise_size(self, img_bgr: np.ndarray) -> Tuple[np.ndarray, Dict[str, Any]]:
         """Resize to fixed width while maintaining aspect ratio."""
@@ -151,8 +234,12 @@ class DocumentProcessor:
     def _conditional_enhance(self, img_bgr: np.ndarray) -> Tuple[np.ndarray, Dict[str, Any]]:
         """Apply CLAHE and Sauvola binarization if image quality is poor."""
         gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-        diag = {"clahe_applied": False, "sauvola_applied": False}
+        diag = {"clahe_applied": False, "sauvola_applied": False, "median_blur_applied": True}
         
+        # 0. Median Blur for Salt-and-Pepper noise reduction
+        gray = cv2.medianBlur(gray, 3)
+        img_bgr = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR) # Update BGR with denoised gray
+
         # 1. CLAHE for contrast
         contrast = np.std(gray)
         diag["contrast_score"] = round(float(contrast), 2)

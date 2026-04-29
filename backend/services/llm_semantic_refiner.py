@@ -3,7 +3,8 @@ import json
 import logging
 from typing import List, Dict, Optional
 from pydantic import BaseModel
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -87,16 +88,15 @@ class LLMSemanticRefiner:
         # 5. Google Gemini (Original fallback)
         google_key = os.getenv("GOOGLE_API_KEY") or os.getenv("VITE_GOOGLE_AI_KEY")
         if google_key:
-            genai.configure(api_key=google_key)
+            client = genai.Client(api_key=google_key)
             self.providers.append({
                 "name": "Google Gemini",
                 "type": "gemini",
-                "model": genai.GenerativeModel(
-                    'gemini-1.5-flash',
-                    generation_config=genai.GenerationConfig(
-                        response_mime_type="application/json",
-                        temperature=0.1,
-                    )
+                "client": client,
+                "model": "gemini-1.5-flash",
+                "config": types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    temperature=0.1,
                 )
             })
 
@@ -132,7 +132,12 @@ class LLMSemanticRefiner:
             )
             return response.choices[0].message.content
         elif provider["type"] == "gemini":
-            response = provider["model"].generate_content(prompt)
+            client = provider["client"]
+            response = client.models.generate_content(
+                model=provider["model"],
+                contents=prompt,
+                config=provider.get("config")
+            )
             return response.text
         raise ValueError(f"Unknown provider type: {provider['type']}")
 
@@ -198,6 +203,7 @@ RAW OCR QUESTIONS TO CORRECT:
                     response_text = response_text[3:]
                 if response_text.endswith("```"):
                     response_text = response_text[:-3]
+                
                 response_text = response_text.strip()
                 
                 logger.info(f"[LLM] {provider['name']} Raw Output:\n{response_text}")
@@ -321,6 +327,56 @@ RAW OCR HEADERS TO CORRECT:
         except Exception as e:
             logger.error(f"[LLM] Failed to save correction to memory: {e}")
 
+    def refine_field_value(self, raw_value: str, allowed_values: List[str]) -> Optional[str]:
+        """
+        Uses LLM context reasoning to auto-correct severely mangled enum strings.
+        Returns the exact matching allowed_value if confident, else None.
+        """
+        if not self.enabled or not allowed_values:
+            return None
+
+        prompt = f"""You are an expert OCR repair agent.
+The user extracted a highly mangled field value from a paper form.
+Your job is to read the raw, messy text and map it to exactly ONE of the allowed enum values.
+
+INSTRUCTIONS:
+1. If you can confidently deduce what the user intended to mark, return the exact string from the allowed values.
+2. If it is pure garbage or completely unreadable, return "".
+3. Output strict JSON with a "corrected_value" string field.
+
+RAW MANGLED TEXT:
+{raw_value}
+
+ALLOWED VALUES:
+{json.dumps(allowed_values)}
+
+EXPECTED JSON SCHEMA:
+{{
+  "corrected_value": "One of the allowed values or empty string"
+}}
+"""
+
+        for provider in self.providers:
+            try:
+                response_text = self._call_provider(provider, prompt)
+                if response_text is None: continue
+                response_text = response_text.strip()
+                if response_text.startswith("```json"): response_text = response_text[7:]
+                if response_text.startswith("```"): response_text = response_text[3:]
+                if response_text.endswith("```"): response_text = response_text[:-3]
+                
+                result = json.loads(response_text)
+                corrected = result.get("corrected_value", "")
+                if corrected in allowed_values:
+                    logger.info(f"[LLM] Recovered mangled field '{raw_value}' -> '{corrected}' using {provider['name']}")
+                    return corrected
+                return None
+            except Exception as e:
+                logger.warning(f"[LLM] {provider['name']} semantic recovery failed: {e}")
+                continue
+                
+        return None
+
 # Global instance
 _refiner_instance = None
 
@@ -329,3 +385,4 @@ def get_semantic_refiner() -> LLMSemanticRefiner:
     if _refiner_instance is None:
         _refiner_instance = LLMSemanticRefiner()
     return _refiner_instance
+

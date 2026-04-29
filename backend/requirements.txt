@@ -21,7 +21,7 @@ easyocr>=1.7.0                 # Local fallback OCR (Phase 2)
 rapidfuzz>=3.0.0               # Fuzzy OCR artifact correction (Phase 5/6)
 
 # ── LLM Semantic Refinement (Phase 5) ────────────────────────────────────────
-google-generativeai>=0.3.0     # Gemini fallback
+google-genai>=1.0.0            # Gemini fallback (modern SDK)
 openai>=1.0.0                  # OpenAI-compatible providers (Groq, xAI, etc.)
 
 # ── Storage / export ──────────────────────────────────────────────────────────

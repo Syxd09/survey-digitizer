@@ -77,31 +77,37 @@ class GridDetector:
 
         tx1, ty1, tx2, ty2 = table_bbox
 
+        # Calculate dynamic minimums based on table dimensions
+        table_height = ty2 - ty1
+        table_width = tx2 - tx1
+        dyn_min_row_height = max(int(table_height * 0.02), self.min_row_height)  # min 2% of table height
+        dyn_min_col_width = max(int(table_width * 0.025), self.min_col_width)    # min 2.5% of table width
+
         # Stage 3: Row segmentation
         h_mask_table = h_mask[ty1:ty2, tx1:tx2]
         row_boundaries = self._segment_axis(
-            h_mask_table, axis="horizontal", length=(ty2 - ty1)
+            h_mask_table, axis="horizontal", length=table_height
         )
         # Ensure table edges are included as boundaries
         row_boundaries = self._ensure_edge_boundaries(
-            row_boundaries, 0, ty2 - ty1
+            row_boundaries, 0, table_height
         )
         # Convert to absolute coordinates
-        rows = self._boundaries_to_ranges(row_boundaries, ty1, self.min_row_height)
+        rows = self._boundaries_to_ranges(row_boundaries, ty1, dyn_min_row_height)
         diag["raw_row_boundaries"] = len(row_boundaries)
         diag["rows_detected"] = len(rows)
 
         # Stage 4: Column segmentation
         v_mask_table = v_mask[ty1:ty2, tx1:tx2]
         col_boundaries = self._segment_axis(
-            v_mask_table, axis="vertical", length=(tx2 - tx1)
+            v_mask_table, axis="vertical", length=table_width
         )
         # Ensure table edges are included as boundaries
         col_boundaries = self._ensure_edge_boundaries(
-            col_boundaries, 0, tx2 - tx1
+            col_boundaries, 0, table_width
         )
         # Convert to absolute coordinates
-        columns = self._boundaries_to_ranges(col_boundaries, tx1, self.min_col_width)
+        columns = self._boundaries_to_ranges(col_boundaries, tx1, dyn_min_col_width)
         diag["raw_col_boundaries"] = len(col_boundaries)
         diag["columns_detected"] = len(columns)
 
@@ -219,10 +225,14 @@ class GridDetector:
         - Thick table borders (long vertical lines)
         - Thin internal cell dividers (short vertical lines)
         """
-        # Adaptive threshold to handle uneven lighting in scans
+        # Dynamic block size based on image width (must be odd). Minimum 15.
+        block_size = max(w // 100, 15)
+        if block_size % 2 == 0:
+            block_size += 1
+            
         binary = cv2.adaptiveThreshold(
             gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-            cv2.THRESH_BINARY_INV, 15, 5
+            cv2.THRESH_BINARY_INV, block_size, 5
         )
 
         # Horizontal lines: multi-scale approach
